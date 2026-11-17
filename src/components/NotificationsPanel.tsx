@@ -76,17 +76,6 @@ function alertAction(type: string, role: string | undefined): { href: string; la
     if (role === "subadmin") return { href: "/subadmin/attendance/records", label: "Late / absence records" };
     return null;
   }
-  if (type === "SALARY_APPROVED" || type === "SALARY_PAID") {
-    return {
-      href:
-        role === "admin"
-          ? "/admin/salary"
-          : role === "subadmin"
-            ? "/subadmin/salary"
-            : "/employee/salary",
-      label: "View my payslip",
-    };
-  }
 
   if (
     type === "ATTENDANCE_ADJUSTED" ||

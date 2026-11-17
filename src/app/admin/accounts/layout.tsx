@@ -18,11 +18,7 @@ export default function AccountsLayout({ children }: { children: React.ReactNode
 
   // A ledger statement and one investment sit two levels down, so their Back
   // names the list they came from rather than the section root.
-  const up = pathname.startsWith("/admin/accounts/capital-investments/")
-    ? { label: "All investments", href: "/admin/accounts/capital-investments" }
-    : pathname.startsWith("/admin/accounts/investment-with-x/")
-    ? { label: "Investment with X", href: "/admin/accounts/investment-with-x" }
-    : { label: "Accounts", href: "/admin/accounts" };
+  const up = { label: "Banks & Wallets", href: "/admin/accounts" };
 
   return (
     <>

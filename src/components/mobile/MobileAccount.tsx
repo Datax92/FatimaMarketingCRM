@@ -105,7 +105,6 @@ const ADMIN_SECTIONS: Section[] = [
     items: [
       { label: "Closed Deals", path: "/admin/financials/deals", d: I.deals },
       { label: "Profit Distribution", path: "/admin/financials/distribution", d: I.pie },
-      { label: "Salary / Payroll", path: "/admin/financials/payroll", d: I.money },
       { label: "Reports", path: "/admin/financials/reports", d: I.report },
     ],
   },
@@ -113,18 +112,9 @@ const ADMIN_SECTIONS: Section[] = [
     title: "Accounts",
     d: I.wallet,
     items: [
-      { label: "All Accounts", path: "/admin/accounts", d: I.wallet },
+      { label: "Banks & Wallets", path: "/admin/accounts", d: I.wallet },
       { label: "Office Expenses", path: "/admin/accounts/office-expenses", d: I.receipt },
       { label: "Personal Expenses", path: "/admin/accounts/personal-expense", d: I.wallet },
-      { label: "StateLife", path: "/admin/accounts/statelife", d: I.receipt },
-      { label: "Marketing Income", path: "/admin/accounts/marketing-income", d: I.sheet },
-      { label: "Car Sale", path: "/admin/accounts/car-sale", d: I.deals },
-      { label: "Investment with X", path: "/admin/accounts/investment-with-x", d: I.sheet },
-      { label: "Capital Investments", path: "/admin/accounts/capital-investments", d: I.money },
-      { label: "Committee", path: "/admin/accounts/committee", d: I.team },
-      { label: "Receivables & Payables", path: "/admin/accounts/receivable", d: I.receipt },
-      { label: "Group Income", path: "/admin/accounts/group-income", d: I.sheet },
-      { label: "Group Expense", path: "/admin/accounts/group-expense", d: I.receipt },
     ],
   },
   {
@@ -191,12 +181,7 @@ function subAdminSections(isHr: boolean): Section[] {
       d: I.money,
       items: [
         { label: "My Earnings", path: "/subadmin/earnings", d: I.wallet },
-        ...(isHr
-          ? [
-              { label: "Salary / Payroll", path: "/subadmin/financials/payroll", d: I.money },
-              { label: "Office Expenses", path: "/subadmin/financials/expenses", d: I.receipt },
-            ]
-          : [{ label: "My Salary", path: "/subadmin/salary", d: I.money }]),
+        ...(isHr ? [{ label: "Office Expenses", path: "/subadmin/financials/expenses", d: I.receipt }] : []),
       ],
     },
   ];
@@ -221,7 +206,6 @@ const EMPLOYEE_SECTIONS: Section[] = [
       { label: "My Stats", path: "/employee/performance/stats", d: I.sheet },
       { label: "My Report", path: "/employee/reports", d: I.report },
       { label: "My Earnings", path: "/employee/earnings", d: I.wallet },
-      { label: "My Salary", path: "/employee/salary", d: I.money },
     ],
   },
   {

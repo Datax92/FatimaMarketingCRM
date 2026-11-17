@@ -6,7 +6,6 @@ import { MobileSubHeader } from "@/components/mobile/MobileSubHeader";
 import { useIsMobile } from "@/hooks/useIsMobile";
 
 const TITLES: Record<string, string> = {
-  "/subadmin/financials/payroll": "Salary / Payroll",
   "/subadmin/financials/expenses": "Office Expenses",
 };
 

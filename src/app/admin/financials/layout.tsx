@@ -8,7 +8,6 @@ import { useIsMobile } from "@/hooks/useIsMobile";
 const TITLES: Record<string, string> = {
   "/admin/financials/deals": "Closed Deals",
   "/admin/financials/distribution": "Profit Distribution",
-  "/admin/financials/payroll": "Salary / Payroll",
   "/admin/financials/expenses": "Office Expenses",
   "/admin/financials/reports": "Financial Reports",
 };

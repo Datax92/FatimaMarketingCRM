@@ -1,23 +1,42 @@
 "use client";
 
-import type { StateLifeSlab, StateLifeRates } from '@/lib/stateLife';
+
 import {
-  saveCapitalSpending as _saveCapitalSpending,
-  deleteCapitalSpending as _deleteCapitalSpending,
-  countCapitalSpendingPayments as _countCapitalSpendingPayments,
-  type CapitalSpendingInput,
-} from '@/app/actions/capitalInvestment';
-import { IS_DEMO, demo, getDemoSession } from '@/lib/demo/store';
+  IS_DEMO,
+  demo,
+  getDemoSession,
+} from '@/lib/demo/store';
 import type { LeadStatus } from '@/lib/leadStatus';
 import type { ActionResult } from '@/lib/actionResult';
-import { forgetSaved, savedOrLoad } from '@/lib/quietSaved';
-import { karachiMonthKey } from '@/lib/dates';
-import { enqueue, patchQueuedFollowUp, registerReplayers, shouldQueue } from '@/lib/outbox';
+import {
+  forgetSaved,
+  savedOrLoad,
+} from '@/lib/quietSaved';
+import {
+  karachiMonthKey,
+} from '@/lib/dates';
+import {
+  enqueue,
+  patchQueuedFollowUp,
+  registerReplayers,
+  shouldQueue,
+} from '@/lib/outbox';
 
-import { assignLead as _assignLead, reassignLeadManual as _reassignLeadManual, acceptLead as _acceptLead,
-  passLead as _passLead, setLeadStatus as _setLeadStatus, setLeadPipelineStage as _setLeadPipelineStage, createLead as _createLead, reviewColdLead as _reviewColdLead, assignLeadsBulk as _assignLeadsBulk } from '@/app/actions/leads';
+import {
+  assignLead as _assignLead,
+  reassignLeadManual as _reassignLeadManual,
+  acceptLead as _acceptLead,
+  passLead as _passLead,
+  setLeadStatus as _setLeadStatus,
+  setLeadPipelineStage as _setLeadPipelineStage,
+  createLead as _createLead,
+  reviewColdLead as _reviewColdLead,
+  assignLeadsBulk as _assignLeadsBulk,
+} from '@/app/actions/leads';
 import type { PipelineStage } from '@/lib/pipelineStage';
-import { saveKyc as _saveKyc } from '@/app/actions/kyc';
+import {
+  saveKyc as _saveKyc,
+} from '@/app/actions/kyc';
 import type { KycValues } from '@/lib/kyc';
 import {
   finalizeProfitDistribution as _finalizeProfitDistribution,
@@ -25,18 +44,41 @@ import {
   type ShareInput,
   type FinalizeResult,
 } from '@/app/actions/profitDistribution';
-import { addFollowUp as _addFollowUp, updateFollowUp as _updateFollowUp } from '@/app/actions/followUps';
+import {
+  addFollowUp as _addFollowUp,
+  updateFollowUp as _updateFollowUp,
+} from '@/app/actions/followUps';
 import {
   closeDeal as _closeDeal,
   updateClosedDeal as _updateClosedDeal,
   type DealEntryInput,
 } from '@/app/actions/closedDeals';
-import { addExpense as _addExpense } from '@/app/actions/expenses';
-import { addReceivable as _addReceivable } from '@/app/actions/receivables';
-import { addCommitteeRecord as _addCommitteeRecord, addInvestmentRecord as _addInvestmentRecord, addCapitalInvestmentRecord as _addCapitalInvestmentRecord, addPersonalExpense as _addPersonalExpense } from '@/app/actions/accounts';
-import { createEmployee as _createEmployee, updateEmployee as _updateEmployee, setEmployeePriority as _setEmployeePriority, setEmployeeAutoPriority as _setEmployeeAutoPriority, updateLaneSettings as _updateLaneSettings, setEmployeeTargets as _setEmployeeTargets, recalculateEmployeePriorities as _recalculateEmployeePriorities, disableEmployee as _disableEmployee, enableEmployee as _enableEmployee, setEmployeeSubAdmin as _setEmployeeSubAdmin, setSubAdminTeam as _setSubAdminTeam, type PriorityChange } from '@/app/actions/employees';
+import {
+  addExpense as _addExpense,
+} from '@/app/actions/expenses';
+
+import {
+  addPersonalExpense as _addPersonalExpense,
+} from '@/app/actions/accounts';
+import {
+  createEmployee as _createEmployee,
+  updateEmployee as _updateEmployee,
+  setEmployeePriority as _setEmployeePriority,
+  setEmployeeAutoPriority as _setEmployeeAutoPriority,
+  updateLaneSettings as _updateLaneSettings,
+  setEmployeeTargets as _setEmployeeTargets,
+  recalculateEmployeePriorities as _recalculateEmployeePriorities,
+  disableEmployee as _disableEmployee,
+  enableEmployee as _enableEmployee,
+  setEmployeeSubAdmin as _setEmployeeSubAdmin,
+  setSubAdminTeam as _setSubAdminTeam,
+  type PriorityChange,
+} from '@/app/actions/employees';
 import type { KpiTargets } from '@/lib/kpi';
-import { createCampaign as _createCampaign, type CreateCampaignInput } from '@/app/actions/campaigns';
+import {
+  createCampaign as _createCampaign,
+  type CreateCampaignInput,
+} from '@/app/actions/campaigns';
 import {
   createDataBankFolder as _createDataBankFolder,
   updateDataBankFolder as _updateDataBankFolder,
@@ -75,17 +117,6 @@ import {
 import type { AttendanceStatus } from '@/lib/attendance';
 import type { ExpenseStatus } from '@/lib/officeExpenses';
 import {
-  listSalaryProfiles as _listSalaryProfiles,
-  saveSalaryProfile as _saveSalaryProfile,
-  getPayroll as _getPayroll,
-  savePayrollMonth as _savePayrollMonth,
-  payPayrollLine as _payPayrollLine,
-  getPayslips as _getPayslips,
-  type PayrollPeriod,
-  type Payslip,
-  type SalaryProfileRecord,
-} from '@/app/actions/payroll';
-import {
   getExpenseCategories as _getExpenseCategories,
   manageExpenseCategory as _manageExpenseCategory,
   createOfficeExpense as _createOfficeExpense,
@@ -115,8 +146,14 @@ import {
   adjustLeaveBalance as _adjustLeaveBalance,
   type LeaveSummary,
 } from '@/app/actions/leave';
-import { markNotificationRead as _markNotificationRead, markAllNotificationsRead as _markAllNotificationsRead } from '@/app/actions/notifications';
-import { buildTeamReport as _buildTeamReport, type TeamReport } from '@/app/actions/reports';
+import {
+  markNotificationRead as _markNotificationRead,
+  markAllNotificationsRead as _markAllNotificationsRead,
+} from '@/app/actions/notifications';
+import {
+  buildTeamReport as _buildTeamReport,
+  type TeamReport,
+} from '@/app/actions/reports';
 import {
   buildActivityBreakdown as _buildActivityBreakdown,
   type ActivityBreakdown,
@@ -128,8 +165,14 @@ import {
   addLeadsToClientFolder as _addLeadsToClientFolder,
   removeLeadFromClientFolder as _removeLeadFromClientFolder,
 } from '@/app/actions/clients';
-import { getMonitoringConfig as _getMonitoringConfig, setNoContactDays as _setNoContactDays, type MonitoringConfig } from '@/app/actions/config';
-import { DEFAULT_NO_CONTACT_DAYS } from '@/lib/constants/monitoring';
+import {
+  getMonitoringConfig as _getMonitoringConfig,
+  setNoContactDays as _setNoContactDays,
+  type MonitoringConfig,
+} from '@/app/actions/config';
+import {
+  DEFAULT_NO_CONTACT_DAYS,
+} from '@/lib/constants/monitoring';
 import {
   createAccount as _createAccount,
   updateAccount as _updateAccount,
@@ -149,37 +192,15 @@ import {
   type PayInput,
   type PayBackInput,
 } from '@/app/actions/ledger';
-import {
-  setSpendingLoan as _setSpendingLoan,
-  recordLoanReturn as _recordLoanReturn,
-  type LoanReturnInput,
-} from '@/app/actions/spendingLoan';
+
 import {
   savePersonalExpense as _savePersonalExpense,
   deletePersonalExpense as _deletePersonalExpense,
   getPersonalExpenseCategories as _getPersonalExpenseCategories,
   managePersonalExpenseCategory as _managePersonalExpenseCategory,
   countPersonalExpensePayments as _countPersonalExpensePayments,
-  saveStateLifePolicy as _saveStateLifePolicy,
-  receiveStateLifeSlab as _receiveStateLifeSlab,
-  getStateLifeRates as _getStateLifeRates,
-  setStateLifeRates as _setStateLifeRates,
-  unreceiveStateLifeSlab as _unreceiveStateLifeSlab,
-  deleteStateLifePolicy as _deleteStateLifePolicy,
-  saveMarketingIncome as _saveMarketingIncome,
-  deleteMarketingIncome as _deleteMarketingIncome,
-  countMarketingIncomeReceipts as _countMarketingIncomeReceipts,
   type PersonalExpenseInput,
-  type StateLifeInputRow,
-  type MarketingIncomeInput,
 } from '@/app/actions/accountModules';
-
-import {
-  saveCarSale as _saveCarSale,
-  deleteCarSale as _deleteCarSale,
-  countCarSaleProfit as _countCarSaleProfit,
-  type CarSaleInput,
-} from '@/app/actions/carSale';
 
 /** Who the demo store should attribute mutations to. */
 const actor = () => getDemoSession() ?? { uid: 'demo-admin', email: 'admin@crm.com' };
@@ -397,38 +418,6 @@ export async function addExpense(
 ): Promise<ActionResult<{ expenseId: string }>> {
   if (IS_DEMO) return demo.addExpense(input, actor().uid);
   return _addExpense(token, input);
-}
-
-export async function addReceivable(
-  token: string,
-  input: { title: string; size: string; amount: number; date?: string }
-): Promise<ActionResult<{ receivableId: string }>> {
-  if (IS_DEMO) return demo.addReceivable(input, actor().uid);
-  return _addReceivable(token, input);
-}
-
-export async function addCommitteeRecord(
-  token: string,
-  input: { title: string; amount: number; description?: string; date?: string }
-): Promise<ActionResult<{ recordId: string }>> {
-  if (IS_DEMO) return demo.addCommitteeRecord(input, actor().uid);
-  return _addCommitteeRecord(token, input);
-}
-
-export async function addInvestmentRecord(
-  token: string,
-  input: { title: string; amount: number; description?: string; date?: string }
-): Promise<ActionResult<{ recordId: string }>> {
-  if (IS_DEMO) return demo.addInvestmentRecord(input, actor().uid);
-  return _addInvestmentRecord(token, input);
-}
-
-export async function addCapitalInvestmentRecord(
-  token: string,
-  input: { title: string; amount: number; description?: string; date?: string }
-): Promise<ActionResult<{ recordId: string }>> {
-  if (IS_DEMO) return demo.addCapitalInvestmentRecord(input, actor().uid);
-  return _addCapitalInvestmentRecord(token, input);
 }
 
 export async function addPersonalExpense(
@@ -1026,67 +1015,6 @@ export type { AttendancePeriod, PayrollDeductionLine } from '@/app/actions/atten
 /* Payroll                                                                     */
 /* -------------------------------------------------------------------------- */
 
-export async function listSalaryProfiles(
-  token: string
-): Promise<ActionResult<{ profiles: SalaryProfileRecord[] }>> {
-  if (IS_DEMO) return demo.listSalaryProfiles() as ActionResult<{ profiles: SalaryProfileRecord[] }>;
-  return savedOrLoad('listSalaryProfiles', [], () => _listSalaryProfiles(token));
-}
-
-export async function saveSalaryProfile(
-  token: string,
-  uid: string,
-  input: { salary: number; allowance: number; joinedAt: string | null; leftAt?: string | null }
-): Promise<ActionResult<{ salary: number; allowance: number }>> {
-  if (IS_DEMO) return demo.saveSalaryProfile(uid, input, actor().uid);
-  const result = await _saveSalaryProfile(token, uid, input);
-  if (result.ok) forgetSaved('listSalaryProfiles', 'getPayroll');
-  return result;
-}
-
-/** One person's figures for one month, set by hand. That month only. */
-export async function savePayrollMonth(
-  token: string,
-  monthKey: string,
-  uid: string,
-  input: { figures: Record<string, unknown>; note?: string | null }
-): Promise<ActionResult<{ net: number; adjusted: number }>> {
-  if (IS_DEMO) return demo.savePayrollMonth(monthKey, uid, input);
-  const result = await _savePayrollMonth(token, monthKey, uid, input);
-  if (result.ok) forgetSaved('getPayroll');
-  return result;
-}
-
-/** A month's payroll, live — see `getPayroll`. */
-export async function getPayroll(
-  token: string,
-  monthKey: string
-): Promise<ActionResult<PayrollPeriod>> {
-  if (IS_DEMO) return demo.getPayroll(monthKey) as ActionResult<PayrollPeriod>;
-  return savedOrLoad('getPayroll', [monthKey], () => _getPayroll(token, monthKey));
-}
-
-/** Pays one person's month out of real accounts — see `payPayrollLine`. Admin only. */
-export async function payPayrollLine(
-  token: string,
-  monthKey: string,
-  uid: string,
-  input: { allocations: Array<{ accountId: string; amount: number }>; dayKey?: string; note?: string | null }
-) {
-  const result = await _payPayrollLine(token, monthKey, uid, input);
-  if (result.ok) forgetSaved('getPayroll');
-  return result;
-}
-
-/** Somebody's salary history. An employee gets their own and nobody else's. */
-export async function getPayslips(
-  token: string,
-  uid?: string
-): Promise<ActionResult<{ slips: Payslip[] }>> {
-  if (IS_DEMO) return demo.getPayslips(uid ?? actor().uid) as ActionResult<{ slips: Payslip[] }>;
-  return _getPayslips(token, uid);
-}
-
 /* -------------------------------------------------------------------------- */
 /* Office expenses                                                             */
 /* -------------------------------------------------------------------------- */
@@ -1140,11 +1068,6 @@ export async function deleteOfficeExpense(token: string, expenseId: string): Pro
   return _deleteOfficeExpense(token, expenseId);
 }
 
-export type {
-  PayrollPeriod,
-  Payslip,
-  SalaryProfileRecord,
-} from '@/app/actions/payroll';
 export type { OfficeExpenseInput } from '@/app/actions/officeExpenses';
 
 /* -------------------------------------------------------------------------- */
@@ -1189,19 +1112,6 @@ export async function createTransfer(
 /** Puts money back into an account against a spending that came out of it. */
 export async function payBackSpending(token: string, input: PayBackInput) {
   return _payBackSpending(token, input);
-}
-
-/** Marks a spending as a loan to somebody, or back to a plain spending. */
-export async function setSpendingLoan(
-  token: string,
-  input: { kind: 'TXN' | 'TICKET'; id: string; borrower: string | null }
-) {
-  return _setSpendingLoan(token, input);
-}
-
-/** Records money a borrower gave back on a loan. */
-export async function recordLoanReturn(token: string, input: LoanReturnInput) {
-  return _recordLoanReturn(token, input);
 }
 
 export async function addManualTransaction(
@@ -1249,76 +1159,6 @@ export async function managePersonalExpenseCategory(
   return _managePersonalExpenseCategory(token, action, name, renameTo);
 }
 
-export async function saveStateLifePolicy(token: string, input: StateLifeInputRow, policyId?: string) {
-  return _saveStateLifePolicy(token, input, policyId);
-}
-
-export async function receiveStateLifeSlab(
-  token: string,
-  policyId: string,
-  slab: StateLifeSlab,
-  accountId: string,
-  input?: { amount?: number; dayKey?: string; note?: string | null }
-) {
-  return _receiveStateLifeSlab(token, policyId, slab, accountId, input);
-}
-
-export async function unreceiveStateLifeSlab(token: string, policyId: string, slab: StateLifeSlab) {
-  return _unreceiveStateLifeSlab(token, policyId, slab);
-}
-
-export async function saveCapitalSpending(
-  token: string,
-  input: CapitalSpendingInput,
-  spendingId?: string
-) {
-  return _saveCapitalSpending(token, input, spendingId);
-}
-
-export async function deleteCapitalSpending(token: string, spendingId: string) {
-  return _deleteCapitalSpending(token, spendingId);
-}
-
-export async function countCapitalSpendingPayments(token: string, spendingId: string) {
-  return _countCapitalSpendingPayments(token, spendingId);
-}
-
-export async function getStateLifeRates(token: string) {
-  return _getStateLifeRates(token);
-}
-
-export async function setStateLifeRates(token: string, rates: Partial<StateLifeRates>) {
-  return _setStateLifeRates(token, rates);
-}
-
-export async function deleteStateLifePolicy(token: string, policyId: string) {
-  return _deleteStateLifePolicy(token, policyId);
-}
-
-export async function saveMarketingIncome(token: string, input: MarketingIncomeInput, recordId?: string) {
-  return _saveMarketingIncome(token, input, recordId);
-}
-
-export async function deleteMarketingIncome(token: string, recordId: string) {
-  return _deleteMarketingIncome(token, recordId);
-}
-
-export async function countMarketingIncomeReceipts(token: string, recordId: string) {
-  return _countMarketingIncomeReceipts(token, recordId);
-}
-
-export async function saveCarSale(token: string, input: CarSaleInput, recordId?: string) {
-  return _saveCarSale(token, input, recordId);
-}
-
-export async function deleteCarSale(token: string, recordId: string) {
-  return _deleteCarSale(token, recordId);
-}
-
-export async function countCarSaleProfit(token: string, recordId: string) {
-  return _countCarSaleProfit(token, recordId);
-}
-
 export async function updateTransaction(
   token: string,
   transactionId: string,
@@ -1355,164 +1195,11 @@ import {
   payExpensesTotal as _payExpensesTotal,
   type PayTotalInput,
 } from '@/app/actions/ledger';
-import {
-  saveInvestmentBook as _saveInvestmentBook,
-  deleteInvestmentBook as _deleteInvestmentBook,
-  saveInvestmentRound as _saveInvestmentRound,
-  deleteInvestmentRound as _deleteInvestmentRound,
-  setInvestmentRoundReceived as _setInvestmentRoundReceived,
-  type InvestmentBookInput,
-  type InvestmentRoundInput,
-} from '@/app/actions/investmentWithX';
-import {
-  saveGroupConfig as _saveGroupConfig,
-  saveGroupEntry as _saveGroupEntry,
-  deleteGroupEntry as _deleteGroupEntry,
-  setGroupIncomeEdit as _setGroupIncomeEdit,
-  setGroupCell as _setGroupCell,
-  setGroupDescription as _setGroupDescription,
-  closeGroupMonth as _closeGroupMonth,
-  reopenGroupMonth as _reopenGroupMonth,
-  type GroupEntryInput,
-} from '@/app/actions/groupFinance';
-import {
-  saveSheetEntry as _saveSheetEntry,
-  settleSheetEntry as _settleSheetEntry,
-  settleSheetEntryThroughAccounts as _settleSheetEntryThroughAccounts,
-  deleteSheetEntry as _deleteSheetEntry,
-  saveSheetGroups as _saveSheetGroups,
-  importLegacyReceivables as _importLegacyReceivables,
-  countLegacyReceivables as _countLegacyReceivables,
-  type SheetEntryInput,
-} from '@/app/actions/receivableSheet';
-import {
-  saveAmanatEntry as _saveAmanatEntry,
-  payAmanatExpenseThroughAccounts as _payAmanatExpenseThroughAccounts,
-  deleteAmanatEntry as _deleteAmanatEntry,
-  type AmanatEntryInput,
-} from '@/app/actions/amanatSheet';
-import type { GroupField, BuiltinColumn } from '@/lib/groupFinance';
-import type { LedgerSide } from '@/lib/receivableSheet';
+
 
 /** Every unpaid expense in a period, paid at once from one or more accounts. */
 export async function payExpensesTotal(token: string, input: PayTotalInput) {
   return _payExpensesTotal(token, input);
-}
-
-export async function saveInvestmentBook(token: string, input: InvestmentBookInput, bookId?: string) {
-  return _saveInvestmentBook(token, input, bookId);
-}
-export async function deleteInvestmentBook(token: string, bookId: string) {
-  return _deleteInvestmentBook(token, bookId);
-}
-export async function saveInvestmentRound(token: string, input: InvestmentRoundInput, roundId?: string) {
-  return _saveInvestmentRound(token, input, roundId);
-}
-export async function deleteInvestmentRound(token: string, roundId: string) {
-  return _deleteInvestmentRound(token, roundId);
-}
-export async function setInvestmentRoundReceived(token: string, roundId: string, received: boolean, dayKey?: string | null) {
-  return _setInvestmentRoundReceived(token, roundId, received, dayKey);
-}
-
-export async function saveGroupConfig(
-  token: string,
-  input: { fields: Array<Partial<GroupField>>; labels?: Partial<Record<BuiltinColumn, string>> }
-) {
-  return _saveGroupConfig(token, input);
-}
-export async function saveGroupEntry(token: string, monthKey: string, input: GroupEntryInput, entryId?: string) {
-  return _saveGroupEntry(token, monthKey, input, entryId);
-}
-export async function deleteGroupEntry(token: string, monthKey: string, entryId: string) {
-  return _deleteGroupEntry(token, monthKey, entryId);
-}
-export async function setGroupIncomeEdit(
-  token: string,
-  monthKey: string,
-  transactionId: string,
-  amount: number | null,
-  note?: string | null
-) {
-  return _setGroupIncomeEdit(token, monthKey, transactionId, amount, note);
-}
-export async function setGroupCell(
-  token: string,
-  monthKey: string,
-  columnKey: string,
-  value: number | null | undefined,
-  note?: string | null
-) {
-  return _setGroupCell(token, monthKey, columnKey, value, note);
-}
-export async function setGroupDescription(token: string, monthKey: string, description: string) {
-  return _setGroupDescription(token, monthKey, description);
-}
-export async function closeGroupMonth(token: string, monthKey: string) {
-  return _closeGroupMonth(token, monthKey);
-}
-export async function reopenGroupMonth(token: string, monthKey: string) {
-  return _reopenGroupMonth(token, monthKey);
-}
-
-export async function saveSheetEntry(token: string, input: SheetEntryInput, entryId?: string) {
-  return _saveSheetEntry(token, input, entryId);
-}
-export async function settleSheetEntry(
-  token: string,
-  entryId: string,
-  input: { amount: number; dayKey?: string | null; note?: string | null }
-) {
-  return _settleSheetEntry(token, entryId, input);
-}
-export async function settleSheetEntryThroughAccounts(
-  token: string,
-  entryId: string,
-  input: {
-    allocations: Array<{ accountId: string; amount: number }>;
-    dayKey?: string | null;
-    note?: string | null;
-    sourceLabel?: string | null;
-  }
-) {
-  return _settleSheetEntryThroughAccounts(token, entryId, input);
-}
-export async function deleteSheetEntry(token: string, entryId: string) {
-  return _deleteSheetEntry(token, entryId);
-}
-export async function saveSheetGroups(
-  token: string,
-  side: LedgerSide,
-  groups: string[],
-  renames?: Array<{ from: string; to: string }>
-) {
-  return _saveSheetGroups(token, side, groups, renames);
-}
-export async function importLegacyReceivables(token: string) {
-  return _importLegacyReceivables(token);
-}
-export async function countLegacyReceivables(token: string) {
-  return _countLegacyReceivables(token);
-}
-
-export async function saveAmanatEntry(token: string, input: AmanatEntryInput, entryId?: string) {
-  return _saveAmanatEntry(token, input, entryId);
-}
-
-export async function payAmanatExpenseThroughAccounts(
-  token: string,
-  entryId: string,
-  input: {
-    allocations: Array<{ accountId: string; amount: number }>;
-    dayKey?: string | null;
-    note?: string | null;
-  }
-) {
-  return _payAmanatExpenseThroughAccounts(token, entryId, input);
-}
-
-export async function deleteAmanatEntry(token: string, entryId: string) {
-  return _deleteAmanatEntry(token, entryId);
 }
 
 /*

@@ -11,8 +11,7 @@
  *
  * The statement is laid out the way the owner's workbook lays it out —
  * **Amount Received** one side, **Spendings** the other, each totalled. That is
- * how `COMMITTE 2025` and `CAPITAL INVESTMENT` are drawn by hand, so those
- * accounts open looking like the sheet they replace.
+ * how the owner's sheets are drawn by hand.
  */
 
 import { useEffect, useMemo, useState } from "react";
@@ -29,7 +28,7 @@ import { useLedger, type AccountDoc, type TransactionDoc } from "@/hooks/useLedg
 import { formatMoney } from "@/lib/money";
 import { karachiDayKey, karachiMonthKey, formatBusinessDate } from "@/lib/dates";
 import {
-  ACCOUNT_KIND_LABELS, TRANSACTION_TYPE_LABELS, ACCOUNT_KINDS,
+  ACCOUNT_KIND_LABELS, TRANSACTION_TYPE_LABELS,
   accountMovement, summarizeMonth, compareToPrevious,
   type LedgerTransaction, type TransactionType,
 } from "@/lib/ledger";
@@ -42,7 +41,9 @@ import {
   A, CARD, ACCOUNT_ICONS, Trend, StatusPill, SummaryCard, Skeleton,
   EmptyState, Button, Chip, SectionTitle,
 } from "./accountsChrome";
-import { CommitteeStatement } from "./CommitteeStatement";
+
+/** Fatima Marketing keeps money in banks, wallets and cash only. */
+const PICKABLE_KINDS = ["BANK", "WALLET", "CASH"] as const;
 
 const iconButton: React.CSSProperties = {
   border: "none", background: "transparent", color: A.hair,
@@ -58,11 +59,6 @@ const FIELD: React.CSSProperties = {
 const SOURCE_ROUTES: Record<string, string> = {
   OFFICE_EXPENSE: "/admin/accounts/office-expenses",
   PERSONAL_EXPENSE: "/admin/accounts/personal-expense",
-  MARKETING_INCOME: "/admin/accounts/marketing-income",
-  CAR_SALE: "/admin/accounts/car-sale",
-  INVESTMENT_WITH_X: "/admin/accounts/investment-with-x",
-  STATELIFE: "/admin/accounts/statelife",
-  RECEIVABLE: "/admin/accounts/receivable",
 };
 
 const SOURCE_LABELS: Record<string, string> = {
@@ -117,9 +113,6 @@ export function AccountsView({ accountId }: { accountId?: string }) {
   const [transferring, setTransferring] = useState(false);
   const [managingAccount, setManagingAccount] = useState(false);
   const [banner, setBanner] = useState<string | null>(null);
-  /** The committee screen owns its own Add / Edit, so they live up here. */
-  const [enteringOn, setEnteringOn] = useState<string | null>(null);
-  const [editingRow, setEditingRow] = useState<TransactionDoc | null>(null);
 
   // One instant for the whole screen, so no two cards straddle midnight.
   const now = useMemo(() => {
@@ -145,20 +138,20 @@ export function AccountsView({ accountId }: { accountId?: string }) {
 
   return (
     <div style={{ fontFamily: "var(--font-directory), system-ui, sans-serif" }}>
-      <header style={{ display: account?.kind === "COMMITTEE" ? "none" : "flex", flexWrap: "wrap", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 14 }}>
+      <header style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 14 }}>
         <div style={{ minWidth: 0 }}>
           {account && (
             <Link href="/admin/accounts" style={{ fontSize: 12, fontWeight: 700, color: A.tealInk, textDecoration: "none" }}>
-              ← All accounts
+              ← Banks & Wallets
             </Link>
           )}
           <h1 style={{ fontFamily: "inherit", fontSize: isMobile ? 21 : 25, fontWeight: 700, color: A.ink, letterSpacing: -0.4, marginTop: account ? 4 : 0 }}>
-            {account ? account.name : "Accounts"}
+            {account ? account.name : "Banks & Wallets"}
           </h1>
           <p style={{ fontSize: 12.5, color: A.faint, marginTop: 2 }}>
             {account
               ? `${ACCOUNT_KIND_LABELS[account.kind]} · every movement, and what caused it`
-              : "Every rupee the business holds, and everywhere it moved"}
+              : "Bank accounts and wallets — add income, pay expenses, move money"}
           </p>
         </div>
         {!account ? (
@@ -184,32 +177,7 @@ export function AccountsView({ accountId }: { accountId?: string }) {
         </p>
       )}
 
-      {account && account.kind === "COMMITTEE" ? (
-        /*
-          A committee has its own screen, transcribed from
-          `Committee Account.dc.html` and its mobile twin. Every other kind of
-          account keeps the generic in/out statement below — the design covers
-          committees, and inventing the rest from it would be guessing.
-        */
-        <CommitteeStatement
-          account={account}
-          transactions={transactions}
-          accounts={accounts}
-          balances={balances}
-          getIdToken={getIdToken}
-          isMobile={isMobile}
-          onAdd={() => setEnteringOn(account.id)}
-          onEdit={setEditingRow}
-          onDelete={async (row) => {
-            const extra = deleteWarning(row);
-            if (!window.confirm(`Delete "${row.sourceLabel ?? "this row"}"?${extra}`)) return;
-            const res = await deleteTransaction(await getIdToken(), row.id);
-            setBanner(res.ok ? "Deleted." : res.error);
-          }}
-          onManage={() => setManagingAccount(true)}
-          onBanner={setBanner}
-        />
-      ) : account ? (
+      {account ? (
         <AccountStatement
           account={account}
           transactions={transactions}
@@ -236,27 +204,6 @@ export function AccountsView({ accountId }: { accountId?: string }) {
           onClose={() => setManagingAccount(false)}
           getIdToken={getIdToken}
           onSaved={setBanner}
-        />
-      )}
-
-      {enteringOn && account && (
-        <ManualEntry
-          account={account}
-          direction="OUT"
-          onClose={() => setEnteringOn(null)}
-          getIdToken={getIdToken}
-          onSaved={(m) => { setBanner(m); setEnteringOn(null); }}
-        />
-      )}
-
-      {editingRow && account && (
-        <ManualEntry
-          account={account}
-          direction={editingRow.direction}
-          existing={editingRow}
-          onClose={() => setEditingRow(null)}
-          getIdToken={getIdToken}
-          onSaved={(m) => { setBanner(m); setEditingRow(null); }}
         />
       )}
 
@@ -1236,12 +1183,12 @@ function NewAccount({ onClose, getIdToken, onSaved }: { onClose: () => void; get
         <div style={{ display: "grid", gap: 11 }}>
           <label style={{ display: "flex", flexDirection: "column", gap: 5, fontSize: 12, fontWeight: 700, color: A.muted }}>
             Name
-            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Meezan Bank · Cash in hand · December Committee" style={{ ...FIELD, fontSize: isMobile ? 16 : 14 }} />
+            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="UBL · EasyPaisa · JazzCash · Cash in hand" style={{ ...FIELD, fontSize: isMobile ? 16 : 14 }} />
           </label>
           <div>
             <span style={{ display: "block", fontSize: 12, fontWeight: 700, color: A.muted, marginBottom: 6 }}>Type</span>
             <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>
-              {ACCOUNT_KINDS.map((k) => {
+              {PICKABLE_KINDS.map((k) => {
                 const Icon = ACCOUNT_ICONS[k];
                 const on = kind === k;
                 return (

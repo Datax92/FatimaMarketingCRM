@@ -23,7 +23,6 @@ import {
   type LedgerTransaction,
 } from './ledger.ts';
 
-import { afterTax, stateLifeCommission, stateLifeTotals } from './stateLife.ts';
 
 /*
  * The ledger, against the owner's own scenarios.
@@ -375,63 +374,6 @@ describe('the small things that corrupt a ledger quietly', () => {
     assert.equal(normalizeAccountKind('NONSENSE'), 'OTHER');
     assert.equal(normalizeAccountKind(undefined), 'OTHER');
     assert.equal(normalizeAccountKind('COMMITTEE'), 'COMMITTEE');
-  });
-});
-
-/* -------------------------------------------------------------------------- */
-/* StateLife — against the workbook's own rows                                 */
-/* -------------------------------------------------------------------------- */
-
-describe('StateLife commission, transcribed from statelife.xlsx', () => {
-  test('row 4 of the sheet, to the paisa', () => {
-    // MUHAMMAD NADEEM: FYP 300,000 · PASS 299,900 · discount 12,600.
-    const c = stateLifeCommission({ fyp: 300_000, pass: 299_900, discount: 12_600 });
-    assert.equal(c.firstCommission, 82_772.4);   // =E4*0.276
-    assert.equal(c.secondCommission, 27_590.8);  // =E4*0.092
-    assert.equal(c.remainingCommission, 97_763.2); // =M4+N4-O4
-    assert.equal(c.quarterCommission, 6_897.7);  // =E4*0.023
-    assert.equal(c.decemberCommission, 20_693.1); // =E4*0.069
-    assert.equal(c.netCommission, 125_354);      // =P4+Q4+R4
-  });
-
-  test('row 5, where there is no discount', () => {
-    const c = stateLifeCommission({ fyp: 100_000, pass: 99_900, discount: 0 });
-    assert.equal(c.firstCommission, 27_572.4);
-    assert.equal(c.secondCommission, 9_190.8);
-    assert.equal(c.remainingCommission, 36_763.2);
-    assert.equal(c.netCommission, 45_954);
-  });
-
-  test('the base is PASS, not FYP — the difference is the whole point', () => {
-    // Row 10: proposed 260,000, passed 253,019. Using FYP would overpay.
-    const onPass = stateLifeCommission({ fyp: 260_000, pass: 253_019, discount: 19_019 });
-    const onFyp = stateLifeCommission({ fyp: 260_000, pass: 260_000, discount: 19_019 });
-    assert.equal(onPass.firstCommission, 69_833.24);
-    assert.notEqual(onPass.netCommission, onFyp.netCommission);
-  });
-
-  test('a discount larger than the commission gives a negative remainder', () => {
-    // Row 15 of the sheet is −2,592 and its total depends on it staying negative.
-    const c = stateLifeCommission({ fyp: 31_000, pass: 31_000, discount: 14_000 });
-    assert.equal(c.remainingCommission, -2_592);
-    assert.equal(c.netCommission, 260);
-  });
-
-  test('the rates are the sheet’s rates with 8% tax folded in', () => {
-    assert.equal(afterTax(0.30), 0.276);
-    assert.equal(afterTax(0.10), 0.092);
-    assert.equal(afterTax(0.025), 0.023);
-    assert.equal(afterTax(0.075), 0.069);
-  });
-
-  test('column totals sum the derived columns, not just the typed ones', () => {
-    const totals = stateLifeTotals([
-      { fyp: 300_000, pass: 299_900, discount: 12_600, paidAmount: 300_003 },
-      { fyp: 100_000, pass: 99_900, discount: 0, paidAmount: 100_014 },
-    ]);
-    assert.equal(totals.pass, 399_800);
-    assert.equal(totals.paidAmount, 400_017);
-    assert.equal(totals.netCommission, 125_354 + 45_954);
   });
 });
 

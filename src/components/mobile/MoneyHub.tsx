@@ -100,14 +100,8 @@ export function MoneyHub() {
           d: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM8.5 12l2.5 2.5 4.5-5",
         },
         {
-          label: "Salary / Payroll",
-          detail: "Monthly payroll, salary profiles and payslips",
-          href: "/admin/financials/payroll",
-          d: "M3 8h14a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H3zM3 8V6a2 2 0 0 1 2-2h10M12 15a2 2 0 1 0 0-4 2 2 0 0 0 0 4",
-        },
-        {
-          label: "Salary Deductions",
-          detail: "Late arrivals and what each one costs",
+          label: "Late / Absence",
+          detail: "Late arrivals and absences across the team",
           href: "/admin/attendance/records",
           d: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM12 7v5l3 2",
         },
@@ -122,24 +116,6 @@ export function MoneyHub() {
           detail: "Employee and campaign performance",
           href: "/admin/financials/reports",
           d: "M6 3h12v18H6zM9 8h6M9 12h6M9 16h4",
-        },
-        {
-          label: "Income Sheet",
-          detail: "Every revenue and expense line",
-          href: "/admin/accounts/income-sheet",
-          d: "M4 19h16M7 16V9M12 16V5M17 16v-4",
-        },
-        {
-          label: "Receivables",
-          detail: "What is still owed",
-          href: "/admin/accounts/receivable",
-          d: "M4 6h16v12H4zM4 10h16M8 14h4",
-        },
-        {
-          label: "Investments",
-          detail: "Committee, capital and investment ledgers",
-          href: "/admin/accounts/investment",
-          d: "M4 19h16M6 16V8M11 16V4M16 16v-6M21 16v-3",
         },
       ]
     : isManager
@@ -167,12 +143,6 @@ export function MoneyHub() {
           ...(isHrManager
             ? [
                 {
-                  label: "Salary / Payroll",
-                  detail: "Monthly payroll, salary profiles and payslips",
-                  href: "/subadmin/financials/payroll",
-                  d: "M3 8h14a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H3zM3 8V6a2 2 0 0 1 2-2h10M12 15a2 2 0 1 0 0-4 2 2 0 0 0 0 4",
-                },
-                {
                   label: "Office Expenses",
                   detail: "What the business spent, and what you have recorded",
                   href: "/subadmin/financials/expenses",
@@ -181,15 +151,7 @@ export function MoneyHub() {
               ]
             : []),
           {
-            // HR has the company's payroll above; this is still their own
-            // payslip, which is a different question and stays for everybody.
-            label: "My Salary",
-            detail: "Your own payslips and salary history",
-            href: "/subadmin/salary",
-            d: "M3 8h14a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H3zM3 8V6a2 2 0 0 1 2-2h10M12 15a2 2 0 1 0 0-4 2 2 0 0 0 0 4",
-          },
-          {
-            label: "Salary Deductions",
+            label: "Late / Absence",
             detail: isHrManager
               ? "Late arrivals across the company and their cost"
               : "Your team's late arrivals and their cost",
@@ -210,12 +172,6 @@ export function MoneyHub() {
             figure: formatCompactMoney(totals.mine),
             href: "/employee/earnings",
             d: "M3 8h14a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H3zM3 8V6a2 2 0 0 1 2-2h10M16 13h2",
-          },
-          {
-            label: "My Salary",
-            detail: "Payslips, salary history and deductions",
-            href: "/employee/salary",
-            d: "M3 8h14a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H3zM3 8V6a2 2 0 0 1 2-2h10M12 15a2 2 0 1 0 0-4 2 2 0 0 0 0 4",
           },
           {
             label: "My Attendance",
