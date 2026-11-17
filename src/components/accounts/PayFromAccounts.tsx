@@ -14,6 +14,7 @@ import { karachiDayKey } from "@/lib/dates";
 import { checkAllocations, type SourceModule, type TransactionType } from "@/lib/ledger";
 import { payFromAccounts } from "@/lib/clientActions";
 import type { AccountDoc } from "@/hooks/useLedger";
+import { BankLogo } from "./BankLogo";
 
 export function PayFromAccounts({
   open,
@@ -155,7 +156,7 @@ export function PayFromAccounts({
                         className={`fm-pay-opt ${a.id === accountId ? "on" : ""}`}
                         onClick={() => setAccountId(a.id)}
                       >
-                        <span className="fm-acc-ini">{a.name.slice(0, 1).toUpperCase()}</span>
+                        <BankLogo name={a.name} size={36} />
                         <span className="fm-pay-name">{a.name}</span>
                         <b className={bal < outstanding ? "low" : ""}>{formatMoney(bal)}</b>
                       </button>

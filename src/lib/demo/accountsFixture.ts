@@ -56,6 +56,20 @@ const transactions: Row[] = [
   // Day-to-day.
   txn('t10', 'acc_cash', 'OUT', 18_500, 'EXPENSE', '2026-11-07', 'MANUAL', 'Fuel and tea'),
   txn('t11', 'acc_jazz', 'OUT', 12_000, 'EXPENSE', '2026-11-08', 'MANUAL', 'Mobile packages'),
+  // A couple of months of everyday movement, so history has pages.
+  txn('t20', 'acc_meezan', 'IN', 250_000, 'INCOME', '2026-09-12', 'DEAL_PAYOUT', 'Deal — Gulberg Greens commission'),
+  txn('t21', 'acc_meezan', 'OUT', 45_000, 'EXPENSE', '2026-09-15', 'OFFICE_EXPENSE', 'Office internet & phones'),
+  txn('t22', 'acc_meezan', 'OUT', 120_000, 'EXPENSE', '2026-09-30', 'OFFICE_EXPENSE', 'Office rent — September'),
+  txn('t23', 'acc_meezan', 'IN', 90_000, 'INCOME', '2026-10-04', 'MANUAL', 'Owner deposit'),
+  txn('t24', 'acc_meezan', 'OUT', 30_000, 'EXPENSE', '2026-10-11', 'MANUAL', 'Printing — brochures'),
+  txn('t25', 'acc_meezan', 'OUT', 18_000, 'EXPENSE', '2026-10-21', 'OFFICE_EXPENSE', 'Electricity — October'),
+  txn('t26', 'acc_meezan', 'IN', 140_000, 'INCOME', '2026-10-25', 'DEAL_PAYOUT', 'Deal — Bahria Enclave token'),
+  txn('t27', 'acc_meezan', 'OUT', 120_000, 'EXPENSE', '2026-10-31', 'OFFICE_EXPENSE', 'Office rent — October'),
+  txn('t28', 'acc_meezan', 'OUT', 9_500, 'EXPENSE', '2026-11-06', 'MANUAL', 'Stationery'),
+  txn('t29', 'acc_easypaisa', 'OUT', 4_500, 'EXPENSE', '2026-11-09', 'PERSONAL_EXPENSE', 'Personal expense — Taxi to site'),
+  txn('t30', 'acc_easypaisa', 'IN', 25_000, 'INCOME', '2026-10-28', 'MANUAL', 'Client advance'),
+  txn('t31', 'acc_jazz', 'IN', 15_000, 'INCOME', '2026-10-19', 'MANUAL', 'Top-up from cash'),
+  txn('t32', 'acc_hbl', 'OUT', 60_000, 'EXPENSE', '2026-10-15', 'MANUAL', 'Meta ads — October'),
   // A transfer, both legs.
   txn('t12', 'acc_ubl', 'OUT', 100_000, 'TRANSFER', '2026-11-04', 'MANUAL', 'Transfer to cash', { groupId: 'g_tr1', counterAccountId: 'acc_cash' }),
   txn('t13', 'acc_cash', 'IN', 100_000, 'TRANSFER', '2026-11-04', 'MANUAL', 'Transfer from Bank Alfalah', { groupId: 'g_tr1', counterAccountId: 'acc_ubl' }),
