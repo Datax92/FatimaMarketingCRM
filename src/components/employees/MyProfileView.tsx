@@ -83,12 +83,8 @@ export function MyProfileView({ scope }: { scope: "employee" | "subadmin" }) {
 
   const leave = () => router.push("/home");
 
-  if (member) {
-    return isMobile ? (
-      <ProfileOverlay key={member.uid} employee={member} leads={leads} deals={deals} onClose={() => setMemberUid(null)} />
-    ) : (
-      <EmployeeDetailModal key={member.uid} employee={member} leads={leads} deals={deals} onClose={() => setMemberUid(null)} />
-    );
+  if (member && isMobile) {
+    return <ProfileOverlay key={member.uid} employee={member} leads={leads} deals={deals} onClose={() => setMemberUid(null)} />;
   }
 
   return isMobile ? (
@@ -101,13 +97,20 @@ export function MyProfileView({ scope }: { scope: "employee" | "subadmin" }) {
       onClose={leave}
     />
   ) : (
-    <EmployeeDetailModal
-      employee={me}
-      leads={leads}
-      deals={deals}
-      team={team}
-      onOpenMember={(person) => setMemberUid(person.uid)}
-      onClose={leave}
-    />
+    <>
+      <EmployeeDetailModal
+        inline
+        employee={me}
+        leads={leads}
+        deals={deals}
+        team={team}
+        onOpenMember={(person) => setMemberUid(person.uid)}
+        onClose={leave}
+      />
+      {/* A team member opens as a window over your own profile. */}
+      {member && (
+        <EmployeeDetailModal key={member.uid} employee={member} leads={leads} deals={deals} onClose={() => setMemberUid(null)} />
+      )}
+    </>
   );
 }

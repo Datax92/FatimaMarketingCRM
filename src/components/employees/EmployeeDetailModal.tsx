@@ -82,7 +82,10 @@ export function EmployeeDetailModal({
   onEdit,
   onReassignLeads,
   onOpenMember,
+  inline = false,
 }: {
+  /** Render as the page itself (My Profile) rather than a window over another page. */
+  inline?: boolean;
   employee: EmployeeMetrics;
   leads: Lead[];
   deals: DealRecord[];
@@ -261,6 +264,7 @@ export function EmployeeDetailModal({
   const activityPages = usePagination(shownActivity, PAGE_SIZE);
 
   useEffect(() => {
+    if (inline) return;
     document.body.style.overflow = "hidden";
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -270,7 +274,7 @@ export function EmployeeDetailModal({
       document.body.style.overflow = "unset";
       document.removeEventListener("keydown", onKey);
     };
-  }, [onClose]);
+  }, [onClose, inline]);
 
   const winRate = subject.assigned > 0 ? ((subject.closedWon / subject.assigned) * 100).toFixed(1) : "0.0";
   // Offered, then taken away when the window lapsed — the denominator is
@@ -312,30 +316,36 @@ export function EmployeeDetailModal({
 
   if (typeof document === "undefined") return null;
 
-  return createPortal(
+  const view = (
     <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 110,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "34px 24px",
-        fontFamily: E.font,
-        letterSpacing: E.tracking,
-      }}
+      style={
+        inline
+          ? { fontFamily: E.font, letterSpacing: E.tracking, maxWidth: 1100, margin: "0 auto" }
+          : {
+              position: "fixed",
+              inset: 0,
+              zIndex: 110,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "34px 24px",
+              fontFamily: E.font,
+              letterSpacing: E.tracking,
+            }
+      }
     >
-      <div
-        className="animate-modal-fade"
-        style={{ position: "fixed", inset: 0, background: "rgba(24,52,50,0.4)" }}
-        onClick={onClose}
-        aria-hidden
-      />
+      {!inline && (
+        <div
+          className="animate-modal-fade"
+          style={{ position: "fixed", inset: 0, background: "rgba(24,52,50,0.4)" }}
+          onClick={onClose}
+          aria-hidden
+        />
+      )}
 
       <div
-        role="dialog"
-        aria-modal="true"
+        role={inline ? "region" : "dialog"}
+        aria-modal={inline ? undefined : true}
         aria-label={`${isManager ? "Manager" : "Employee"}: ${employee.name}`}
         className="animate-modal-pop"
         style={{
@@ -343,7 +353,7 @@ export function EmployeeDetailModal({
           zIndex: 1,
           width: "100%",
           maxWidth: 1000,
-          maxHeight: "100%",
+          maxHeight: inline ? undefined : "100%",
           background: E.surface,
           borderRadius: 20,
           boxShadow: "0 30px 80px rgba(18,54,52,0.3)",
@@ -517,7 +527,7 @@ export function EmployeeDetailModal({
               <span style={{ whiteSpace: "nowrap" }}>Edit Details</span>
             </button>
             )}
-            <button
+            {!inline && <button
               type="button"
               onClick={onClose}
               aria-label="Close"
@@ -537,7 +547,7 @@ export function EmployeeDetailModal({
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" aria-hidden>
                 <path d="M6 6l12 12M18 6 6 18" />
               </svg>
-            </button>
+            </button>}
           </div>
         </div>
 
@@ -765,8 +775,10 @@ export function EmployeeDetailModal({
           </div>
         </div>
       )}
-    </div>,
-    document.body
+    </div>
+  );
+
+  return inline ? view : createPortal(view, document.body
   );
 }
 
