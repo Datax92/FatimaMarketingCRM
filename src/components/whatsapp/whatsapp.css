@@ -1,0 +1,128 @@
+/* WhatsApp Web (dark) look for the admin WhatsApp monitor. Scoped to .wa-app. */
+
+.wa-app {
+  --wa-rail: #202c33;
+  --wa-panel: #111b21;
+  --wa-header: #202c33;
+  --wa-hover: #202c33;
+  --wa-active: #2a3942;
+  --wa-input: #202c33;
+  --wa-border: #222d34;
+  --wa-chat-bg: #0b141a;
+  --wa-in: #202c33;
+  --wa-out: #005c4b;
+  --wa-text: #e9edef;
+  --wa-muted: #8696a0;
+  --wa-accent: #00a884;
+  --wa-badge: #25d366;
+  --wa-popup: #233138;
+  --wa-chip: #182229;
+
+  font-family: "Segoe UI", "Helvetica Neue", Helvetica, "Lucida Grande", Arial, Ubuntu, Cantarell, sans-serif;
+  color: var(--wa-text);
+  background: var(--wa-panel);
+}
+
+.wa-app button,
+.wa-app input {
+  font-family: inherit;
+}
+
+/* Thin scrollbars like WhatsApp Web */
+.wa-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(134, 150, 160, 0.35) transparent;
+}
+.wa-scroll::-webkit-scrollbar { width: 6px; }
+.wa-scroll::-webkit-scrollbar-thumb { background: rgba(134, 150, 160, 0.35); border-radius: 6px; }
+.wa-scroll::-webkit-scrollbar-track { background: transparent; }
+
+/* Chat wallpaper: dark base with a faint doodle pattern */
+.wa-wallpaper {
+  background-color: var(--wa-chat-bg);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='0.045' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 26c6-8 18-8 22 0s-4 16-11 16-17-8-11-16z'/%3E%3Ccircle cx='92' cy='22' r='7'/%3E%3Cpath d='M128 14l10 10m0-10l-10 10'/%3E%3Cpath d='M58 62l14-8 14 8v16l-14 8-14-8z'/%3E%3Cpath d='M16 96h22l-4 18H20z'/%3E%3Cpath d='M112 70c8 0 14 6 14 14s-14 20-14 20-14-12-14-20 6-14 14-14z'/%3E%3Ccircle cx='112' cy='84' r='4'/%3E%3Cpath d='M64 120l6 12 13 2-9 9 2 13-12-6-12 6 2-13-9-9 13-2z'/%3E%3Cpath d='M128 128c0-6 10-6 10 0v14h-10z'/%3E%3Cpath d='M20 140q10-10 20 0t20 0'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Bubble tails */
+.wa-tail-in::before,
+.wa-tail-out::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 8px;
+  height: 13px;
+}
+.wa-tail-in::before {
+  left: -8px;
+  background: var(--wa-in);
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+}
+.wa-tail-out::before {
+  right: -8px;
+  background: var(--wa-out);
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+
+/* Search highlight */
+.wa-mark {
+  background: rgba(255, 210, 0, 0.35);
+  color: inherit;
+  border-radius: 2px;
+}
+.wa-mark-active {
+  background: #ffd200;
+  color: #111b21;
+}
+
+/* ── Animations ── */
+@keyframes wa-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes wa-slide-up { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes wa-pop { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: none; } }
+@keyframes wa-drawer-in { from { transform: translateX(100%); } to { transform: none; } }
+@keyframes wa-panel-in { from { opacity: 0; transform: translateX(-16px); } to { opacity: 1; transform: none; } }
+@keyframes wa-chat-in { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
+@keyframes wa-toast-in { from { opacity: 0; transform: translateX(110%); } to { opacity: 1; transform: none; } }
+@keyframes wa-toast-bar { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+@keyframes wa-badge-pop { 0% { transform: scale(0.4); } 70% { transform: scale(1.18); } 100% { transform: scale(1); } }
+@keyframes wa-flash { 0% { background: rgba(0, 168, 132, 0.22); } 100% { background: transparent; } }
+@keyframes wa-shimmer { 0% { background-position: -300px 0; } 100% { background-position: 300px 0; } }
+@keyframes wa-pulse-ring { 0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.55); } 100% { box-shadow: 0 0 0 10px rgba(37, 211, 102, 0); } }
+@keyframes wa-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+.wa-anim-fade { animation: wa-fade-in 0.2s ease-out both; }
+.wa-anim-up { animation: wa-slide-up 0.25s ease-out both; }
+.wa-anim-pop { animation: wa-pop 0.18s cubic-bezier(0.2, 0.9, 0.3, 1.2) both; }
+.wa-anim-drawer { animation: wa-drawer-in 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.wa-anim-panel { animation: wa-panel-in 0.25s ease-out both; }
+.wa-anim-chat { animation: wa-chat-in 0.25s ease-out both; }
+.wa-anim-toast { animation: wa-toast-in 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.1) both; }
+.wa-anim-badge { animation: wa-badge-pop 0.3s ease-out both; }
+.wa-anim-flash { animation: wa-flash 1.6s ease-out both; }
+.wa-anim-float { animation: wa-float 4s ease-in-out infinite; }
+.wa-pulse { animation: wa-pulse-ring 1.6s ease-out infinite; }
+.wa-toast-bar { transform-origin: left; animation: wa-toast-bar linear forwards; }
+
+.wa-skeleton {
+  background: linear-gradient(90deg, #1f2c33 0px, #2a3942 80px, #1f2c33 160px);
+  background-size: 600px 100%;
+  animation: wa-shimmer 1.3s linear infinite;
+}
+
+/* Chat rows off screen are skipped by the browser until scrolled to; the
+   size is a placeholder until a row has been drawn once. Containment would
+   clip a row's open menu, so a row with its menu open is drawn normally. */
+.wa-row {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 76px;
+}
+.wa-row:has(.wa-popup) {
+  content-visibility: visible;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wa-app *,
+  .wa-app *::before {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

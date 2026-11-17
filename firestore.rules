@@ -545,6 +545,19 @@ service cloud.firestore {
     }
 
     // Anything not matched above is denied.
+    // ---- WhatsApp monitor (written only by /api/whatsapp/* via the Admin SDK) ----
+    // Admins only. wa_secrets (API tokens) and wa_meta are deliberately absent, so
+    // the default deny below keeps them server-only.
+    match /wa_messages/{id}      { allow read: if isAdmin(); allow write: if false; }
+    match /wa_conversations/{id} { allow read: if isAdmin(); allow write: if false; }
+    match /wa_contacts/{id}      { allow read: if isAdmin(); allow write: if false; }
+    match /wa_numbers/{id} {
+      allow read: if isAdmin();
+      // The admin may only rename the employee label on a connected number.
+      allow update: if isAdmin() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['label']);
+      allow create, delete: if false;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }
