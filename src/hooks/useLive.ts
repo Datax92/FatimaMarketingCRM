@@ -27,17 +27,19 @@ import { useCallback, useSyncExternalStore } from 'react';
 import type { Query, DocumentData } from 'firebase/firestore';
 import { subscribeLive, liveState, SERVER_STATE, type LiveState } from '@/lib/liveCollection';
 import { IS_DEMO } from '@/lib/demo/store';
-import { demoLiveRows } from '@/lib/demo/accountsFixture';
+import { demoLiveRows, demoLedgerVersion, subscribeDemoLedger } from '@/lib/demo/accountsFixture';
 
 /** One state object per key, so a demo screen's memoised work stays stable. */
-const demoStates = new Map<string, LiveState>();
+const demoStates = new Map<string, { version: number; state: LiveState }>();
 function demoState(key: string): LiveState {
-  let state = demoStates.get(key);
-  if (!state) {
-    state = { rows: demoLiveRows(key) as LiveState['rows'], loading: false, error: null };
-    demoStates.set(key, state);
+  const version = demoLedgerVersion();
+  let entry = demoStates.get(key);
+  if (!entry || entry.version !== version) {
+    // A fresh array each version, so React sees the demo write as a change.
+    entry = { version, state: { rows: [...demoLiveRows(key)] as LiveState['rows'], loading: false, error: null } };
+    demoStates.set(key, entry);
   }
-  return state;
+  return entry.state;
 }
 
 export function useLive(
@@ -49,7 +51,8 @@ export function useLive(
   const subscribe = useCallback(
     (notify: () => void) => {
       // Demo mode has no database: the rows come from `lib/demo/accountsFixture`.
-      if (!enabled || IS_DEMO) return () => {};
+      if (!enabled) return () => {};
+      if (IS_DEMO) return subscribeDemoLedger(notify);
       return subscribeLive(key, build, describeError, notify);
     },
     [key, enabled, build, describeError]

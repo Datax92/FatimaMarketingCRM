@@ -8,7 +8,7 @@ Meta-leads CRM for Fatima Marketing. Built from three earlier projects:
 | Property-CRM | The whole look: themed navbar, app-grid home with shortcuts and cards, Appearance page (themes, wallpapers, icon packs), sign-in screen, animations |
 | Datadash | WhatsApp monitor (Meta Cloud API, Coexistence) — admin only, `/admin/whatsapp` |
 
-Removed from the baseline: every Accounts module except **Banks & Wallets** (create UBL/EasyPaisa/cash accounts, add income, transfer, pay expenses from them), and all Salary/Payroll.
+Removed from the baseline: every Accounts module and all Salary/Payroll. **Accounts** is now simple: create an account with any name (UBL, EasyPaisa, Cash), add money to it, and pay office or personal expenses from it.
 
 ## Run
 
@@ -29,6 +29,8 @@ npm run build
 
 ## Where things are
 
+- `src/components/accounts/SimpleAccounts.tsx` — Accounts: create an account, add money, see its history
+- `src/components/accounts/PayFromAccounts.tsx` — "Pay from account" on office and personal expenses
 - `src/lib/navigation.ts` — every menu and home tile, per role
 - `src/components/shell/` — navbar, home launcher, appearance, icons, wallpapers
 - `src/app/fm-shell.css` — the Property design system (layered so Tailwind still wins)

@@ -6,6 +6,7 @@ import {
   demo,
   getDemoSession,
 } from '@/lib/demo/store';
+import { demoLedger } from '@/lib/demo/accountsFixture';
 import type { LeadStatus } from '@/lib/leadStatus';
 import type { ActionResult } from '@/lib/actionResult';
 import {
@@ -1081,7 +1082,12 @@ export type { OfficeExpenseInput } from '@/app/actions/officeExpenses';
  * invents money teaches the wrong number. Against a real project they work
  * exactly as every other action does.
  */
-export async function createAccount(token: string, input: AccountInput) {
+export async function createAccount(token: string, input: AccountInput): Promise<ActionResult<{ accountId: string }>> {
+  if (IS_DEMO) {
+    const name = (input.name ?? '').trim();
+    if (!name) return { ok: false, error: 'Give the account a name.' };
+    return { ok: true, data: { accountId: demoLedger.createAccount(name, Math.max(0, Number(input.openingBalance) || 0)) } };
+  }
   return _createAccount(token, input);
 }
 
@@ -1090,6 +1096,10 @@ export async function updateAccount(
   accountId: string,
   input: Partial<AccountInput> & { status?: 'ACTIVE' | 'ARCHIVED' }
 ) {
+  if (IS_DEMO) {
+    if (input.name) demoLedger.renameAccount(accountId, input.name.trim());
+    return { ok: true as const, data: undefined };
+  }
   return _updateAccount(token, accountId, input);
 }
 
@@ -1099,6 +1109,18 @@ export async function recalculateBalances(token: string) {
 
 /** The one path money takes. See `actions/ledger`. */
 export async function payFromAccounts(token: string, input: PayInput) {
+  if (IS_DEMO) {
+    for (const line of input.allocations) {
+      demoLedger.addTransaction({
+        accountId: line.accountId, direction: input.direction ?? 'OUT', amount: line.amount, type: input.type ?? 'EXPENSE',
+        dayKey: input.dayKey ?? new Date().toISOString().slice(0, 10), label: input.sourceLabel,
+        sourceModule: input.sourceModule, sourceId: input.sourceId,
+      });
+      if (input.sourceModule === 'OFFICE_EXPENSE') demo.addOfficeExpensePayment(input.sourceId, line.amount);
+      if (input.sourceModule === 'PERSONAL_EXPENSE') demoLedger.markPersonalPaid(input.sourceId, line.amount);
+    }
+    return { ok: true as const, data: { groupId: 'demo', posted: input.allocations.length, fullyPaid: true } };
+  }
   return _payFromAccounts(token, input);
 }
 
@@ -1127,6 +1149,15 @@ export async function addManualTransaction(
     loanTo?: string | null;
   }
 ) {
+  if (IS_DEMO) {
+    if (!(input.amount > 0)) return { ok: false as const, error: 'Enter an amount above zero.' };
+    demoLedger.addTransaction({
+      accountId: input.accountId, direction: input.direction, amount: input.amount,
+      type: input.type ?? (input.direction === 'IN' ? 'INCOME' : 'EXPENSE'),
+      dayKey: input.dayKey ?? new Date().toISOString().slice(0, 10), label: input.label,
+    });
+    return { ok: true as const, data: { transactionId: 'demo' } };
+  }
   return _addManualTransaction(token, input);
 }
 
@@ -1168,6 +1199,11 @@ export async function updateTransaction(
 }
 
 export async function deleteTransaction(token: string, transactionId: string) {
+  if (IS_DEMO) {
+    const row = demoLedger.deleteTransaction(transactionId);
+    if (row?.sourceModule === 'OFFICE_EXPENSE') demo.addOfficeExpensePayment(String(row.sourceId), -Number(row.amount));
+    return { ok: true as const, data: undefined };
+  }
   return _deleteTransaction(token, transactionId);
 }
 
@@ -1180,6 +1216,7 @@ export async function listDeletedForAccount(token: string, accountId: string) {
 }
 
 export async function deleteAccount(token: string, accountId: string) {
+  if (IS_DEMO) return { ok: true as const, data: { deleted: demoLedger.deleteAccount(accountId) } };
   return _deleteAccount(token, accountId);
 }
 
@@ -1199,6 +1236,30 @@ import {
 
 /** Every unpaid expense in a period, paid at once from one or more accounts. */
 export async function payExpensesTotal(token: string, input: PayTotalInput) {
+  if (IS_DEMO) {
+    const office = input.kind === 'OFFICE';
+    const day = input.dayKey ?? new Date().toISOString().slice(0, 10);
+    const lines = input.allocations.map((a) => ({ ...a }));
+    for (const id of input.ids) {
+      const owed = office ? demo.officeExpenseDue(id) : demoLedger.personalDue(id);
+      let due = owed?.due ?? 0;
+      for (const line of lines) {
+        if (due <= 0) break;
+        const take = Math.min(due, line.amount);
+        if (take <= 0) continue;
+        line.amount -= take;
+        due -= take;
+        demoLedger.addTransaction({
+          accountId: line.accountId, direction: 'OUT', amount: take, type: office ? 'EXPENSE' : 'REIMBURSEMENT', dayKey: day,
+          label: office ? owed!.title : `Personal expense — ${owed!.title}`,
+          sourceModule: office ? 'OFFICE_EXPENSE' : 'PERSONAL_EXPENSE', sourceId: id,
+        });
+        if (office) demo.addOfficeExpensePayment(id, take);
+        else demoLedger.markPersonalPaid(id, take);
+      }
+    }
+    return { ok: true as const, data: { fullyPaid: lines.every((l) => l.amount <= 0.009), posted: input.allocations.length } };
+  }
   return _payExpensesTotal(token, input);
 }
 

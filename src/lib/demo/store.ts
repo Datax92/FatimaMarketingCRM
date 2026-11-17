@@ -1128,6 +1128,22 @@ function demoHandedOut(folderId: string, key: string): Lead | undefined {
 }
 
 export const demo = {
+  /** Demo only: what is still owed on an office expense, and its title. */
+  officeExpenseDue(expenseId: string): { due: number; title: string } | null {
+    const e = state.expenses.find((x) => x.id === expenseId) as (ExpenseRecord & { paidAmount?: number }) | undefined;
+    return e ? { due: Math.max(0, e.amount - (e.paidAmount ?? 0)), title: e.title } : null;
+  },
+
+  /** Demo only: money paid against an office expense from an account. */
+  addOfficeExpensePayment(expenseId: string, amount: number) {
+    state.expenses = state.expenses.map((e) =>
+      e.id === expenseId
+        ? ({ ...e, paidAmount: ((e as { paidAmount?: number }).paidAmount ?? 0) + amount } as typeof e)
+        : e
+    );
+    emit();
+  },
+
   assignLead(leadId: string, userId: string, actorUid: string): Result {
     const lead = state.leads.find((l) => l.id === leadId);
     if (!lead) return fail('That lead no longer exists.');

@@ -72,7 +72,7 @@ function saveSections(key: string, list: HomeSection[]) {
 /** Buttons that start a new entry are named for what they do, so they read apart from the pages. */
 const ACTION_LABELS: Record<string, string> = {
   checkin: 'Check in now', officeExpense: 'Add an office expense', personalExpense: 'Add a personal expense',
-  income: 'Add income', leave: 'Apply for leave', dataImport: 'Import a lead list',
+  income: 'Open accounts', leave: 'Apply for leave', dataImport: 'Import a lead list',
 };
 const actionLabel = (s: ShortcutDef) => ACTION_LABELS[s.id] || s.label;
 

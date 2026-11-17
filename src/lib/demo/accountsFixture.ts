@@ -15,7 +15,7 @@ type Row = Record<string, unknown> & { id: string };
 const by = { createdByUid: 'demo-admin', createdByName: 'Usman Sheikh' };
 
 const accounts: Row[] = [
-  { id: 'acc_ubl', name: 'UBL — Current', kind: 'BANK', openingBalance: 1_800_000, status: 'ACTIVE' },
+  { id: 'acc_ubl', name: 'Bank Alfalah', kind: 'BANK', openingBalance: 1_800_000, status: 'ACTIVE' },
   { id: 'acc_meezan', name: 'Meezan Bank', kind: 'BANK', openingBalance: 950_000, status: 'ACTIVE' },
   { id: 'acc_hbl', name: 'HBL — Business', kind: 'BANK', openingBalance: 600_000, status: 'ACTIVE' },
   { id: 'acc_easypaisa', name: 'EasyPaisa', kind: 'WALLET', openingBalance: 85_000, status: 'ACTIVE' },
@@ -58,18 +58,103 @@ const transactions: Row[] = [
   txn('t11', 'acc_jazz', 'OUT', 12_000, 'EXPENSE', '2026-11-08', 'MANUAL', 'Mobile packages'),
   // A transfer, both legs.
   txn('t12', 'acc_ubl', 'OUT', 100_000, 'TRANSFER', '2026-11-04', 'MANUAL', 'Transfer to cash', { groupId: 'g_tr1', counterAccountId: 'acc_cash' }),
-  txn('t13', 'acc_cash', 'IN', 100_000, 'TRANSFER', '2026-11-04', 'MANUAL', 'Transfer from UBL', { groupId: 'g_tr1', counterAccountId: 'acc_ubl' }),
+  txn('t13', 'acc_cash', 'IN', 100_000, 'TRANSFER', '2026-11-04', 'MANUAL', 'Transfer from Bank Alfalah', { groupId: 'g_tr1', counterAccountId: 'acc_ubl' }),
 ].sort((a, b) => String(b.dayKey).localeCompare(String(a.dayKey)));
 
+/** A day this many days before today, as a Karachi day key — so the demo always has this month's expenses. */
+const daysAgo = (n: number) => new Date(Date.now() - n * 86_400_000 + 5 * 3_600_000).toISOString().slice(0, 10);
+
 const personalExpenses: Row[] = [
-  { id: 'pe_1', employeeUid: 'demo-admin', title: 'Client lunch', category: 'Meals', vendor: 'Monal', amount: 14_500, paidAmount: 0, dayKey: '2026-10-07', purpose: 'Meeting with Gulberg Heights' },
-  { id: 'pe_2', employeeUid: 'demo-admin', title: 'Site visit fuel', category: 'Travel', vendor: 'PSO', amount: 6_000, paidAmount: 6_000, dayKey: '2026-10-02', purpose: 'DHA Phase 6 visit' },
+  { id: 'pe_1', employeeUid: 'demo-admin', title: 'Client lunch', category: 'Meals', vendor: 'Monal', amount: 14_500, paidAmount: 0, dayKey: daysAgo(1), purpose: 'Meeting with Gulberg Heights' },
+  { id: 'pe_2', employeeUid: 'demo-admin', title: 'Site visit fuel', category: 'Travel', vendor: 'PSO', amount: 6_000, paidAmount: 0, dayKey: daysAgo(0), purpose: 'DHA Phase 6 visit' },
+  { id: 'pe_3', employeeUid: 'demo-admin', title: 'Mobile top-up', category: 'Phone', vendor: 'Jazz', amount: 2_000, paidAmount: 0, dayKey: daysAgo(2), purpose: 'Calls to leads' },
 ];
 
 const FIXTURE: Record<string, Row[]> = {
   accounts,
   transactions,
   'personalExpenses:all': personalExpenses,
+};
+
+/* -------------------------------------------------------------------------- */
+/* Writable in demo mode: accounts, money added, expenses paid.                */
+/* -------------------------------------------------------------------------- */
+
+let version = 0;
+const listeners = new Set<() => void>();
+
+/** Bumped on every demo write, so `useLive` re-reads. */
+export const demoLedgerVersion = () => version;
+
+export function subscribeDemoLedger(fn: () => void) {
+  listeners.add(fn);
+  return () => {
+    listeners.delete(fn);
+  };
+}
+
+function changed() {
+  version += 1;
+  accounts.sort((a, b) => String(a.name).localeCompare(String(b.name)));
+  transactions.sort((a, b) => String(b.dayKey).localeCompare(String(a.dayKey)));
+  listeners.forEach((fn) => fn());
+}
+
+let seq = 0;
+const nextId = (p: string) => `${p}_${Date.now().toString(36)}_${seq++}`;
+
+export const demoLedger = {
+  createAccount(name: string, openingBalance: number): string {
+    const id = nextId('acc');
+    accounts.push({ id, name, kind: 'BANK', openingBalance, status: 'ACTIVE' });
+    changed();
+    return id;
+  },
+  renameAccount(id: string, name: string) {
+    const acc = accounts.find((a) => a.id === id);
+    if (acc) acc.name = name;
+    changed();
+  },
+  deleteAccount(id: string): number {
+    const i = accounts.findIndex((a) => a.id === id);
+    if (i >= 0) accounts.splice(i, 1);
+    let removed = 0;
+    for (let k = transactions.length - 1; k >= 0; k--) {
+      if (transactions[k].accountId === id) {
+        transactions.splice(k, 1);
+        removed += 1;
+      }
+    }
+    changed();
+    return removed;
+  },
+  addTransaction(input: { accountId: string; direction: 'IN' | 'OUT'; amount: number; type: string; dayKey: string; label: string; sourceModule?: string; sourceId?: string | null }) {
+    transactions.push(
+      txn(nextId('t'), input.accountId, input.direction, input.amount, input.type, input.dayKey, input.sourceModule ?? 'MANUAL', input.label, { sourceId: input.sourceId ?? null })
+    );
+    changed();
+  },
+  deleteTransaction(id: string): Row | null {
+    const i = transactions.findIndex((t) => t.id === id);
+    if (i < 0) return null;
+    const [row] = transactions.splice(i, 1);
+    if (row.sourceModule === 'PERSONAL_EXPENSE') {
+      const exp = personalExpenses.find((e) => e.id === row.sourceId);
+      if (exp) exp.paidAmount = Math.max(0, Number(exp.paidAmount ?? 0) - Number(row.amount));
+    }
+    changed();
+    return row;
+  },
+  personalDue(id: string): { due: number; title: string } | null {
+    const e = personalExpenses.find((x) => x.id === id);
+    return e ? { due: Math.max(0, Number(e.amount) - Number(e.paidAmount ?? 0)), title: String(e.title) } : null;
+  },
+  /** A personal expense lives here in demo mode; office expenses live in the demo store. */
+  markPersonalPaid(id: string, amount: number) {
+    const exp = personalExpenses.find((e) => e.id === id);
+    if (exp) exp.paidAmount = Number(exp.paidAmount ?? 0) + amount;
+    changed();
+  },
 };
 
 /** The rows a `useLive` key reads in demo mode; an unknown key reads empty. */

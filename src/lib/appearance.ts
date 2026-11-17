@@ -117,7 +117,7 @@ export const SHORTCUTS: ShortcutDef[] = [
   { id: 'metaLeads', label: 'Meta leads', sub: 'Facebook & Instagram leads', icon: 'meta', paths: { admin: '/admin/meta-ads', subadmin: '/subadmin/meta-leads', employee: '/employee/meta-leads' } },
   { id: 'checkin', label: 'Check in', sub: 'Mark today\'s attendance', icon: 'checkin', paths: { admin: '/admin/attendance/me', subadmin: '/subadmin/attendance/me', employee: '/employee/attendance' } },
   { id: 'whatsapp', label: 'WhatsApp', sub: 'Monitor team chats', icon: 'whatsapp', paths: { admin: '/admin/whatsapp' } },
-  { id: 'income', label: 'Add income', sub: 'Into a bank or wallet', icon: 'bank', paths: { admin: '/admin/accounts' } },
+  { id: 'income', label: 'Accounts', sub: 'Add money, see balances', icon: 'bank', paths: { admin: '/admin/accounts' } },
   { id: 'officeExpense', label: 'Office expense', sub: 'Rent, bills, supplies', icon: 'expenses', paths: { admin: '/admin/accounts/office-expenses', subadmin: '/subadmin/financials/expenses' }, hrOnly: true },
   { id: 'personalExpense', label: 'Personal expense', sub: 'Owner\'s own spending', icon: 'cash', paths: { admin: '/admin/accounts/personal-expense' } },
   { id: 'dataImport', label: 'Data Bank', sub: 'Upload a lead list', icon: 'databank', paths: { admin: '/admin/data-bank', subadmin: '/subadmin/data-bank' } },
@@ -131,7 +131,7 @@ export const DEFAULT_LOOK: Look = {
   wallpaper: 'dots',
   icons: 'classic',
   seed: 7,
-  shortcuts: ['leads', 'metaLeads', 'checkin'],
+  shortcuts: ['leads', 'income', 'metaLeads', 'checkin'],
 };
 
 export const findTheme = (id: string) => THEMES.find((t) => t.id === id);

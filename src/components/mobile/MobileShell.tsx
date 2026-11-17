@@ -119,7 +119,6 @@ function hasOwnHeader(pathname: string): boolean {
   return (
     pathname.startsWith("/admin/financials") ||
     pathname.startsWith("/subadmin/financials") ||
-    pathname.startsWith("/admin/accounts") ||
     pathname.includes("/attendance")
   );
 }

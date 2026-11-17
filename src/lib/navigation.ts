@@ -109,7 +109,7 @@ const ADMIN: NavSection[] = [
     label: "Accounts",
     icon: "bank",
     items: [
-      { label: "Banks & Wallets", path: "/admin/accounts", icon: "bank", hint: "UBL, EasyPaisa, cash — add income" },
+      { label: "Accounts", path: "/admin/accounts", icon: "bank", hint: "Create accounts, add money, see balances" },
       { label: "Office Expenses", path: "/admin/accounts/office-expenses", icon: "expenses", hint: "Rent, bills, supplies" },
       { label: "Personal Expenses", path: "/admin/accounts/personal-expense", icon: "cash", hint: "Owner's own spending" },
     ],

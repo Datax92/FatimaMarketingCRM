@@ -117,7 +117,7 @@ const ADMIN_SECTIONS: Section[] = [
     title: "Accounts",
     d: I.wallet,
     items: [
-      { label: "Banks & Wallets", path: "/admin/accounts", d: I.wallet },
+      { label: "Accounts", path: "/admin/accounts", d: I.wallet },
       { label: "Office Expenses", path: "/admin/accounts/office-expenses", d: I.receipt },
       { label: "Personal Expenses", path: "/admin/accounts/personal-expense", d: I.wallet },
     ],
