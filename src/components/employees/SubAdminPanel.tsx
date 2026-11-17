@@ -37,14 +37,14 @@ import type { EmployeeMetrics } from "@/lib/metrics";
 import type { DataBankFolder } from "@/hooks/useDataBank";
 
 const E = {
-  ink: "#1f3b39",
-  muted: "#5b6d6b",
-  faint: "#9aacaa",
-  border: "#dceae8",
-  soft: "#f2f8f7",
+  ink: "var(--ink)",
+  muted: "var(--ink-2)",
+  faint: "var(--ink-3)",
+  border: "var(--rule)",
+  soft: "var(--brand-wash)",
   surface: "#ffffff",
-  teal: "#2f7d78",
-  tealSoft: "#e2f0ee",
+  teal: "var(--brand)",
+  tealSoft: "var(--brand-wash)",
 };
 
 export function SubAdminPanel({
@@ -193,7 +193,7 @@ export function SubAdminPanel({
                       >
                         {manager.name}
                         {manager.status === "DISABLED" && (
-                          <span style={{ marginLeft: 7, fontSize: 10.5, fontWeight: 700, color: "#a4682a" }}>
+                          <span style={{ marginLeft: 7, fontSize: 10.5, fontWeight: 700, color: "var(--warn)" }}>
                             INACTIVE
                           </span>
                         )}
@@ -222,8 +222,8 @@ export function SubAdminPanel({
                           fontSize: 10.5,
                           fontWeight: 700,
                           letterSpacing: 0.3,
-                          border: `1px solid ${manager.managerKind === "HR" ? "#c9dedb" : E.border}`,
-                          background: manager.managerKind === "HR" ? "#e2f0ee" : E.surface,
+                          border: `1px solid ${manager.managerKind === "HR" ? "var(--rule-2)" : E.border}`,
+                          background: manager.managerKind === "HR" ? "var(--brand-wash)" : E.surface,
                           color: manager.managerKind === "HR" ? E.teal : E.faint,
                         }}
                       >

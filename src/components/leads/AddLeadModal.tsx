@@ -32,9 +32,9 @@ type NoteRow = {
 const NOTE_CHANNELS = ["Phone Call", "WhatsApp", "Email", "Meeting"];
 
 const INPUT_CLASS =
-  "w-full rounded-md border border-[#dceae8] bg-[#f7fbfa] px-3 py-2.5 text-[13.5px] text-[#2b3a39] outline-none transition-colors placeholder:text-[#9aacaa] focus:border-[#4f9c99] focus:bg-white focus:ring-2 focus:ring-[#4f9c99]/15";
+  "w-full rounded-md border border-[var(--rule)] bg-[var(--brand-wash)] px-3 py-2.5 text-[13.5px] text-[var(--ink)] outline-none transition-colors placeholder:text-[var(--ink-3)] focus:border-[var(--brand-2)] focus:bg-white focus:ring-2 focus:ring-[var(--brand-2)]/15";
 
-const FIELD_LABEL_CLASS = "flex flex-col gap-1.5 text-xs text-[#5b6d6b]";
+const FIELD_LABEL_CLASS = "flex flex-col gap-1.5 text-xs text-[var(--ink-2)]";
 
 /** `datetime-local` wants local wall-clock time with no zone suffix. */
 function nowLocalInputValue(): string {
@@ -217,17 +217,17 @@ export function AddLeadModal({
 
   return createPortal(
     <div className="fixed inset-0 z-[120] flex items-center justify-center px-4 py-8 sm:px-6 sm:py-10">
-      <div className="animate-modal-fade fixed inset-0 bg-[#1e3a38]/45" onClick={onClose} aria-hidden />
+      <div className="animate-modal-fade fixed inset-0 bg-[var(--ink)]/45" onClick={onClose} aria-hidden />
 
       <form
         onSubmit={submit}
         role="dialog"
         aria-modal="true"
         aria-label="Add lead manually"
-        className="animate-modal-pop relative z-10 grid max-h-full w-full max-w-[760px] grid-rows-[auto_1fr_auto] overflow-hidden rounded-2xl bg-[#fbfdfd] shadow-[0_26px_70px_rgba(18,54,52,0.32)]"
+        className="animate-modal-pop relative z-10 grid max-h-full w-full max-w-[760px] grid-rows-[auto_1fr_auto] overflow-hidden rounded-2xl bg-[var(--card)] shadow-[0_26px_70px_rgba(18,54,52,0.32)]"
       >
         {/* Header */}
-        <div className="flex items-center gap-3.5 bg-[#4f9c99] px-6 py-4 text-white">
+        <div className="flex items-center gap-3.5 bg-[var(--brand-2)] px-6 py-4 text-white">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-[1.5px] border-white/55 bg-white/20">
             <UserPlus size={20} />
           </div>
@@ -256,7 +256,7 @@ export function AddLeadModal({
               ref={errorRef}
               tabIndex={-1}
               role="alert"
-              className="mb-4 flex items-start gap-2 rounded-md border border-[#f0c4bd] bg-[#fdeeeb] px-3.5 py-3 text-xs text-[#a33a29] outline-none"
+              className="mb-4 flex items-start gap-2 rounded-md border border-[var(--bad-edge)] bg-[var(--bad-wash)] px-3.5 py-3 text-xs text-[var(--bad)] outline-none"
             >
               <AlertTriangle size={15} className="mt-px shrink-0" />
               <span>{formError}</span>
@@ -268,7 +268,7 @@ export function AddLeadModal({
           <div className="grid gap-x-4.5 gap-y-3.5 sm:grid-cols-2">
             <label className={FIELD_LABEL_CLASS}>
               <span>
-                Full Name <span className="text-[#e05a4a]">*</span>
+                Full Name <span className="text-[var(--bad)]">*</span>
               </span>
               <input
                 value={name}
@@ -311,7 +311,7 @@ export function AddLeadModal({
             </label>
             <label className={`${FIELD_LABEL_CLASS} sm:col-span-2`}>
               <span>
-                Original Creation Date <span className="text-[#9aacaa]">(leave blank to use current time)</span>
+                Original Creation Date <span className="text-[var(--ink-3)]">(leave blank to use current time)</span>
               </span>
               <input
                 type="datetime-local"
@@ -386,7 +386,7 @@ export function AddLeadModal({
               <div className="grid gap-x-4.5 gap-y-3.5 sm:grid-cols-2">
                 <label className={`${FIELD_LABEL_CLASS} sm:col-span-2`}>
                   <span>
-                    Service Description <span className="text-[#e05a4a]">*</span>
+                    Service Description <span className="text-[var(--bad)]">*</span>
                   </span>
                   <input
                     value={dealDesc}
@@ -397,7 +397,7 @@ export function AddLeadModal({
                 </label>
                 <label className={FIELD_LABEL_CLASS}>
                   <span>
-                    Amount Received (PKR) <span className="text-[#e05a4a]">*</span>
+                    Amount Received (PKR) <span className="text-[var(--bad)]">*</span>
                   </span>
                   <input
                     type="number"
@@ -476,19 +476,19 @@ export function AddLeadModal({
           <div className="mb-3.5 flex flex-wrap items-start justify-between gap-4">
             <div>
               <div className="flex items-center gap-2.5">
-                <span className="text-[#4f9c99]">
+                <span className="text-[var(--brand-2)]">
                   <Clock size={17} />
                 </span>
-                <span className="text-[15px] font-medium text-[#2b3a39]">History</span>
+                <span className="text-[15px] font-medium text-[var(--ink)]">History</span>
               </div>
-              <p className="mt-0.5 text-[12.5px] text-[#7e918f]">
+              <p className="mt-0.5 text-[12.5px] text-[var(--ink-3)]">
                 Record of prior calls or notes, backdated with the lead.
               </p>
             </div>
             <button
               type="button"
               onClick={addNote}
-              className="inline-flex shrink-0 items-center gap-2 rounded-full bg-[#e8f5f3] px-4 py-2 text-[12.5px] text-[#2f7d78] transition-colors hover:bg-[#daeeeb]"
+              className="inline-flex shrink-0 items-center gap-2 rounded-full bg-[var(--brand-wash)] px-4 py-2 text-[12.5px] text-[var(--brand)] transition-colors hover:bg-[var(--brand-edge)]"
             >
               <Plus size={13} />
               <span>Add Note</span>
@@ -497,20 +497,20 @@ export function AddLeadModal({
 
           <div className="flex flex-col gap-2.5">
             {notes.length === 0 ? (
-              <p className="rounded-md border border-dashed border-[#cfe2e0] px-4 py-4.5 text-center text-[12.5px] text-[#9aacaa]">
+              <p className="rounded-md border border-dashed border-[var(--rule-2)] px-4 py-4.5 text-center text-[12.5px] text-[var(--ink-3)]">
                 No prior history — add a note to backdate one.
               </p>
             ) : (
               notes.map((row, index) => (
-                <div key={row.key} className="rounded-lg border border-[#dceae8] bg-[#f7fbfa] px-3.5 py-3">
+                <div key={row.key} className="rounded-lg border border-[var(--rule)] bg-[var(--brand-wash)] px-3.5 py-3">
                   <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2">
-                    <span className="text-xs text-[#7e918f]">Touch #{index + 1}</span>
+                    <span className="text-xs text-[var(--ink-3)]">Touch #{index + 1}</span>
                     <div className="flex items-center gap-2">
                       <select
                         value={row.channel}
                         onChange={(e) => updateNote(row.key, { channel: e.target.value })}
                         aria-label={`Channel for note ${index + 1}`}
-                        className="cursor-pointer rounded border border-[#dceae8] bg-white px-2 py-1 text-xs text-[#5b6d6b] outline-none focus:border-[#4f9c99]"
+                        className="cursor-pointer rounded border border-[var(--rule)] bg-white px-2 py-1 text-xs text-[var(--ink-2)] outline-none focus:border-[var(--brand-2)]"
                       >
                         {NOTE_CHANNELS.map((c) => (
                           <option key={c} value={c}>
@@ -523,13 +523,13 @@ export function AddLeadModal({
                         value={row.occurredAt}
                         onChange={(e) => updateNote(row.key, { occurredAt: e.target.value })}
                         aria-label={`Date for note ${index + 1}`}
-                        className="rounded border border-[#dceae8] bg-white px-2 py-1 text-xs text-[#5b6d6b] outline-none focus:border-[#4f9c99]"
+                        className="rounded border border-[var(--rule)] bg-white px-2 py-1 text-xs text-[var(--ink-2)] outline-none focus:border-[var(--brand-2)]"
                       />
                       <button
                         type="button"
                         onClick={() => removeNote(row.key)}
                         aria-label={`Remove note ${index + 1}`}
-                        className="flex h-7 w-7 items-center justify-center rounded text-[#9aacaa] transition-colors hover:bg-[#e9f1f0] hover:text-[#e05a4a]"
+                        className="flex h-7 w-7 items-center justify-center rounded text-[var(--ink-3)] transition-colors hover:bg-[var(--paper)] hover:text-[var(--bad)]"
                       >
                         <X size={14} />
                       </button>
@@ -541,7 +541,7 @@ export function AddLeadModal({
                     onChange={(e) => updateNote(row.key, { message: e.target.value })}
                     placeholder="What was discussed…"
                     aria-label={`Message for note ${index + 1}`}
-                    className="w-full resize-y rounded-md border border-[#dceae8] bg-white px-3 py-2 text-[13px] text-[#2b3a39] outline-none transition-colors placeholder:text-[#9aacaa] focus:border-[#4f9c99] focus:ring-2 focus:ring-[#4f9c99]/15"
+                    className="w-full resize-y rounded-md border border-[var(--rule)] bg-white px-3 py-2 text-[13px] text-[var(--ink)] outline-none transition-colors placeholder:text-[var(--ink-3)] focus:border-[var(--brand-2)] focus:ring-2 focus:ring-[var(--brand-2)]/15"
                   />
                 </div>
               ))
@@ -550,18 +550,18 @@ export function AddLeadModal({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between gap-4 border-t border-[#dceae8] bg-[#eef6f5] px-6 py-3.5">
+        <div className="flex items-center justify-between gap-4 border-t border-[var(--rule)] bg-[var(--brand-wash)] px-6 py-3.5">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full border border-[#cfe2e0] bg-white px-5 py-2.5 text-[13.5px] text-[#5b6d6b] transition-colors hover:bg-[#f3faf9]"
+            className="rounded-full border border-[var(--rule-2)] bg-white px-5 py-2.5 text-[13.5px] text-[var(--ink-2)] transition-colors hover:bg-[var(--brand-wash)]"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={busy}
-            className="inline-flex items-center gap-2 rounded-full bg-[#3f8f8a] px-6 py-2.5 text-[13.5px] text-white transition-colors hover:bg-[#2f7d78] disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-full bg-[var(--brand)] px-6 py-2.5 text-[13.5px] text-white transition-colors hover:bg-[var(--brand)] disabled:opacity-50"
           >
             <Sparkles size={15} />
             <span>{busy ? "Adding…" : "Add Lead to Pipeline"}</span>
@@ -585,14 +585,14 @@ function SectionHeading({
   return (
     <div className="mb-3.5">
       <div className="flex items-center gap-2.5">
-        <span className="text-[#4f9c99]">{icon}</span>
-        <span className="text-[15px] font-medium text-[#2b3a39]">{title}</span>
+        <span className="text-[var(--brand-2)]">{icon}</span>
+        <span className="text-[15px] font-medium text-[var(--ink)]">{title}</span>
       </div>
-      {subtitle && <p className="mt-0.5 text-[12.5px] text-[#7e918f]">{subtitle}</p>}
+      {subtitle && <p className="mt-0.5 text-[12.5px] text-[var(--ink-3)]">{subtitle}</p>}
     </div>
   );
 }
 
 function Divider() {
-  return <div className="my-5.5 h-px bg-[#e6f1f0]" />;
+  return <div className="my-5.5 h-px bg-[var(--rule)]" />;
 }

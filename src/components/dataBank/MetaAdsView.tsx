@@ -206,18 +206,18 @@ export function MetaAdsView() {
 
   return (
     <div
-      className="-m-6 min-h-full bg-[#e9f1f0] px-6 py-6 text-[#2b3a39] md:-m-8 md:px-8 md:py-7"
+      className="-m-6 min-h-full bg-[var(--paper)] px-6 py-6 text-[var(--ink)] md:-m-8 md:px-8 md:py-7"
       // The phone shell pads 16px, not 24: the class bleed scrolled the page sideways there.
       style={isMobile ? { margin: -16, padding: "16px 14px 28px" } : undefined}
     >
       <header className="mb-5 flex flex-wrap items-end justify-between gap-4">
         <div className="flex items-center gap-3.5">
-          <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#4f9c99] text-white">
+          <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--brand-2)] text-white">
             <Megaphone size={22} />
           </span>
           <div>
-            <h1 className="text-[24px] text-[#2b3a39]">Meta Ads</h1>
-            <p className="mt-0.5 text-[13px] text-[#7e918f]">
+            <h1 className="text-[24px] text-[var(--ink)]">Meta Ads</h1>
+            <p className="mt-0.5 text-[13px] text-[var(--ink-3)]">
               {totals.sources} ad{totals.sources === 1 ? "" : "s"} sending leads ·{" "}
               {totals.waiting.toLocaleString()} waiting to be given out ·{" "}
               {totals.distributed.toLocaleString()} already in the pipeline
@@ -230,7 +230,7 @@ export function MetaAdsView() {
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search campaign"
-            className="rounded-full border border-[#dceae8] bg-white px-4 py-2 text-[13.5px] text-[#2b3a39] outline-none placeholder:text-[#9aacaa] focus:border-[#4f9c99]"
+            className="rounded-full border border-[var(--rule)] bg-white px-4 py-2 text-[13.5px] text-[var(--ink)] outline-none placeholder:text-[var(--ink-3)] focus:border-[var(--brand-2)]"
             style={{ fontSize: isMobile ? 16 : 13.5 }}
           />
         )}
@@ -249,25 +249,25 @@ export function MetaAdsView() {
           {justIn.map(({ folder, at }) => (
             <div
               key={folder.id}
-              className="meta-alert flex items-center gap-3 rounded-2xl border border-[#bfe0dc] bg-[#e8f5f3] px-4 py-3"
+              className="meta-alert flex items-center gap-3 rounded-2xl border border-[var(--brand-edge)] bg-[var(--brand-wash)] px-4 py-3"
               role="status"
               aria-live="polite"
             >
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#2f7d78] text-white">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--brand)] text-white">
                 <BellRing size={16} />
               </span>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-[13.5px] font-semibold text-[#1f5c58]">
+                <p className="truncate text-[13.5px] font-semibold text-[var(--brand-dk)]">
                   A new lead just came in from {folder.name}
                 </p>
-                <p className="mt-0.5 text-[12px] text-[#3c6d69]">
+                <p className="mt-0.5 text-[12px] text-[var(--brand)]">
                   {minutesAgo(clock, at)} · {(folder.recordCount ?? 0).toLocaleString()} waiting to
                   be given out
                 </p>
               </div>
               <Link
                 href={`${basePath}/data-bank/${folder.id}`}
-                className="shrink-0 rounded-full bg-[#2f7d78] px-3.5 py-1.5 text-[12.5px] font-semibold text-white"
+                className="shrink-0 rounded-full bg-[var(--brand)] px-3.5 py-1.5 text-[12.5px] font-semibold text-white"
               >
                 Open
               </Link>
@@ -275,7 +275,7 @@ export function MetaAdsView() {
                 type="button"
                 onClick={() => setAcknowledged((current) => [...current, folder.id])}
                 aria-label={`Dismiss the alert for ${folder.name}`}
-                className="shrink-0 rounded-full p-1 text-[#5b8b87] hover:bg-[#d6ebe8]"
+                className="shrink-0 rounded-full p-1 text-[var(--ink-3)] hover:bg-[var(--brand-edge)]"
               >
                 <X size={15} />
               </button>
@@ -285,14 +285,14 @@ export function MetaAdsView() {
       )}
 
       {issues.length > 0 && (
-        <div className="mb-4 rounded-2xl border border-[#ecdcae] bg-[#fdf5e6] px-5 py-4">
+        <div className="mb-4 rounded-2xl border border-[var(--accent-edge)] bg-[var(--warn-wash)] px-5 py-4">
           <div className="flex items-start gap-3">
-            <AlertTriangle size={18} className="mt-0.5 shrink-0 text-[#a5762a]" />
+            <AlertTriangle size={18} className="mt-0.5 shrink-0 text-[var(--warn)]" />
             <div className="min-w-0">
-              <p className="text-[13.5px] font-semibold text-[#8a6321]">
+              <p className="text-[13.5px] font-semibold text-[var(--accent-ink)]">
                 {issues.length} lead{issues.length === 1 ? "" : "s"} arrived but could not be filed
               </p>
-              <p className="mt-1 text-[12.5px] leading-relaxed text-[#8a6321]">
+              <p className="mt-1 text-[12.5px] leading-relaxed text-[var(--accent-ink)]">
                 {issues.some((i) => i.reason === "NO_PHONE")
                   ? "Some came in without a phone number — the Facebook form is probably not asking for one. Add the Phone number question to the form and future leads will file normally."
                   : "Something went wrong filing them."}{" "}
@@ -301,12 +301,12 @@ export function MetaAdsView() {
               </p>
               <ul className="mt-2 space-y-0.5">
                 {issues.slice(0, 5).map((issue) => (
-                  <li key={issue.id} className="text-[12px] text-[#8a6321]">
+                  <li key={issue.id} className="text-[12px] text-[var(--accent-ink)]">
                     · {issue.source ?? "Unknown ad"} — {issue.detail}
                   </li>
                 ))}
                 {issues.length > 5 && (
-                  <li className="text-[12px] text-[#8a6321]">· and {issues.length - 5} more</li>
+                  <li className="text-[12px] text-[var(--accent-ink)]">· and {issues.length - 5} more</li>
                 )}
               </ul>
             </div>
@@ -315,10 +315,10 @@ export function MetaAdsView() {
       )}
 
       {metaFolders.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-[#cfe2e0] bg-white/70 px-6 py-16 text-center">
-          <Radio className="mx-auto mb-3 text-[#a9cfcc]" size={30} />
-          <p className="text-[14.5px] text-[#2b3a39]">No Facebook leads yet.</p>
-          <p className="mx-auto mt-1.5 max-w-[520px] text-[13px] leading-relaxed text-[#7e918f]">
+        <div className="rounded-2xl border border-dashed border-[var(--rule-2)] bg-white/70 px-6 py-16 text-center">
+          <Radio className="mx-auto mb-3 text-[var(--brand-edge)]" size={30} />
+          <p className="text-[14.5px] text-[var(--ink)]">No Facebook leads yet.</p>
+          <p className="mx-auto mt-1.5 max-w-[520px] text-[13px] leading-relaxed text-[var(--ink-3)]">
             Each Facebook ad gets its own folder here the first time one of its leads arrives —
             nothing to set up per campaign. Lead-form ads and click-to-WhatsApp ads both land here.
             If ads are running and nothing appears, check the ad sends people to the WhatsApp number

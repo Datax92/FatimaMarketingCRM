@@ -217,8 +217,8 @@ export function TeamCalendarView({ canAdjust }: { canAdjust: boolean }) {
                       style={{
                         fontSize: 10,
                         fontWeight: 800,
-                        color: isToday ? "#fff" : "#8fa2a0",
-                        background: isToday ? "#3f8f8a" : "transparent",
+                        color: isToday ? "#fff" : "var(--ink-3)",
+                        background: isToday ? "var(--brand)" : "transparent",
                         borderRadius: 999,
                         textAlign: "center",
                         fontVariantNumeric: "tabular-nums",
@@ -248,7 +248,7 @@ export function TeamCalendarView({ canAdjust }: { canAdjust: boolean }) {
                       style={{
                         fontSize: 12.5,
                         fontWeight: 700,
-                        color: "#141f1e",
+                        color: "var(--ink)",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",

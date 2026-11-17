@@ -103,15 +103,15 @@ export function ClientFolderView({
 
   if (!folder || !scope) {
     return (
-      <div className="-m-6 min-h-full bg-[#e9f1f0] px-6 py-6 md:-m-8 md:px-8 md:py-7">
-        <div className="rounded-2xl border border-dashed border-[#cfe2e0] bg-white/70 px-6 py-16 text-center">
-          <FolderHeart className="mx-auto mb-3 text-[#a9cfcc]" size={30} />
-          <p className="text-[14.5px] text-[#2b3a39]">
+      <div className="-m-6 min-h-full bg-[var(--paper)] px-6 py-6 md:-m-8 md:px-8 md:py-7">
+        <div className="rounded-2xl border border-dashed border-[var(--rule-2)] bg-white/70 px-6 py-16 text-center">
+          <FolderHeart className="mx-auto mb-3 text-[var(--brand-edge)]" size={30} />
+          <p className="text-[14.5px] text-[var(--ink)]">
             That folder is gone, or was never assigned to you.
           </p>
           <Link
             href={basePath}
-            className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-[#cfe2e0] bg-white px-4 py-2 text-[13px] text-[#2f7d78]"
+            className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-[var(--rule-2)] bg-white px-4 py-2 text-[13px] text-[var(--brand)]"
           >
             <ChevronLeft size={14} /> Back to folders
           </Link>

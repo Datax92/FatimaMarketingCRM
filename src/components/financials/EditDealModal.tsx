@@ -47,17 +47,17 @@ import { OverlayPanel, OverlayCard } from "@/components/ui/OverlayPanel";
 import type { DealRecord } from "@/hooks/useFinancials";
 
 const T = {
-  ink: "#1f3b39",
-  muted: "#5b6d6b",
-  faint: "#9aacaa",
-  line: "#dceae8",
-  ground: "#f3faf9",
-  teal: "#2f7d78",
-  tealSoft: "#e2f0ee",
-  amber: "#a4682a",
-  red: "#a33a29",
-  redSoft: "#fdeeeb",
-  redLine: "#f0c4bd",
+  ink: "var(--ink)",
+  muted: "var(--ink-2)",
+  faint: "var(--ink-3)",
+  line: "var(--rule)",
+  ground: "var(--brand-wash)",
+  teal: "var(--brand)",
+  tealSoft: "var(--brand-wash)",
+  amber: "var(--warn)",
+  red: "var(--bad)",
+  redSoft: "var(--bad-wash)",
+  redLine: "var(--bad-edge)",
 };
 
 /** The stored figure as an input value: blank for nothing, never "0" noise. */
@@ -289,8 +289,8 @@ export function EditDealModal({ deal, getIdToken, onClose, onDone }: EditDealMod
           style={{
             marginTop: 14,
             borderRadius: 12,
-            border: "1px solid #bfe0dc",
-            background: "#eef8f7",
+            border: "1px solid var(--brand-edge)",
+            background: "var(--brand-wash)",
             padding: "12px 14px",
             display: "flex",
             flexDirection: "column",
@@ -489,7 +489,7 @@ function Segmented({
             onClick={() => onChange(option.value)}
             style={{
               borderRadius: 10,
-              border: `1px solid ${on ? "#3f8f8a" : T.line}`,
+              border: `1px solid ${on ? "var(--brand)" : T.line}`,
               background: on ? T.tealSoft : "#fff",
               color: on ? T.teal : T.muted,
               padding: small ? "6px 8px" : "9px 10px",

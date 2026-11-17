@@ -98,7 +98,8 @@ function alertAction(type: string, role: string | undefined): { href: string; la
   return null;
 }
 
-export function NotificationsPanel({ getIdToken, uid, role }: { getIdToken: () => Promise<string>, uid: string | undefined, role: string | undefined }) {
+export function NotificationsPanel({ getIdToken, uid, role, variant = "default" }: { getIdToken: () => Promise<string>, uid: string | undefined, role: string | undefined, variant?: "default" | "nav" }) {
+  const nav = variant === "nav";
   const { notifications } = useNotifications(uid, role);
   const [isOpen, setIsOpen] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -160,16 +161,17 @@ export function NotificationsPanel({ getIdToken, uid, role }: { getIdToken: () =
   };
 
   return (
-    <div className="relative" ref={ref}>
+    <div className={nav ? "relative flex" : "relative"} ref={ref}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         aria-label={`Alerts${notifications.length ? `, ${notifications.length >= 20 ? "20 or more" : notifications.length} unread` : ""}`}
         aria-expanded={isOpen}
-        className="relative rounded-full p-2 text-slate-900 transition-colors hover:bg-emerald-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+        className={nav ? "o-nav-ic" : "relative rounded-full p-2 text-slate-900 transition-colors hover:bg-emerald-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-white"}
+        title="Alerts"
       >
-        <Bell size={20} />
+        <Bell size={nav ? 16 : 20} />
         {notifications.length > 0 && (
-          <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-[10px] font-bold text-white">
+          <span className={nav ? "dot" : "absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-[10px] font-bold text-white"}>
             {/* The list is capped at 20 to keep the read cost down, so the badge
                 says "20+" rather than a number it cannot know is exact. */}
             {notifications.length >= 20 ? "20+" : notifications.length}
@@ -178,7 +180,7 @@ export function NotificationsPanel({ getIdToken, uid, role }: { getIdToken: () =
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 z-50 mt-3 max-h-[420px] w-96 overflow-y-auto rounded-2xl border border-emerald-100 bg-white shadow-2xl page-enter">
+        <div className={nav ? "fm-drop absolute right-0 top-full z-[80] mt-0.5 max-h-[420px] w-96 overflow-y-auto rounded border border-[var(--rule-2)] bg-white text-[var(--ink)] shadow-[var(--sh-3)]" : "absolute right-0 z-50 mt-3 max-h-[420px] w-96 overflow-y-auto rounded-2xl border border-emerald-100 bg-white shadow-2xl page-enter"}>
           <div className="sticky top-0 flex items-center justify-between border-b border-emerald-100 bg-white p-4 backdrop-blur-sm">
             <h3 className="font-bold text-slate-900">Alerts</h3>
             {notifications.length > 0 && (

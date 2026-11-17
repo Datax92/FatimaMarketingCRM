@@ -128,15 +128,15 @@ function renderNotes(expense: OfficeExpense) {
   if (!expense.description && !expense.decisionNote && !expense.receiptUrl) return null;
   return (
     <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 10, marginTop: 6 }}>
-      {expense.description && <span style={{ fontSize: 11.5, color: "#6c7d7b", fontWeight: 500 }}>{expense.description}</span>}
+      {expense.description && <span style={{ fontSize: 11.5, color: "var(--ink-2)", fontWeight: 500 }}>{expense.description}</span>}
       {expense.decisionNote && (
-        <span style={{ fontSize: 11, color: "#6c7d7b", fontWeight: 500 }}>
+        <span style={{ fontSize: 11, color: "var(--ink-2)", fontWeight: 500 }}>
           {expense.decidedByName ?? "Decision"}: {expense.decisionNote}
         </span>
       )}
       {expense.receiptUrl && (
         <a href={expense.receiptUrl} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()}
-          style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 11.5, fontWeight: 700, color: "#2f7d78" }}>
+          style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 11.5, fontWeight: 700, color: "var(--brand)" }}>
           <Paperclip size={12} /> {expense.receiptName ?? "Receipt"}
         </a>
       )}
@@ -347,10 +347,10 @@ export function OfficeExpensesView({ isAdmin: routeIsAdmin }: { isAdmin: boolean
   const statCards = useMemo<StatCard[]>(() => {
     const pct = (n: number) => (summary.total ? Math.round((n / summary.total) * 100) : 0);
     return [
-      { label: "Total Invoiced", value: rupees(summary.total), note: "every record in range", pill: `${summary.count} recs`, pct: 100, color: "#141f1e", accent: "#3f8f8a", icon: ICON.receipt },
-      { label: "This Month", value: rupees(monthSummary.spend), note: "approved", pill: null, pct: pct(monthSummary.spend), color: "#141f1e", accent: "#4fa39c", icon: ICON.calendar },
-      { label: "Pending", value: rupees(summary.pending), note: `${summary.pendingCount} awaiting a decision`, pill: summary.pendingCount ? "Action" : "Clear", tone: summary.pendingCount ? "warn" : "quiet", pct: pct(summary.pending), color: "#a5762a", accent: "#c99a2e", icon: ICON.clock },
-      { label: "Approved", value: rupees(summary.approved), note: `${summary.approvedCount} records`, pill: `${pct(summary.approved)}%`, tone: "good", pct: pct(summary.approved), color: "#2f7d78", accent: "#2f7d78", icon: ICON.check },
+      { label: "Total Invoiced", value: rupees(summary.total), note: "every record in range", pill: `${summary.count} recs`, pct: 100, color: "var(--ink)", accent: "var(--brand)", icon: ICON.receipt },
+      { label: "This Month", value: rupees(monthSummary.spend), note: "approved", pill: null, pct: pct(monthSummary.spend), color: "var(--ink)", accent: "var(--brand-2)", icon: ICON.calendar },
+      { label: "Pending", value: rupees(summary.pending), note: `${summary.pendingCount} awaiting a decision`, pill: summary.pendingCount ? "Action" : "Clear", tone: summary.pendingCount ? "warn" : "quiet", pct: pct(summary.pending), color: "var(--warn)", accent: "var(--accent)", icon: ICON.clock },
+      { label: "Approved", value: rupees(summary.approved), note: `${summary.approvedCount} records`, pill: `${pct(summary.approved)}%`, tone: "good", pct: pct(summary.approved), color: "var(--brand)", accent: "var(--brand)", icon: ICON.check },
     ];
   }, [summary, monthSummary]);
 
@@ -601,7 +601,7 @@ export function OfficeExpensesView({ isAdmin: routeIsAdmin }: { isAdmin: boolean
           */}
           {recorders.length > 1 && (
             <div style={{ display: "grid", gap: 8 }}>
-              <span style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: "1.3px", textTransform: "uppercase", color: "#93a5a3" }}>
+              <span style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: "1.3px", textTransform: "uppercase", color: "var(--ink-3)" }}>
                 Whose expenses
               </span>
               <ChipRow
@@ -730,7 +730,7 @@ export function OfficeExpensesView({ isAdmin: routeIsAdmin }: { isAdmin: boolean
                       marginBottom: 12,
                       fontSize: 12.5,
                       fontWeight: 700,
-                      color: trend > 0 ? "#a33a29" : "#1f7a52",
+                      color: trend > 0 ? "var(--bad)" : "var(--good)",
                     }}
                   >
                     {trend > 0 ? "▲" : "▼"} {Math.abs(trend)}% against the previous{" "}

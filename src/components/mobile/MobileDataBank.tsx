@@ -68,7 +68,7 @@ import { AccountButton } from "./MobileAccount";
 const TONE: Record<DataBankStatus, { bg: string; text: string; dot: string }> = {
   NEW: { bg: M.blueBg, text: M.blue, dot: M.blue },
   CONTACTED: { bg: M.tealTint, text: M.tealDeep, dot: M.tealDeep },
-  NOT_INTERESTED: { bg: "#f2f7f6", text: M.faint, dot: M.ghost },
+  NOT_INTERESTED: { bg: "var(--paper-2)", text: M.faint, dot: M.ghost },
 };
 
 /**
@@ -77,8 +77,8 @@ const TONE: Record<DataBankStatus, { bg: string; text: string; dot: string }> = 
  * is the one the bulk bar is about to act on.
  */
 const ROW_TONES = {
-  selected: { background: "#c6e0dc", border: "#3f8f8a" },
-  unopened: { background: "#e2f0ee", border: "#c9dedb" },
+  selected: { background: "var(--rule-2)", border: "var(--brand)" },
+  unopened: { background: "var(--brand-wash)", border: "var(--rule-2)" },
   opened: { background: M.cardBg, border: M.cardBorder },
 } as const;
 
@@ -291,8 +291,8 @@ export function MobileDataBankFolders() {
                       display: "inline-block",
                       marginTop: 6,
                       borderRadius: 999,
-                      background: "#eaf1f6",
-                      color: "#4d7590",
+                      background: "var(--brand-wash)",
+                      color: "var(--brand-2)",
                       padding: "2px 9px",
                       fontSize: 11,
                       fontWeight: 700,
@@ -372,8 +372,8 @@ export function MobileDataBankFolders() {
                         style={{
                           border: "none",
                           borderRadius: 999,
-                          background: "#eaf1f6",
-                          color: "#4d7590",
+                          background: "var(--brand-wash)",
+                          color: "var(--brand-2)",
                           padding: "5px 11px",
                           fontSize: 11.5,
                           fontWeight: 700,
@@ -1000,7 +1000,7 @@ export function MobileFolderWorkspace({ folderId }: { folderId: string }) {
                         justifyContent: "center",
                         fontSize: 14,
                         fontWeight: 700,
-                        color: tickedRow ? "#fff" : "#4a5c5a",
+                        color: tickedRow ? "#fff" : "var(--ink-2)",
                         flexShrink: 0,
                         cursor: "pointer",
                         transition: "background-color 140ms ease, border-color 140ms ease",
@@ -1170,7 +1170,7 @@ export function MobileFolderWorkspace({ folderId }: { folderId: string }) {
                     justifyContent: "center",
                     fontSize: 14,
                     fontWeight: 700,
-                    color: ticked ? "#fff" : "#4a5c5a",
+                    color: ticked ? "#fff" : "var(--ink-2)",
                     flexShrink: 0,
                     cursor: "pointer",
                     transition: "background-color 140ms ease, border-color 140ms ease",
@@ -1664,7 +1664,7 @@ function MobileRecordDetail({
                 resize: "vertical",
                 borderRadius: M.fieldRadius,
                 border: `1px solid ${M.cardBorder}`,
-                background: "#f7fbfa",
+                background: "var(--brand-wash)",
                 padding: "11px 13px",
                 fontSize: 13.5,
                 fontWeight: 500,
@@ -1716,7 +1716,7 @@ function MobileRecordDetail({
                       marginTop: 3,
                       fontSize: 13.5,
                       fontWeight: 600,
-                      color: value ? M.ink : "#c3d5d3",
+                      color: value ? M.ink : "var(--rule-2)",
                       wordBreak: "break-word",
                       fontVariantNumeric: field.key === folder.roles.phone ? "tabular-nums" : undefined,
                     }}
@@ -1738,7 +1738,7 @@ function MobileRecordDetail({
         <div
           style={{
             borderRadius: M.cardRadius,
-            border: "1px solid #bfe0dc",
+            border: "1px solid var(--brand-edge)",
             background: M.tealTint,
             padding: "15px 16px",
           }}
@@ -1760,7 +1760,7 @@ function MobileRecordDetail({
               marginTop: 12,
               width: "100%",
               borderRadius: M.fieldRadius,
-              border: "1px solid #bfe0dc",
+              border: "1px solid var(--brand-edge)",
               background: "#fff",
               padding: "12px 13px",
               fontSize: 13.5,
@@ -1817,7 +1817,7 @@ function MobileRecordDetail({
             gap: 8,
             width: "100%",
             borderRadius: 999,
-            border: "1px solid #f0c4bd",
+            border: "1px solid var(--bad-edge)",
             background: "#fff",
             color: M.red,
             padding: "12px 18px",
@@ -2013,9 +2013,9 @@ export function Note({ tone, children }: { tone: "error" | "success"; children: 
       role={error ? "alert" : "status"}
       style={{
         borderRadius: M.rowRadius,
-        border: `1px solid ${error ? "#f0c4bd" : "#bfe0dc"}`,
-        background: error ? "#fdeeeb" : "#eef8f7",
-        color: error ? "#a33a29" : M.tealDeep,
+        border: `1px solid ${error ? "var(--bad-edge)" : "var(--brand-edge)"}`,
+        background: error ? "var(--bad-wash)" : "var(--brand-wash)",
+        color: error ? "var(--bad)" : M.tealDeep,
         padding: "11px 13px",
         fontSize: 12.5,
         fontWeight: 600,

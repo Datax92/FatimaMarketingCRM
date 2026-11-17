@@ -152,7 +152,7 @@ function Row({ href, label, detail, figure, negative, d }: {
     <Link href={href} style={{ textDecoration: "none" }}>
       <MobileCard style={{ padding: "13px 14px" }}>
         <div style={{ display: "grid", gridTemplateColumns: "38px minmax(0,1fr) auto", alignItems: "center", gap: 12 }}>
-          <span aria-hidden style={{ width: 38, height: 38, borderRadius: 12, background: "#e8f5f3", color: M.teal, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <span aria-hidden style={{ width: 38, height: 38, borderRadius: 12, background: "var(--brand-wash)", color: M.teal, display: "flex", alignItems: "center", justifyContent: "center" }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d={d} /></svg>
           </span>
           <span style={{ minWidth: 0 }}>
@@ -165,7 +165,7 @@ function Row({ href, label, detail, figure, negative, d }: {
           </span>
           <span style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
             {figure && (
-              <span style={{ fontSize: 14, fontWeight: 800, color: negative ? "#a8483c" : M.ink, fontVariantNumeric: "tabular-nums" }}>
+              <span style={{ fontSize: 14, fontWeight: 800, color: negative ? "var(--bad)" : M.ink, fontVariantNumeric: "tabular-nums" }}>
                 {figure}
               </span>
             )}

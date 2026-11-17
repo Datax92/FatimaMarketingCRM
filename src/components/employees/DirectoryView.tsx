@@ -80,10 +80,10 @@ const PAGE_SIZE = 10;
 
 const DIRECTORY_CSS = `
 .directory-row { transition: background-color 140ms ease; }
-.directory-row:hover { background: #f7fbfa; }
-.directory-row:focus-visible { background: #f2f8f7; outline: 2px solid #3f8f8a; outline-offset: -2px; }
+.directory-row:hover { background: var(--brand-wash); }
+.directory-row:focus-visible { background: var(--brand-wash); outline: 2px solid var(--brand); outline-offset: -2px; }
 .directory-stat { transition: border-color 160ms ease; }
-.directory-stat:hover { border-color: #b6d9d5; }
+.directory-stat:hover { border-color: var(--brand-edge); }
 @keyframes directory-row-in { from { opacity: 0; transform: translate3d(0, 8px, 0); } to { opacity: 1; transform: none; } }
 .directory-row-in { animation: directory-row-in 300ms cubic-bezier(0.22,0.61,0.36,1) both; }
 @media (prefers-reduced-motion: reduce) {
@@ -345,7 +345,7 @@ export function DirectoryView({ scope }: { scope: DirectoryScope }) {
       style={{
         minHeight: "100%",
         background: E.page,
-        color: "#2b3a39",
+        color: "var(--ink)",
         fontFamily: E.font,
         letterSpacing: E.tracking,
         padding: "24px 28px 32px",
@@ -561,7 +561,7 @@ export function DirectoryView({ scope }: { scope: DirectoryScope }) {
               gap: 9,
               width: 300,
               maxWidth: "100%",
-              background: "#f4f8f7",
+              background: "var(--paper-2)",
               border: `1px solid ${E.border}`,
               borderRadius: 10,
               padding: "10px 14px",
@@ -585,7 +585,7 @@ export function DirectoryView({ scope }: { scope: DirectoryScope }) {
                 background: "transparent",
                 fontSize: 13.5,
                 fontWeight: 500,
-                color: "#2b3a39",
+                color: "var(--ink)",
                 fontFamily: "inherit",
               }}
             />
@@ -594,7 +594,7 @@ export function DirectoryView({ scope }: { scope: DirectoryScope }) {
           <div
             role="tablist"
             aria-label="Filter by status"
-            style={{ display: "flex", alignItems: "center", gap: 4, padding: 4, borderRadius: 11, background: "#f0f6f5" }}
+            style={{ display: "flex", alignItems: "center", gap: 4, padding: 4, borderRadius: 11, background: "var(--paper-2)" }}
           >
             {DIRECTORY_FILTERS.map((option) => {
               const active = filter === option;
@@ -613,7 +613,7 @@ export function DirectoryView({ scope }: { scope: DirectoryScope }) {
                     fontWeight: 700,
                     cursor: "pointer",
                     fontFamily: "inherit",
-                    color: active ? E.tealInk : "#7e918f",
+                    color: active ? E.tealInk : "var(--ink-3)",
                     background: active ? "#fff" : "transparent",
                     boxShadow: active ? "0 1px 3px rgba(31,92,88,0.12)" : "none",
                     transition: "background-color 160ms ease, color 160ms ease",
@@ -795,7 +795,7 @@ function StatCard({ stat }: { stat: DirectoryStat }) {
                 width: 6,
                 borderRadius: "3px 3px 0 0",
                 height: Math.max(5, Math.round((value / peak) * 34)),
-                background: index === stat.spark.length - 1 ? stat.accent : "#d9e9e7",
+                background: index === stat.spark.length - 1 ? stat.accent : "var(--rule)",
               }}
             />
           ))}
@@ -849,7 +849,7 @@ function RosterRow({
             height: 42,
             borderRadius: "50%",
             background: E.tint,
-            border: "1.5px solid #b6d9d5",
+            border: "1.5px solid var(--brand-edge)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -932,7 +932,7 @@ function RosterRow({
         }}
       >
         <span style={{ color: E.tealInk }}>{employee.closedWon}</span>
-        <span style={{ color: "#cddfdd", fontWeight: 500 }}> / </span>
+        <span style={{ color: "var(--rule-2)", fontWeight: 500 }}> / </span>
         <span style={{ color: E.red }}>{employee.lost}</span>
       </div>
 
@@ -975,9 +975,9 @@ function Notice({
         alignItems: "flex-start",
         justifyContent: "space-between",
         gap: 12,
-        border: `1px solid ${error ? "#f0c4bd" : "#bfe0dc"}`,
+        border: `1px solid ${error ? "var(--bad-edge)" : "var(--brand-edge)"}`,
         background: error ? E.redBg : E.tealTint,
-        color: error ? "#a33a29" : E.deep,
+        color: error ? "var(--bad)" : E.deep,
         borderRadius: 12,
         padding: "12px 16px",
         fontSize: 13,

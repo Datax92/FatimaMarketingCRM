@@ -149,7 +149,7 @@ export function ReassignWorkspace({ uid }: { uid: string }) {
   };
 
   const header = (
-    <div className="flex min-h-[78px] shrink-0 items-center gap-2.5 bg-[#4f9c99] px-5 py-3.5 text-white">
+    <div className="flex min-h-[78px] shrink-0 items-center gap-2.5 bg-[var(--brand-2)] px-5 py-3.5 text-white">
       <Link
         href={DIRECTORY}
         aria-label="Back to the directory"
@@ -179,15 +179,15 @@ export function ReassignWorkspace({ uid }: { uid: string }) {
   const controls = (
     <>
       <div className="flex shrink-0 items-center gap-2.5 px-[18px] pt-4 pb-2.5">
-        <div className="flex flex-1 items-center gap-2 rounded-md border border-[#dceae8] bg-[#eef5f4] px-3 py-2 focus-within:border-[#4f9c99] focus-within:ring-2 focus-within:ring-[#4f9c99]/15">
-          <Search size={16} className="shrink-0 text-[#7e918f]" />
+        <div className="flex flex-1 items-center gap-2 rounded-md border border-[var(--rule)] bg-[var(--paper-2)] px-3 py-2 focus-within:border-[var(--brand-2)] focus-within:ring-2 focus-within:ring-[var(--brand-2)]/15">
+          <Search size={16} className="shrink-0 text-[var(--ink-3)]" />
           <input
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search leads"
             aria-label="Search these leads by name or phone number"
-            className="min-w-0 flex-1 bg-transparent text-[#2b3a39] outline-none placeholder:text-[#7e918f]"
+            className="min-w-0 flex-1 bg-transparent text-[var(--ink)] outline-none placeholder:text-[var(--ink-3)]"
             // 16px on the phone, or iOS Safari zooms the page on focus.
             style={{ fontSize: isMobile ? 16 : 13.5 }}
           />
@@ -205,12 +205,12 @@ export function ReassignWorkspace({ uid }: { uid: string }) {
               onClick={() => setCut(key)}
               className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-2 text-[12.5px] transition-colors ${
                 active
-                  ? "border-[#4f9c99] bg-[#4f9c99] text-white"
-                  : "border-[#cfe2e0] bg-white text-[#5b6d6b] hover:border-[#8cc3bf]"
+                  ? "border-[var(--brand-2)] bg-[var(--brand-2)] text-white"
+                  : "border-[var(--rule-2)] bg-white text-[var(--ink-2)] hover:border-[var(--brand-edge)]"
               }`}
             >
               <span>{CUT_LABELS[key]}</span>
-              <span className={`rounded-full px-1.5 text-[11px] tabular-nums ${active ? "bg-white/20 text-white" : "bg-[#eef5f4] text-[#5b6d6b]"}`}>
+              <span className={`rounded-full px-1.5 text-[11px] tabular-nums ${active ? "bg-white/20 text-white" : "bg-[var(--paper-2)] text-[var(--ink-2)]"}`}>
                 {counts[key].toLocaleString()}
               </span>
             </button>
@@ -248,7 +248,7 @@ export function ReassignWorkspace({ uid }: { uid: string }) {
   const rows = (
     <>
       {visible.length === 0 ? (
-        <p className="px-3 py-10 text-center text-[13px] text-[#8fa2a0]">
+        <p className="px-3 py-10 text-center text-[13px] text-[var(--ink-3)]">
           {items.length === 0
             ? `${sourceName} holds no open leads.`
             : query.trim()
@@ -274,17 +274,17 @@ export function ReassignWorkspace({ uid }: { uid: string }) {
                     return next;
                   })
                 }
-                className="h-4 w-4 shrink-0 accent-[#2f7d78]"
+                className="h-4 w-4 shrink-0 accent-[var(--brand)]"
               />
               <AssignedLeadRow
                 name={item.name}
                 phone={item.phone}
                 kindLabel={describeLeadSource(lead)}
-                ringColor="#2f7d78"
+                ringColor="var(--brand)"
                 chip={{
                   text: LEAD_STATUS_LABELS[lead.status as LeadStatus] ?? lead.status,
-                  background: "#e8f5f3",
-                  color: "#2f7d78",
+                  background: "var(--brand-wash)",
+                  color: "var(--brand)",
                 }}
                 active={item.id === openId}
                 seen={isOpened(item.id)}
@@ -306,7 +306,7 @@ export function ReassignWorkspace({ uid }: { uid: string }) {
 
   if (isMobile) {
     return (
-      <div className="flex flex-col bg-[#fbfdfd] text-[#2b3a39]" style={{ margin: -16, minHeight: "100%" }}>
+      <div className="flex flex-col bg-[var(--card)] text-[var(--ink)]" style={{ margin: -16, minHeight: "100%" }}>
         {header}
         {controls}
         <div className="flex flex-col gap-2.5 px-3.5 pb-6">{rows}</div>
@@ -328,9 +328,9 @@ export function ReassignWorkspace({ uid }: { uid: string }) {
   }
 
   return (
-    <div className="leads-shell -m-6 grid grid-cols-1 overflow-hidden bg-[#e9f1f0] text-[#2b3a39] md:-m-8 lg:grid-cols-[372px_1fr]">
+    <div className="leads-shell -m-6 grid grid-cols-1 overflow-hidden bg-[var(--paper)] text-[var(--ink)] md:-m-8 lg:grid-cols-[372px_1fr]">
       <section
-        className={`min-w-0 flex-col border-r border-[#dceae8] bg-[#fbfdfd] ${
+        className={`min-w-0 flex-col border-r border-[var(--rule)] bg-[var(--card)] ${
           openLead ? "hidden min-h-0 lg:flex" : "flex min-h-0"
         }`}
         aria-label={`${sourceName}'s open leads`}

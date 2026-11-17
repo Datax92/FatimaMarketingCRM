@@ -13,7 +13,7 @@
  * ragged rows at 390px pushes the actual screen below the fold.
  *
  * The segmented pill is `Attendance Calendar.dc.html`'s (2026-09-18): a
- * #dceae8 track with the current tab lifted onto white.
+ * var(--rule) track with the current tab lifted onto white.
  */
 
 import Link from "next/link";
@@ -55,7 +55,7 @@ export function AttendanceNav({ tabs }: { tabs: AttendanceTab[] }) {
         gap: 4,
         padding: 4,
         borderRadius: 999,
-        background: "#dceae8",
+        background: "var(--rule)",
         maxWidth: "100%",
         overflowX: "auto",
         WebkitOverflowScrolling: "touch",
@@ -76,7 +76,7 @@ export function AttendanceNav({ tabs }: { tabs: AttendanceTab[] }) {
               fontWeight: 700,
               whiteSpace: "nowrap",
               textDecoration: "none",
-              color: active ? "#2f7d78" : "#5b6d6b",
+              color: active ? "var(--brand)" : "var(--ink-2)",
               background: active ? "#fff" : "transparent",
               boxShadow: active ? "0 1px 3px rgba(31,92,88,0.14)" : "none",
             }}

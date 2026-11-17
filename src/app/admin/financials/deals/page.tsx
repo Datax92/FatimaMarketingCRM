@@ -35,18 +35,18 @@ import { describeLeadSource } from "@/lib/leadSource";
 import { Search, Handshake, X, ChevronRight, Clock, CheckCircle2, Layers } from "lucide-react";
 
 const T = {
-  ink: "#1f3b39",
-  muted: "#5b6d6b",
-  faint: "#9aacaa",
-  line: "#dceae8",
-  hair: "#f0f6f5",
+  ink: "var(--ink)",
+  muted: "var(--ink-2)",
+  faint: "var(--ink-3)",
+  line: "var(--rule)",
+  hair: "var(--paper-2)",
   surface: "#ffffff",
-  ground: "#f3faf9",
-  teal: "#2f7d78",
-  tealMid: "#3f8f8a",
-  tealSoft: "#e2f0ee",
-  amber: "#a4682a",
-  amberSoft: "#fdf1e3",
+  ground: "var(--brand-wash)",
+  teal: "var(--brand)",
+  tealMid: "var(--brand)",
+  tealSoft: "var(--brand-wash)",
+  amber: "var(--warn)",
+  amberSoft: "var(--warn-wash)",
 };
 
 type StateFilter = "SETTLED" | "AWAITING" | "ALL";

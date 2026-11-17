@@ -26,11 +26,11 @@ import {
   type PersonalLeadFolder,
 } from "@/lib/clientActions";
 
-const INK = "#1f3b39";
-const MUTED = "#5b6d6b";
-const FAINT = "#8fa2a0";
-const LINE = "#dceae8";
-const TEAL = "#2f7d78";
+const INK = "var(--ink)";
+const MUTED = "var(--ink-2)";
+const FAINT = "var(--ink-3)";
+const LINE = "var(--rule)";
+const TEAL = "var(--brand)";
 
 export function PersonalLeadModal({
   getIdToken,
@@ -186,9 +186,9 @@ export function PersonalLeadModal({
             role="alert"
             style={{
               borderRadius: 12,
-              border: "1px solid #f0c4bd",
-              background: "#fdeeeb",
-              color: "#a33a29",
+              border: "1px solid var(--bad-edge)",
+              background: "var(--bad-wash)",
+              color: "var(--bad)",
               padding: "10px 12px",
               fontSize: 13,
               fontWeight: 600,

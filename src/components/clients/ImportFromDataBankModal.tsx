@@ -277,7 +277,7 @@ export function ImportFromDataBankModal({
             )}
 
             {page.hasNext && mode === "ALL" && (
-              <p style={{ marginTop: 9, fontSize: 11.5, color: "#8a6a17", lineHeight: 1.5 }}>
+              <p style={{ marginTop: 9, fontSize: 11.5, color: "var(--warn)", lineHeight: 1.5 }}>
                 This folder has more records than are loaded. Importing takes the{" "}
                 {page.records.length} showing — scroll the Data Bank folder or import again to bring
                 the rest across.
@@ -287,7 +287,7 @@ export function ImportFromDataBankModal({
         )}
 
         {error && (
-          <p role="alert" style={{ fontSize: 12.5, color: "#a33a29", fontWeight: 600 }}>
+          <p role="alert" style={{ fontSize: 12.5, color: "var(--bad)", fontWeight: 600 }}>
             {error}
           </p>
         )}

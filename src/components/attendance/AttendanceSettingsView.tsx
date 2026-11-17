@@ -104,7 +104,7 @@ export function AttendanceSettingsView() {
     const token = await getIdToken();
     const result = await setAttendanceConfig(token, {
       ...policy,
-      // Split on newlines only, never on spaces: "Leadway Office 5G" is one
+      // Split on newlines only, never on spaces: "Fatima Office 5G" is one
       // network, and the whitespace split the IP field uses would save it as
       // four networks that match nothing.
       officeWifiNames: wifiText
@@ -176,9 +176,9 @@ export function AttendanceSettingsView() {
             padding: "10px 14px",
             fontSize: 13,
             fontWeight: 600,
-            border: `1px solid ${banner.ok ? "#bfe3d2" : "#f0c4bd"}`,
-            background: banner.ok ? "#e4f3ec" : "#fdeeeb",
-            color: banner.ok ? "#1f7a52" : "#a33a29",
+            border: `1px solid ${banner.ok ? "var(--good-edge)" : "var(--bad-edge)"}`,
+            background: banner.ok ? "var(--good-wash)" : "var(--bad-wash)",
+            color: banner.ok ? "var(--good)" : "var(--bad)",
           }}
         >
           {banner.text}
@@ -647,7 +647,7 @@ export function AttendanceSettingsView() {
             value={wifiText}
             onChange={(event) => setWifiText(event.target.value)}
             rows={3}
-            placeholder={"Leadway-Office\nLeadway-Office 5G"}
+            placeholder={"Fatima-Office\nFatima-Office 5G"}
             style={{ ...fieldStyle, width: "100%", resize: "vertical" }}
           />
         </Field>

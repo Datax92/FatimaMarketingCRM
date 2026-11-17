@@ -43,7 +43,7 @@ const FIELD: React.CSSProperties = {
   padding: "11px 13px",
   fontSize: 13.5,
   fontWeight: 500,
-  color: "#22302f",
+  color: "var(--ink)",
   outline: "none",
   width: "100%",
   fontFamily: "inherit",
@@ -348,13 +348,13 @@ export function EmployeeFormModal({
                 display: "flex",
                 alignItems: "flex-start",
                 gap: 8,
-                border: "1px solid #f0c4bd",
+                border: "1px solid var(--bad-edge)",
                 background: E.redBg,
                 borderRadius: 10,
                 padding: "11px 14px",
                 fontSize: 13,
                 fontWeight: 500,
-                color: "#a33a29",
+                color: "var(--bad)",
                 marginBottom: 18,
                 outline: "none",
               }}
@@ -703,7 +703,7 @@ export function EmployeeFormModal({
             style={{
               padding: "11px 22px",
               borderRadius: 10,
-              border: "1px solid #d6e5e3",
+              border: "1px solid var(--rule)",
               background: E.surface,
               color: E.muted,
               fontSize: 13.5,
@@ -747,7 +747,7 @@ export function EmployeeFormModal({
 
 function Required() {
   return (
-    <span style={{ color: "#e05a4a" }} aria-hidden>
+    <span style={{ color: "var(--bad)" }} aria-hidden>
       *
     </span>
   );

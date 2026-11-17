@@ -15,7 +15,7 @@ import { addDataBankRecord, updateDataBankRecord } from "@/lib/clientActions";
 import type { DataBankFolder, DataBankRecord } from "@/hooks/useDataBank";
 
 const INPUT =
-  "w-full rounded-md border border-[#dceae8] bg-[#f7fbfa] px-3 py-2.5 text-[13.5px] text-[#2b3a39] outline-none transition-colors placeholder:text-[#9aacaa] focus:border-[#4f9c99] focus:bg-white focus:ring-2 focus:ring-[#4f9c99]/15";
+  "w-full rounded-md border border-[var(--rule)] bg-[var(--brand-wash)] px-3 py-2.5 text-[13.5px] text-[var(--ink)] outline-none transition-colors placeholder:text-[var(--ink-3)] focus:border-[var(--brand-2)] focus:bg-white focus:ring-2 focus:ring-[var(--brand-2)]/15";
 
 export function RecordFormModal({
   folder,
@@ -77,7 +77,7 @@ export function RecordFormModal({
 
   return createPortal(
     <div className="fixed inset-0 z-[120] flex items-center justify-center px-4 py-8">
-      <div className="animate-modal-fade fixed inset-0 bg-[#1e3a38]/45" onClick={onClose} aria-hidden />
+      <div className="animate-modal-fade fixed inset-0 bg-[var(--ink)]/45" onClick={onClose} aria-hidden />
 
       <form
         onSubmit={submit}
@@ -86,14 +86,14 @@ export function RecordFormModal({
         aria-label={editing ? "Edit record" : "Add record"}
         className="animate-modal-pop relative z-10 grid max-h-full w-full max-w-[540px] grid-rows-[auto_1fr_auto] overflow-hidden rounded-2xl bg-white shadow-[0_26px_70px_rgba(18,54,52,0.32)]"
       >
-        <div className="bg-[#4f9c99] px-6 py-4 text-white">
+        <div className="bg-[var(--brand-2)] px-6 py-4 text-white">
           <div className="text-[17px] font-medium">{editing ? "Edit Record" : "Add Record"}</div>
           <p className="mt-0.5 text-[12.5px] text-white/85">{folder.name}</p>
         </div>
 
         <div className="teal-scrollbar min-h-0 space-y-3.5 overflow-y-auto px-6 py-5">
           {error && (
-            <div role="alert" className="rounded-md border border-[#f0c4bd] bg-[#fdeeeb] px-4 py-3 text-[13px] text-[#a33a29]">
+            <div role="alert" className="rounded-md border border-[var(--bad-edge)] bg-[var(--bad-wash)] px-4 py-3 text-[13px] text-[var(--bad)]">
               {error}
             </div>
           )}
@@ -101,10 +101,10 @@ export function RecordFormModal({
           {folder.fields.map((field) => {
             const required = field.key === folder.roles.name || field.key === folder.roles.phone;
             return (
-              <label key={field.key} className="flex flex-col gap-1.5 text-xs text-[#5b6d6b]">
+              <label key={field.key} className="flex flex-col gap-1.5 text-xs text-[var(--ink-2)]">
                 <span>
                   {field.label}
-                  {required && <span className="text-[#e05a4a]"> *</span>}
+                  {required && <span className="text-[var(--bad)]"> *</span>}
                 </span>
                 <input
                   value={values[field.key] ?? ""}
@@ -117,19 +117,19 @@ export function RecordFormModal({
           })}
         </div>
 
-        <div className="flex items-center justify-end gap-3 border-t border-[#e6f1f0] bg-[#f7fbfa] px-6 py-4">
+        <div className="flex items-center justify-end gap-3 border-t border-[var(--rule)] bg-[var(--brand-wash)] px-6 py-4">
           <button
             type="button"
             onClick={onClose}
             disabled={busy}
-            className="rounded-full border border-[#cfe2e0] bg-white px-6 py-2.5 text-[13.5px] text-[#5b6d6b] transition-colors hover:bg-[#f3faf9] disabled:opacity-50"
+            className="rounded-full border border-[var(--rule-2)] bg-white px-6 py-2.5 text-[13.5px] text-[var(--ink-2)] transition-colors hover:bg-[var(--brand-wash)] disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={busy}
-            className="rounded-full bg-[#3f8f8a] px-7 py-2.5 text-[13.5px] text-white transition-colors hover:bg-[#2f7d78] disabled:opacity-50"
+            className="rounded-full bg-[var(--brand)] px-7 py-2.5 text-[13.5px] text-white transition-colors hover:bg-[var(--brand)] disabled:opacity-50"
           >
             {busy ? "Saving…" : editing ? "Save Changes" : "Add Record"}
           </button>

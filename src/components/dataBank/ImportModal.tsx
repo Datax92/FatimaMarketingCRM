@@ -49,7 +49,7 @@ function describeRemaining(startedAt: number, done: number, total: number): stri
 }
 
 const SELECT =
-  "w-full rounded-md border border-[#dceae8] bg-[#f7fbfa] px-3 py-2 text-[13px] text-[#2b3a39] outline-none focus:border-[#4f9c99] focus:bg-white";
+  "w-full rounded-md border border-[var(--rule)] bg-[var(--brand-wash)] px-3 py-2 text-[13px] text-[var(--ink)] outline-none focus:border-[var(--brand-2)] focus:bg-white";
 
 export function ImportModal({
   folder,
@@ -209,7 +209,7 @@ export function ImportModal({
   return createPortal(
     <div className="fixed inset-0 z-[120] flex items-center justify-center px-4 py-8">
       <div
-        className="animate-modal-fade fixed inset-0 bg-[#1e3a38]/45"
+        className="animate-modal-fade fixed inset-0 bg-[var(--ink)]/45"
         onClick={step === "running" || step === "reading" ? undefined : onClose}
         aria-hidden
       />
@@ -220,7 +220,7 @@ export function ImportModal({
         aria-label={`Import into ${folder.name}`}
         className="animate-modal-pop relative z-10 grid max-h-full w-full max-w-[720px] grid-rows-[auto_1fr_auto] overflow-hidden rounded-2xl bg-white shadow-[0_26px_70px_rgba(18,54,52,0.32)]"
       >
-        <div className="bg-[#4f9c99] px-6 py-4 text-white">
+        <div className="bg-[var(--brand-2)] px-6 py-4 text-white">
           <div className="text-[17px] font-medium">Import into {folder.name}</div>
           <p className="mt-0.5 text-[12.5px] text-white/85">
             {step === "map" && sheet
@@ -231,21 +231,21 @@ export function ImportModal({
 
         <div className="teal-scrollbar min-h-0 space-y-4 overflow-y-auto px-6 py-5">
           {error && (
-            <div role="alert" className="rounded-md border border-[#f0c4bd] bg-[#fdeeeb] px-4 py-3 text-[13px] text-[#a33a29]">
+            <div role="alert" className="rounded-md border border-[var(--bad-edge)] bg-[var(--bad-wash)] px-4 py-3 text-[13px] text-[var(--bad)]">
               {error}
             </div>
           )}
 
           {step === "pick" && (
-            <label className="flex cursor-pointer flex-col items-center gap-2 rounded-xl border-2 border-dashed border-[#cfe2e0] bg-[#f7fbfa] px-6 py-12 text-center transition-colors hover:border-[#8cc3bf]">
-              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#4f9c99" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <label className="flex cursor-pointer flex-col items-center gap-2 rounded-xl border-2 border-dashed border-[var(--rule-2)] bg-[var(--brand-wash)] px-6 py-12 text-center transition-colors hover:border-[var(--brand-edge)]">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--brand-2)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
               </svg>
-              <span className="text-[14.5px] text-[#2b3a39]">Choose a CSV file</span>
-              <span className="text-[12.5px] text-[#7e918f]">
+              <span className="text-[14.5px] text-[var(--ink)]">Choose a CSV file</span>
+              <span className="text-[12.5px] text-[var(--ink-3)]">
                 Nothing is written until you confirm the columns.
               </span>
-              <span className="text-[12px] text-[#9aacaa]">
+              <span className="text-[12px] text-[var(--ink-3)]">
                 Large files are fine — 40,000 rows go in one pass, and take a few minutes.
               </span>
               <input
@@ -263,26 +263,26 @@ export function ImportModal({
           {step === "map" && sheet && prepared && (
             <>
               <div>
-                <div className="text-[14.5px] text-[#2b3a39]">Match your columns</div>
-                <p className="mt-0.5 text-[12.5px] text-[#7e918f]">
+                <div className="text-[14.5px] text-[var(--ink)]">Match your columns</div>
+                <p className="mt-0.5 text-[12.5px] text-[var(--ink-3)]">
                   Each column in your file, and the folder field it goes into. Anything set to
                   &ldquo;Skip&rdquo; is not imported.
                 </p>
               </div>
 
-              <div className="overflow-hidden rounded-lg border border-[#e0eeec]">
+              <div className="overflow-hidden rounded-lg border border-[var(--rule)]">
                 {sheet.headers.map((header, index) => (
                   <div
                     key={header}
-                    className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 border-b border-[#f0f6f5] px-4 py-2.5 last:border-b-0"
+                    className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 border-b border-[var(--paper-2)] px-4 py-2.5 last:border-b-0"
                   >
                     <div className="min-w-0">
-                      <div className="truncate text-[13.5px] text-[#2b3a39]">{header}</div>
-                      <div className="truncate text-[12px] text-[#9aacaa]">
+                      <div className="truncate text-[13.5px] text-[var(--ink)]">{header}</div>
+                      <div className="truncate text-[12px] text-[var(--ink-3)]">
                         {sheet.rows[0]?.[index] || "—"}
                       </div>
                     </div>
-                    <span className="text-[#c3d5d3]" aria-hidden>
+                    <span className="text-[var(--rule-2)]" aria-hidden>
                       →
                     </span>
                     <select
@@ -320,7 +320,7 @@ export function ImportModal({
               </div>
 
               {(!nameMapped || !phoneMapped) && (
-                <div className="rounded-md border border-[#f0e0c0] bg-[#fdf5e6] px-4 py-3 text-[13px] text-[#a5762a]">
+                <div className="rounded-md border border-[var(--accent-edge)] bg-[var(--warn-wash)] px-4 py-3 text-[13px] text-[var(--warn)]">
                   Point a column at{" "}
                   {!nameMapped && <strong>{labelFor(folder.roles.name)}</strong>}
                   {!nameMapped && !phoneMapped && " and "}
@@ -329,11 +329,11 @@ export function ImportModal({
                 </div>
               )}
 
-              <div className="rounded-lg bg-[#f2f8f7] px-4 py-3 text-[13px] text-[#3c4d4b]">
-                <strong className="text-[#2f7d78]">{prepared.rows.length.toLocaleString()}</strong> of{" "}
+              <div className="rounded-lg bg-[var(--brand-wash)] px-4 py-3 text-[13px] text-[var(--ink-2)]">
+                <strong className="text-[var(--brand)]">{prepared.rows.length.toLocaleString()}</strong> of{" "}
                 {sheet.rows.length.toLocaleString()} rows ready to import.
                 {prepared.missingName.length > 0 && (
-                  <div className="mt-1 text-[12.5px] text-[#9aacaa]">
+                  <div className="mt-1 text-[12.5px] text-[var(--ink-3)]">
                     {prepared.missingName.length} skipped — no name (line
                     {prepared.missingName.length === 1 ? " " : "s "}
                     {prepared.missingName.slice(0, 5).join(", ")}
@@ -341,7 +341,7 @@ export function ImportModal({
                   </div>
                 )}
                 {prepared.missingPhone.length > 0 && (
-                  <div className="mt-1 text-[12.5px] text-[#9aacaa]">
+                  <div className="mt-1 text-[12.5px] text-[var(--ink-3)]">
                     {prepared.missingPhone.length} skipped — no usable number (line
                     {prepared.missingPhone.length === 1 ? " " : "s "}
                     {prepared.missingPhone.slice(0, 5).join(", ")}
@@ -349,7 +349,7 @@ export function ImportModal({
                   </div>
                 )}
                 {prepared.duplicateInFile.length > 0 && (
-                  <div className="mt-1 text-[12.5px] text-[#9aacaa]">
+                  <div className="mt-1 text-[12.5px] text-[var(--ink-3)]">
                     {prepared.duplicateInFile.length} skipped — the same number appears earlier in
                     this file
                   </div>
@@ -368,8 +368,8 @@ export function ImportModal({
                 <div
                   className={
                     cost.writes > FREE_TIER_DAILY_WRITES
-                      ? "rounded-md border border-[#f0e0c0] bg-[#fdf5e6] px-4 py-3 text-[13px] text-[#a5762a]"
-                      : "rounded-md border border-[#dceae8] bg-white px-4 py-3 text-[13px] text-[#5b6d6b]"
+                      ? "rounded-md border border-[var(--accent-edge)] bg-[var(--warn-wash)] px-4 py-3 text-[13px] text-[var(--warn)]"
+                      : "rounded-md border border-[var(--rule)] bg-white px-4 py-3 text-[13px] text-[var(--ink-2)]"
                   }
                 >
                   {/* No plan, quota or billing talk on screen (owner, 2026-09-23) —
@@ -393,11 +393,11 @@ export function ImportModal({
           {step === "reading" && (
             <div className="py-14 text-center">
               <div
-                className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-[#dceae8] border-t-[#3f8f8a]"
+                className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-[var(--rule)] border-t-[var(--brand)]"
                 aria-hidden
               />
-              <div className="mt-4 text-[14.5px] text-[#2b3a39]">Reading {fileName}…</div>
-              <p className="mt-1.5 text-[12.5px] text-[#7e918f]">
+              <div className="mt-4 text-[14.5px] text-[var(--ink)]">Reading {fileName}…</div>
+              <p className="mt-1.5 text-[12.5px] text-[var(--ink-3)]">
                 A large file takes a moment to parse. Nothing has been written yet.
               </p>
             </div>
@@ -405,14 +405,14 @@ export function ImportModal({
 
           {step === "running" && (
             <div className="py-10 text-center">
-              <div className="text-[14.5px] text-[#2b3a39]">Importing…</div>
-              <div className="mx-auto mt-4 h-2.5 w-full max-w-[420px] overflow-hidden rounded-full bg-[#eef4f3]">
+              <div className="text-[14.5px] text-[var(--ink)]">Importing…</div>
+              <div className="mx-auto mt-4 h-2.5 w-full max-w-[420px] overflow-hidden rounded-full bg-[var(--paper-2)]">
                 <div
-                  className="h-full rounded-full bg-[#3f8f8a] transition-[width] duration-300"
+                  className="h-full rounded-full bg-[var(--brand)] transition-[width] duration-300"
                   style={{ width: `${percent}%` }}
                 />
               </div>
-              <div className="mt-2 text-[12.5px] tabular-nums text-[#7e918f]">
+              <div className="mt-2 text-[12.5px] tabular-nums text-[var(--ink-3)]">
                 {progress.done.toLocaleString()} of {progress.total.toLocaleString()} rows · {percent}%
               </div>
               {/*
@@ -420,24 +420,24 @@ export function ImportModal({
                 figure the only honest reading of a slow bar is "it has hung".
               */}
               {remaining && (
-                <div className="mt-1 text-[12.5px] text-[#9aacaa]">About {remaining} left</div>
+                <div className="mt-1 text-[12.5px] text-[var(--ink-3)]">About {remaining} left</div>
               )}
-              <p className="mt-3 text-[12px] text-[#9aacaa]">Keep this window open until it finishes.</p>
+              <p className="mt-3 text-[12px] text-[var(--ink-3)]">Keep this window open until it finishes.</p>
             </div>
           )}
 
           {step === "done" && result && (
             <div className="py-10 text-center">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#e8f5f3] text-[#2f7d78]">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[var(--brand-wash)] text-[var(--brand)]">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                   <path d="M20 6 9 17l-5-5" />
                 </svg>
               </div>
-              <div className="mt-3 text-[16px] text-[#2b3a39]">
+              <div className="mt-3 text-[16px] text-[var(--ink)]">
                 {result.written.toLocaleString()} record{result.written === 1 ? "" : "s"} imported
               </div>
               {result.duplicates > 0 && (
-                <p className="mt-1.5 text-[13px] text-[#7e918f]">
+                <p className="mt-1.5 text-[13px] text-[var(--ink-3)]">
                   {result.duplicates.toLocaleString()} skipped — already in this folder. Existing
                   rows were left exactly as they were.
                 </p>
@@ -446,7 +446,7 @@ export function ImportModal({
           )}
         </div>
 
-        <div className="flex items-center justify-end gap-3 border-t border-[#e6f1f0] bg-[#f7fbfa] px-6 py-4">
+        <div className="flex items-center justify-end gap-3 border-t border-[var(--rule)] bg-[var(--brand-wash)] px-6 py-4">
           {step === "map" && (
             <button
               type="button"
@@ -455,7 +455,7 @@ export function ImportModal({
                 setSheet(null);
                 setError(null);
               }}
-              className="rounded-full border border-[#cfe2e0] bg-white px-6 py-2.5 text-[13.5px] text-[#5b6d6b] transition-colors hover:bg-[#f3faf9]"
+              className="rounded-full border border-[var(--rule-2)] bg-white px-6 py-2.5 text-[13.5px] text-[var(--ink-2)] transition-colors hover:bg-[var(--brand-wash)]"
             >
               Choose another file
             </button>
@@ -470,7 +470,7 @@ export function ImportModal({
                   onClose();
                 }
               }}
-              className="rounded-full border border-[#cfe2e0] bg-white px-6 py-2.5 text-[13.5px] text-[#5b6d6b] transition-colors hover:bg-[#f3faf9]"
+              className="rounded-full border border-[var(--rule-2)] bg-white px-6 py-2.5 text-[13.5px] text-[var(--ink-2)] transition-colors hover:bg-[var(--brand-wash)]"
             >
               {step === "done" ? "Done" : "Cancel"}
             </button>
@@ -480,7 +480,7 @@ export function ImportModal({
               type="button"
               onClick={() => void run()}
               disabled={!prepared || prepared.rows.length === 0 || !nameMapped || !phoneMapped}
-              className="rounded-full bg-[#3f8f8a] px-7 py-2.5 text-[13.5px] text-white transition-colors hover:bg-[#2f7d78] disabled:opacity-50"
+              className="rounded-full bg-[var(--brand)] px-7 py-2.5 text-[13.5px] text-white transition-colors hover:bg-[var(--brand)] disabled:opacity-50"
             >
               Import {prepared ? prepared.rows.length.toLocaleString() : 0} rows
             </button>

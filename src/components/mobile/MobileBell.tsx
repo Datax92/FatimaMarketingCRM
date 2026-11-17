@@ -95,7 +95,7 @@ export function MobileBell({
               width: 8,
               height: 8,
               borderRadius: "50%",
-              background: "#ffcf6b",
+              background: "var(--accent)",
               // The ring is the header's own teal, so the dot reads as punched
               // out of the disc rather than outlined.
               border: `1.5px solid ${M.teal}`,
@@ -141,7 +141,7 @@ export function MobileBell({
                   style={{
                     textAlign: "left",
                     border: `1px solid ${M.cardBorder}`,
-                    background: "#f7fbfa",
+                    background: "var(--brand-wash)",
                     borderRadius: M.rowRadius,
                     padding: "13px 14px",
                     cursor: "pointer",
@@ -186,7 +186,7 @@ export function MobileBell({
                   padding: 14,
                   borderRadius: 999,
                   border: `1px solid ${M.cardBorder}`,
-                  background: "#f7fbfa",
+                  background: "var(--brand-wash)",
                   color: M.muted,
                   fontSize: 13.5,
                   fontWeight: 700,

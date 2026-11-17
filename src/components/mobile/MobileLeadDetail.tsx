@@ -5,7 +5,7 @@
  * `Active Leads Mobile.dc.html`.
  *
  * The design's own structure is kept exactly — 56px/radius-18 avatar, the
- * `1fr 1fr 44px` action row, the 2-up facts grid hairlined with `#dceae8`, the
+ * `1fr 1fr 44px` action row, the 2-up facts grid hairlined with `var(--rule)`, the
  * pill segmented control, 18px note cards, and one sticky primary action whose
  * label follows the open tab.
  *
@@ -119,7 +119,7 @@ const FIELD_LABEL: React.CSSProperties = {
 
 const FIELD: React.CSSProperties = {
   border: `1px solid ${M.cardBorder}`,
-  background: "#f7fbfa",
+  background: "var(--brand-wash)",
   borderRadius: M.fieldRadius,
   padding: "13px 14px",
   fontSize: 14,
@@ -467,9 +467,9 @@ export function MobileLeadDetail({
               fontSize: 12.5,
               fontWeight: 600,
               lineHeight: 1.45,
-              border: `1px solid ${banner?.tone === "success" ? "#bfe0dc" : "#f0c4bd"}`,
-              background: banner?.tone === "success" ? "#eef8f7" : "#fdeeeb",
-              color: banner?.tone === "success" ? M.tealDeep : "#a33a29",
+              border: `1px solid ${banner?.tone === "success" ? "var(--brand-edge)" : "var(--bad-edge)"}`,
+              background: banner?.tone === "success" ? "var(--brand-wash)" : "var(--bad-wash)",
+              color: banner?.tone === "success" ? M.tealDeep : "var(--bad)",
             }}
           >
             {banner?.text ?? historyError}
@@ -699,7 +699,7 @@ export function MobileLeadDetail({
                           }
                           style={{
                             borderRadius: 999,
-                            background: "#4d7590",
+                            background: "var(--brand-2)",
                             color: "#fff",
                             padding: "6px 12px",
                             fontSize: 11.5,
@@ -984,8 +984,8 @@ function FollowUpList({
                   padding: "2px 8px",
                   ...((note.kind ? FOLLOW_UP_KIND_LABELS[note.kind] : entryLabelAt(index, followUps.length, false)) ===
                   FOLLOW_UP_KIND_LABELS.REMARK
-                    ? { background: "#fdf1e3", color: "#a4682a" }
-                    : { background: "#e2f0ee", color: M.tealDeep }),
+                    ? { background: "var(--warn-wash)", color: "var(--warn)" }
+                    : { background: "var(--brand-wash)", color: M.tealDeep }),
                 }}
               >
                 {note.kind ? FOLLOW_UP_KIND_LABELS[note.kind] : entryLabelAt(index, followUps.length, false)}
@@ -1024,7 +1024,7 @@ function FollowUpList({
                 ) : (
                   <span
                     title="Only the latest entry can be edited."
-                    style={{ fontSize: 10.5, fontWeight: 700, color: "#b3c4c2" }}
+                    style={{ fontSize: 10.5, fontWeight: 700, color: "var(--rule-2)" }}
                   >
                     Locked
                   </span>
@@ -1147,7 +1147,7 @@ function AuditTrail({
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, paddingTop: 5 }}>
             <div style={{ width: 8, height: 8, borderRadius: "50%", background: M.teal }} />
             {index < events.length - 1 && (
-              <div style={{ width: 1.5, flex: 1, minHeight: 22, background: "#d6e7e5" }} />
+              <div style={{ width: 1.5, flex: 1, minHeight: 22, background: "var(--rule)" }} />
             )}
           </div>
           <div>
@@ -1564,8 +1564,8 @@ function DealForm({
                   style={{
                     textAlign: "left",
                     borderRadius: 14,
-                    border: `1px solid ${on ? M.teal : "#dceae8"}`,
-                    background: on ? "#e2f0ee" : "#fff",
+                    border: `1px solid ${on ? M.teal : "var(--rule)"}`,
+                    background: on ? "var(--brand-wash)" : "#fff",
                     color: on ? M.tealDeep : M.muted,
                     padding: "11px 13px",
                     cursor: "pointer",
@@ -1632,8 +1632,8 @@ function DealForm({
                       onClick={() => setDownPaymentKind(kind)}
                       style={{
                         borderRadius: 12,
-                        border: `1px solid ${on ? M.teal : "#dceae8"}`,
-                        background: on ? "#e2f0ee" : "#fff",
+                        border: `1px solid ${on ? M.teal : "var(--rule)"}`,
+                        background: on ? "var(--brand-wash)" : "#fff",
                         color: on ? M.tealDeep : M.muted,
                         padding: "10px 8px",
                         fontSize: 13,
@@ -1697,7 +1697,7 @@ function DealForm({
                 style={{
                   ...FIELD,
                   fontVariantNumeric: "tabular-nums",
-                  background: "#eef5f4",
+                  background: "var(--paper-2)",
                   color: M.muted,
                 }}
               />
@@ -1751,7 +1751,7 @@ function DealForm({
                   style={{
                     ...FIELD,
                     fontVariantNumeric: "tabular-nums",
-                    background: "#eef5f4",
+                    background: "var(--paper-2)",
                     color: M.muted,
                   }}
                 />
@@ -1829,8 +1829,8 @@ function DealForm({
           marginTop: 14,
           padding: "13px 15px",
           borderRadius: 16,
-          background: "#eef8f7",
-          border: "1px solid #bfe0dc",
+          background: "var(--brand-wash)",
+          border: "1px solid var(--brand-edge)",
         }}
         aria-live="polite"
       >
@@ -1863,8 +1863,8 @@ function DealForm({
           marginTop: 8,
           padding: "13px 15px",
           borderRadius: 16,
-          background: "#eef8f7",
-          border: "1px solid #bfe0dc",
+          background: "var(--brand-wash)",
+          border: "1px solid var(--brand-edge)",
         }}
         aria-live="polite"
       >
@@ -1890,12 +1890,12 @@ function DealForm({
           style={{
             marginTop: 12,
             borderRadius: 12,
-            border: "1px solid #f0c4bd",
-            background: "#fdeeeb",
+            border: "1px solid var(--bad-edge)",
+            background: "var(--bad-wash)",
             padding: "10px 12px",
             fontSize: 12,
             fontWeight: 600,
-            color: "#a33a29",
+            color: "var(--bad)",
             lineHeight: 1.45,
           }}
         >
@@ -1969,7 +1969,7 @@ function DealRecord({
           onClick={() => printReceipt(deal)}
           style={{
             borderRadius: 999,
-            border: "1px solid #dceae8",
+            border: "1px solid var(--rule)",
             padding: "7px 13px",
             fontSize: 13,
             fontWeight: 700,
@@ -1987,7 +1987,7 @@ function DealRecord({
             onClick={() => setEditing(true)}
             style={{
               borderRadius: 999,
-              border: "1px solid #dceae8",
+              border: "1px solid var(--rule)",
               padding: "7px 13px",
               fontSize: 13,
               fontWeight: 700,
@@ -2056,8 +2056,8 @@ function DealRecord({
           marginTop: 14,
           padding: "13px 15px",
           borderRadius: 16,
-          background: "#eef8f7",
-          border: "1px solid #bfe0dc",
+          background: "var(--brand-wash)",
+          border: "1px solid var(--brand-edge)",
         }}
       >
         <span style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: "0.9px", color: M.tealDeep }}>NET PROFIT</span>
@@ -2134,7 +2134,7 @@ export function Sheet({
                 width: 34,
                 height: 34,
                 borderRadius: "50%",
-                background: "#eef5f4",
+                background: "var(--paper-2)",
                 border: "none",
                 display: "flex",
                 alignItems: "center",
@@ -2229,7 +2229,7 @@ export function Toggle({
         padding: "12px 10px",
         borderRadius: M.fieldRadius,
         border: `1px solid ${checked ? M.teal : M.cardBorder}`,
-        background: checked ? M.tealTint : "#f7fbfa",
+        background: checked ? M.tealTint : "var(--brand-wash)",
         color: checked ? M.tealDeep : M.muted,
         fontSize: 12.5,
         fontWeight: 700,
@@ -2242,7 +2242,7 @@ export function Toggle({
           width: 16,
           height: 16,
           borderRadius: 5,
-          border: `1.5px solid ${checked ? M.teal : "#c4d6d4"}`,
+          border: `1.5px solid ${checked ? M.teal : "var(--rule-2)"}`,
           background: checked ? M.teal : "#fff",
           display: "flex",
           alignItems: "center",

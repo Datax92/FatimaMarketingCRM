@@ -4,7 +4,7 @@
  * Shared Employee Directory chrome, built to `Employee Directory.dc.html` and
  * `Employee Directory Mobile.dc.html`.
  *
- * Both files are drawn in **Manrope** on a `#eef4f3` ground with a
+ * Both files are drawn in **Manrope** on a `var(--paper-2)` ground with a
  * `letter-spacing:-0.01em` default — a different type system from the leads
  * screens (Poppins) and the dashboard (Plus Jakarta Sans). Every value in `E`
  * is the design's own; nothing is sampled from a picture.
@@ -56,43 +56,43 @@ export type { LeadFilterKey, RangeKey, EntryTally };
 
 export const E = {
   /* ground */
-  page: "#eef4f3",
+  page: "var(--paper-2)",
   surface: "#ffffff",
-  border: "#e2ecea",
-  softBorder: "#eef4f3",
-  rowBorder: "#f2f7f6",
-  field: "#f7fbfa",
-  tint: "#f2f8f7",
+  border: "var(--rule)",
+  softBorder: "var(--paper-2)",
+  rowBorder: "var(--paper-2)",
+  field: "var(--brand-wash)",
+  tint: "var(--brand-wash)",
 
   /* ink */
-  ink: "#1b2827",
-  inkMobile: "#141f1e",
-  body: "#3c4d4b",
-  muted: "#5b6d6b",
-  label: "#8fa2a0",
-  faint: "#9aacaa",
-  hair: "#c3d5d3",
+  ink: "var(--ink)",
+  inkMobile: "var(--ink)",
+  body: "var(--ink-2)",
+  muted: "var(--ink-2)",
+  label: "var(--ink-3)",
+  faint: "var(--ink-3)",
+  hair: "var(--rule-2)",
 
   /* teal */
-  deep: "#1f5c58",
-  teal: "#3f8f8a",
-  tealInk: "#2f7d78",
-  light: "#4fa39c",
-  tealTint: "#e8f5f3",
+  deep: "var(--brand-dk)",
+  teal: "var(--brand)",
+  tealInk: "var(--brand)",
+  light: "var(--brand-2)",
+  tealTint: "var(--brand-wash)",
 
   /* state */
-  red: "#c0574a",
-  redInk: "#b4524a",
-  redBg: "#fdeeec",
-  amber: "#c99a2e",
-  amberInk: "#a5762a",
-  amberBg: "#fdf5e6",
-  blue: "#3f7ea3",
-  blueBg: "#eef6fb",
+  red: "var(--bad)",
+  redInk: "var(--bad)",
+  redBg: "var(--bad-wash)",
+  amber: "var(--accent)",
+  amberInk: "var(--warn)",
+  amberBg: "var(--warn-wash)",
+  blue: "var(--brand-2)",
+  blueBg: "var(--brand-wash)",
 
   /** The hero and modal header gradient, identical in both design files. */
-  gradient: "linear-gradient(115deg,#1f5c58 0%,#3f8f8a 62%,#4fa39c 100%)",
-  gradientMobile: "linear-gradient(115deg,#1f5c58 0%,#3f8f8a 68%,#4fa39c 100%)",
+  gradient: "linear-gradient(115deg,var(--brand-dk) 0%,var(--brand) 62%,var(--brand-2) 100%)",
+  gradientMobile: "linear-gradient(115deg,var(--brand-dk) 0%,var(--brand) 68%,var(--brand-2) 100%)",
 
   font: "var(--font-directory), Manrope, system-ui, sans-serif",
   tracking: "-0.01em",
@@ -100,16 +100,16 @@ export const E = {
 
 /** Lead status → the accent both files key their avatars and pills to. */
 export const LEAD_ACCENT: Record<string, string> = {
-  CLOSED_WON: "#2f7d78",
-  CLOSED_LOST: "#c0574a",
-  NOT_INTERESTED: "#c0574a",
-  INTERESTED: "#3f7ea3",
-  NEGOTIATION: "#3f7ea3",
-  ASSIGNED: "#c99a2e",
+  CLOSED_WON: "var(--brand)",
+  CLOSED_LOST: "var(--bad)",
+  NOT_INTERESTED: "var(--bad)",
+  INTERESTED: "var(--brand-2)",
+  NEGOTIATION: "var(--brand-2)",
+  ASSIGNED: "var(--accent)",
 };
 
 export function leadAccent(status: string): string {
-  return LEAD_ACCENT[status] ?? "#7e918f";
+  return LEAD_ACCENT[status] ?? "var(--ink-3)";
 }
 
 /** `dash` from both design files. */
@@ -714,10 +714,10 @@ export function buildDirectoryAnalytics(
 
   const inProgress = Math.max(0, employee.assigned - employee.closedWon - employee.lost);
   const outcomeCounts = [
-    { label: "Closed Won", count: employee.closedWon, color: "#2f7d78" },
-    { label: "Closed Lost", count: employee.lost, color: "#c0574a" },
-    { label: "In Progress", count: inProgress, color: "#3f7ea3" },
-    { label: "Missed", count: employee.missed, color: "#c99a2e" },
+    { label: "Closed Won", count: employee.closedWon, color: "var(--brand)" },
+    { label: "Closed Lost", count: employee.lost, color: "var(--bad)" },
+    { label: "In Progress", count: inProgress, color: "var(--brand-2)" },
+    { label: "Missed", count: employee.missed, color: "var(--accent)" },
   ];
   const outcomeMax = Math.max(1, ...outcomeCounts.map((o) => o.count));
 
@@ -764,8 +764,8 @@ export function buildDirectoryAnalytics(
       color: t.pct >= 60 ? E.tealInk : E.red,
       fill:
         t.pct >= 60
-          ? "linear-gradient(90deg,#3f8f8a,#63b3ad)"
-          : "linear-gradient(90deg,#d8735f,#c0574a)",
+          ? "linear-gradient(90deg,var(--brand),var(--brand-2))"
+          : "linear-gradient(90deg,var(--bad),var(--bad))",
     })),
     outcomes: outcomeCounts.map((o) => ({
       ...o,

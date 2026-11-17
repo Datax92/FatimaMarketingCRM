@@ -27,7 +27,7 @@
 
 import { useCallback, useSyncExternalStore } from "react";
 
-const KEY_PREFIX = "leadway:openedLeads:";
+const KEY_PREFIX = "fatima:openedLeads:";
 
 /**
  * Ids are capped so a long-lived account cannot grow the entry without bound.

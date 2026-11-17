@@ -259,7 +259,7 @@ function Dashboard({
         className="acc-in"
         style={{
           borderRadius: 18,
-          background: `linear-gradient(135deg, ${A.deep} 0%, ${A.tealInk} 55%, #35706b 100%)`,
+          background: `linear-gradient(135deg, ${A.deep} 0%, ${A.tealInk} 55%, var(--brand) 100%)`,
           color: "#fff",
           padding: isMobile ? "20px 20px" : "24px 26px",
           marginBottom: 12,
@@ -836,7 +836,7 @@ function ManageAccount({
               }}
               style={{
                 display: "inline-flex", alignItems: "center", gap: 6, borderRadius: 11,
-                border: `1px solid #f0c4bd`, background: A.negativeBg, color: A.negative,
+                border: `1px solid var(--bad-edge)`, background: A.negativeBg, color: A.negative,
                 padding: "10px 16px", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit",
               }}
             >

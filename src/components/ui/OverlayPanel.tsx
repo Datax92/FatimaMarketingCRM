@@ -44,12 +44,12 @@ const noopSubscribe = () => () => {};
 const useMounted = () => useSyncExternalStore(noopSubscribe, () => true, () => false);
 
 const T = {
-  ink: "#1f3b39",
-  line: "#dceae8",
+  ink: "var(--ink)",
+  line: "var(--rule)",
   surface: "#ffffff",
-  ground: "#f3faf9",
-  teal: "#2f7d78",
-  tealMid: "#3f8f8a",
+  ground: "var(--brand-wash)",
+  teal: "var(--brand)",
+  tealMid: "var(--brand)",
 };
 
 export interface OverlayPanelProps {
@@ -298,7 +298,7 @@ export function OverlayCard({
           justifyContent: "space-between",
           gap: 10,
           padding: "11px 16px",
-          borderBottom: "1px solid #f0f6f5",
+          borderBottom: "1px solid var(--paper-2)",
         }}
       >
         <h3
@@ -310,7 +310,7 @@ export function OverlayCard({
             fontWeight: 700,
             letterSpacing: "0.6px",
             textTransform: "uppercase",
-            color: "#5b6d6b",
+            color: "var(--ink-2)",
           }}
         >
           {icon && (
@@ -320,7 +320,7 @@ export function OverlayCard({
           )}
           {title}
         </h3>
-        {hint && <span style={{ fontSize: 11.5, color: "#9aacaa" }}>{hint}</span>}
+        {hint && <span style={{ fontSize: 11.5, color: "var(--ink-3)" }}>{hint}</span>}
       </div>
       <div style={{ padding: 16 }}>{children}</div>
     </section>

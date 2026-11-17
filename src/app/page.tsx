@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { IS_DEMO, DEMO_ACCOUNTS, DEMO_PASSWORD } from "@/lib/demo/store";
 import { ShieldCheck, User, Users, Lock, Mail, AlertCircle, Info, Eye, EyeOff } from "lucide-react";
-import { BrandLogo } from "@/components/BrandLogo";
+import { BrandLockup } from "@/components/shell/Brand";
+import { PRODUCT } from "@/lib/brand";
 import CursorGrid from "@/components/effects/CursorGrid";
 
 function describeSignInError(code: string | undefined): string {
@@ -46,7 +47,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (loading || !user || !role) return;
-    router.replace(`/home?role=${role}`);
+    router.replace("/home");
   }, [user, role, loading, router]);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -68,210 +69,162 @@ export default function LoginPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#f3faf9]">
-        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-emerald-600" />
+      <div className="property-login-viewport" role="status">
+        <div className="h-10 w-10 animate-spin rounded-full border-2 border-[var(--brand-edge)] border-t-[var(--brand)]" />
       </div>
     );
   }
 
+  const roles = [
+    { key: "admin", label: "Admin", Icon: ShieldCheck },
+    { key: "subadmin", label: "Manager", Icon: Users },
+    { key: "employee", label: "Employee", Icon: User },
+  ] as const;
+
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#f3faf9] px-4 text-slate-900">
-      {/* Animated CSS inside style tag */}
-      <style dangerouslySetInnerHTML={{
-        __html: `
-        @keyframes drift {
-          0% { transform: translate(0, 0) scale(1); }
-          33% { transform: translate(30px, -50px) scale(1.1); }
-          66% { transform: translate(-20px, 20px) scale(0.9); }
-          100% { transform: translate(0, 0) scale(1); }
-        }
-        .animate-drift-slow {
-          animation: drift 15s ease-in-out infinite;
-        }
-        .animate-drift-slower {
-          animation: drift 20s ease-in-out infinite reverse;
-        }
-      `}} />
+    <div className="property-login-viewport">
+      <CursorGrid color="#1F2456" cellSize={65} radius={180} gridOpacity={0.045} fillOpacity={0.03} maxOpacity={0.7} clickPulse />
+      <div className="property-drift-blob blob-1" aria-hidden="true" />
+      <div className="property-drift-blob blob-2" aria-hidden="true" />
 
-      {/* Cursor Grid Background - same as home page */}
-      <CursorGrid />
-
-      {/* Animated Gradient Blobs */}
-      <div className="absolute top-1/4 left-1/4 h-[35rem] w-[35rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-400/20 blur-[120px] animate-drift-slow pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 h-[30rem] w-[30rem] translate-x-1/2 translate-y-1/2 rounded-full bg-emerald-300/20 blur-[120px] animate-drift-slower pointer-events-none" />
-
-      {/* Main Login Card */}
-      <div className="relative w-full max-w-[420px] rounded-[2rem] bg-white p-8 sm:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] z-10 page-enter">
-
-        {/* Header Section */}
-        <div className="mb-8 flex flex-col items-center text-center space-y-3">
-          <BrandLogo className="mb-2" />
-
-          <div className="flex items-center gap-1.5 text-emerald-600">
-            {selectedRole === "admin" ? <ShieldCheck size={16} /> : selectedRole === "subadmin" ? <Users size={16} /> : <User size={16} />}
-            <span className="text-xs font-semibold uppercase tracking-wider">{selectedRole === "admin" ? "Admin sign-in" : selectedRole === "subadmin" ? "Sub Admin sign-in" : "User sign-in"}</span>
+      <div className="property-login-card">
+        <div className="property-brand-header">
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 14 }}>
+            <BrandLockup size={46} />
           </div>
-
-          <h1 className="text-xl font-bold text-slate-900">Lead Management System</h1>
-
-          <div className="flex flex-col gap-1 text-sm text-slate-500">
-            <p>Choose your role, then sign in</p>
-            <p dir="rtl" className="text-[13px] opacity-70">اپنا کردار منتخب کریں، پھر سائن ان کریں</p>
+          <div className="property-role-badge">
+            {selectedRole === "admin" ? <ShieldCheck size={14} className="badge-icon" /> : selectedRole === "subadmin" ? <Users size={14} className="badge-icon" /> : <User size={14} className="badge-icon" />}
+            <span>{selectedRole === "admin" ? "ADMIN SIGN-IN" : selectedRole === "subadmin" ? "MANAGER SIGN-IN" : "EMPLOYEE SIGN-IN"}</span>
+          </div>
+          <h1 className="property-portal-title">{PRODUCT}</h1>
+          <div className="property-portal-subtitles">
+            <p className="sub-en">Choose your role, then sign in</p>
+            <p className="sub-ur" dir="rtl">اپنا کردار منتخب کریں، پھر سائن ان کریں</p>
           </div>
         </div>
 
         {roleError && (
-          <div className="mb-6 flex items-start gap-2.5 rounded-xl border border-amber-500/20 bg-amber-500/10 p-3 text-xs font-medium text-amber-600">
-            <AlertCircle size={16} className="mt-px shrink-0" />
-            <span>{roleError}</span>
+          <div className="property-auth-alert error" role="alert">
+            <AlertCircle size={15} /> {roleError}
+          </div>
+        )}
+        {error && (
+          <div className="property-auth-alert error" role="alert">
+            {error}
+            {process.env.NODE_ENV !== "production" && errorCode && <small style={{ display: "block", opacity: 0.6 }}>{errorCode}</small>}
           </div>
         )}
 
-        <form onSubmit={handleLogin} className="space-y-5">
-
-          {/* Role selector.
-              Three roles now, so the toggle is generated rather than written
-              out three times — the previous pair had the whole button markup
-              duplicated, and a third copy is where the styling starts to
-              drift. The label is the role's own word from
-              `lib/constants/hierarchy`, so it cannot disagree with the rest of
-              the product. */}
-          <div className="flex w-full rounded-xl border border-slate-100 bg-slate-50/50 p-1">
-            {([
-              { key: "admin", label: "Admin", Icon: ShieldCheck },
-              { key: "subadmin", label: "Sub Admin", Icon: Users },
-              { key: "employee", label: "User", Icon: User },
-            ] as const).map(({ key, label, Icon }) => {
-              const active = selectedRole === key;
-              return (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => setSelectedRole(key)}
-                  aria-pressed={active}
-                  className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2.5 text-[13px] font-semibold transition-all ${
-                    active
-                      ? "bg-white text-emerald-600 shadow-[0_2px_10px_rgb(0,0,0,0.04)] border border-emerald-100/50"
-                      : "text-slate-500 hover:text-slate-700 hover:bg-slate-100/50"
-                  }`}
-                >
-                  <Icon size={15} className={active ? "text-emerald-500" : ""} />
-                  {label}
-                </button>
-              );
-            })}
+        <form onSubmit={handleLogin} className="property-login-form" noValidate>
+          <div className="property-role-tabs" role="group" aria-label="Role">
+            {roles.map(({ key, label, Icon }) => (
+              <button
+                key={key}
+                type="button"
+                className={`role-tab-pill ${selectedRole === key ? "active" : ""}`}
+                aria-pressed={selectedRole === key}
+                onClick={() => setSelectedRole(key)}
+              >
+                <Icon size={14} /> {label}
+              </button>
+            ))}
           </div>
 
-          {/* Email Input */}
-          <div className="space-y-1.5">
-            <label htmlFor="email" className="flex items-center gap-1.5 text-sm font-semibold text-slate-700">
-              {IS_DEMO ? "Email or username" : "Email"} <span dir="rtl" className="text-xs font-normal text-slate-400">(ای میل)</span>
+          <div className="property-input-field">
+            <label className="property-field-label" htmlFor="email">
+              <span>{IS_DEMO ? "Email or username" : "Email"}</span>
+              <span className="ur-hint" dir="rtl">(ای میل)</span>
             </label>
-            <div className="relative flex items-center group">
-              <Mail className="absolute left-3.5 text-slate-400 group-focus-within:text-emerald-500 transition-colors" size={18} />
+            <div className="property-input-wrap">
+              <Mail className="input-left-icon" size={17} />
               <input
                 id="email"
                 // The demo admin signs in as `demo`, which an email box refuses.
                 type={IS_DEMO ? "text" : "email"}
                 autoCapitalize="none"
-                required
                 autoComplete="username"
-                className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-900 outline-none transition-all focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10"
+                autoFocus
+                required
+                className="property-text-input"
+                placeholder={IS_DEMO ? "demo" : "you@fatimamarketing.com"}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder={IS_DEMO ? "demo" : "Email address"}
               />
             </div>
           </div>
 
-          {/* Password Input */}
-          <div className="space-y-1.5">
-            <label htmlFor="password" className="flex items-center gap-1.5 text-sm font-semibold text-slate-700">
-              Password <span dir="rtl" className="text-xs font-normal text-slate-400">(پاس ورڈ)</span>
+          <div className="property-input-field">
+            <label className="property-field-label" htmlFor="password">
+              <span>Password</span>
+              <span className="ur-hint" dir="rtl">(پاس ورڈ)</span>
             </label>
-            <div className="relative flex items-center group">
-              <Lock className="absolute left-3.5 text-slate-400 group-focus-within:text-emerald-500 transition-colors" size={18} />
+            <div className="property-input-wrap">
+              <Lock className="input-left-icon" size={17} />
               <input
                 id="password"
                 type={showPassword ? "text" : "password"}
-                required
                 autoComplete="current-password"
-                className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-10 text-sm text-slate-900 outline-none transition-all focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10"
+                required
+                className="property-text-input with-toggle"
+                placeholder="••••••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
               />
               <button
                 type="button"
+                className="input-eye-toggle"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3.5 text-slate-400 hover:text-slate-600 focus:outline-none"
+                aria-label={showPassword ? "Hide password" : "Show password"}
               >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
               </button>
             </div>
           </div>
 
-          {error && (
-            <div className="space-y-1 rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-xs font-medium text-red-500">
-              <p>{error}</p>
-              {process.env.NODE_ENV !== "production" && errorCode && (
-                <p className="font-mono text-[11px] text-red-500/60">{errorCode}</p>
-              )}
-            </div>
-          )}
-
-          <div className="pt-2">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full rounded-xl bg-emerald-600 py-3.5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/20 transition-all hover:bg-emerald-700 hover:shadow-emerald-600/30 focus:outline-none focus:ring-4 focus:ring-emerald-600/20 disabled:opacity-50"
-            >
-              {isSubmitting ? "Signing in…" : "Sign in"}
-            </button>
-          </div>
+          <button type="submit" className="property-submit-btn" disabled={isSubmitting}>
+            {isSubmitting ? "Signing in…" : "Sign in"}
+          </button>
         </form>
 
-        <div className="mt-8 text-center text-xs text-slate-500">
-          <p>
-            First time here? <a href="#" className="font-semibold text-emerald-600 hover:underline">Create the account</a>
-          </p>
-          <p className="mt-1 opacity-70">(verified by an emailed code)</p>
+        <div className="property-card-footer">
+          <span className="property-footer-note">Accounts are created by your administrator.</span>
         </div>
 
-        {/* Demo accounts — the admin first, as the client is told to use it. */}
         {IS_DEMO && (
-          <div className="mt-8 space-y-2 border-t border-slate-100 pt-6">
+          <div style={{ marginTop: 18, paddingTop: 16, borderTop: "1px solid var(--rule)", display: "grid", gap: 8 }}>
             <button
               type="button"
+              className="btn"
+              style={{ height: "auto", padding: "10px 12px", justifyContent: "flex-start", flexDirection: "column", alignItems: "flex-start", background: "var(--brand-wash)" }}
               onClick={() => {
                 setEmail("demo");
                 setPassword(DEMO_PASSWORD);
                 setSelectedRole("admin");
               }}
-              className="w-full rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-left transition-colors hover:bg-emerald-100"
             >
-              <span className="block text-[11px] font-bold uppercase tracking-wider text-emerald-700">Demo admin</span>
-              <span className="block text-sm text-slate-700">
+              <span className="kicker" style={{ color: "var(--brand)" }}>Demo admin</span>
+              <span style={{ fontSize: 13 }}>
                 Username <b>demo</b> · Password <b>{DEMO_PASSWORD}</b>
               </span>
             </button>
-            <p className="flex items-center justify-center gap-1.5 pt-2 text-[11px] font-bold uppercase tracking-wider text-amber-600">
-              <Info size={12} /> Or see another role · password {DEMO_PASSWORD}
+            <p className="kicker" style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "center", color: "var(--warn)" }}>
+              <Info size={12} /> Or another role · password {DEMO_PASSWORD}
             </p>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-2">
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
               {DEMO_ACCOUNTS.map((account) => (
                 <button
                   key={account.uid}
                   type="button"
+                  className="btn sm"
+                  style={{ height: "auto", padding: "6px 8px", flexDirection: "column", alignItems: "flex-start", fontSize: 11 }}
                   onClick={() => {
                     setEmail(account.email);
                     setPassword(DEMO_PASSWORD);
                     setSelectedRole(account.role);
                   }}
-                  className="flex flex-col rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-left text-[10px] transition-colors hover:border-emerald-300 hover:bg-emerald-50"
                 >
-                  <span className="font-semibold text-slate-900 truncate w-full">{account.email}</span>
-                  <span className="capitalize text-slate-500">{account.role}</span>
+                  <b style={{ maxWidth: "100%", overflow: "hidden", textOverflow: "ellipsis" }}>{account.email}</b>
+                  <span style={{ textTransform: "capitalize", color: "var(--ink-3)" }}>{account.role}</span>
                 </button>
               ))}
             </div>

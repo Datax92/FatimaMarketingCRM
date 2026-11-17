@@ -52,16 +52,16 @@ export function EarningsPanel({
       <header className="mb-6 flex items-center gap-3">
         <span
           className="flex h-11 w-11 items-center justify-center rounded-2xl"
-          style={{ background: "#e2f0ee", color: "#2f7d78" }}
+          style={{ background: "var(--brand-wash)", color: "var(--brand)" }}
           aria-hidden
         >
           <Wallet size={20} />
         </span>
         <div>
-          <h1 className="text-[22px] font-semibold text-[#1f3b39]">
+          <h1 className="text-[22px] font-semibold text-[var(--ink)]">
             {scope === "team" ? "Team Earnings" : "My Earnings"}
           </h1>
-          <p className="text-[13px] text-[#7e918f]">
+          <p className="text-[13px] text-[var(--ink-3)]">
             Your share of every deal the admin has finalised.
           </p>
         </div>
@@ -85,37 +85,37 @@ export function EarningsPanel({
       </div>
 
       {error && (
-        <p className="mb-4 rounded-lg border border-[#f0c4bd] bg-[#fdeeeb] p-3.5 text-xs text-[#a33a29]">
+        <p className="mb-4 rounded-lg border border-[var(--bad-edge)] bg-[var(--bad-wash)] p-3.5 text-xs text-[var(--bad)]">
           {error}
         </p>
       )}
 
       {loading ? (
-        <p className="rounded-xl border border-dashed border-[#cfe2e0] bg-white/70 p-8 text-center text-[13px] text-[#7e918f]">
+        <p className="rounded-xl border border-dashed border-[var(--rule-2)] bg-white/70 p-8 text-center text-[13px] text-[var(--ink-3)]">
           Loading…
         </p>
       ) : payouts.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-[#cfe2e0] bg-white/70 p-8 text-center text-[13px] text-[#7e918f]">
+        <p className="rounded-xl border border-dashed border-[var(--rule-2)] bg-white/70 p-8 text-center text-[13px] text-[var(--ink-3)]">
           Nothing yet. A share appears here once the admin finalises the distribution for a deal
           you were part of.
         </p>
       ) : isMobile ? (
         <div className="flex flex-col gap-2.5">
           {payouts.map((payout) => (
-            <article key={payout.id} className="rounded-xl border border-[#e0eeec] bg-white px-4 py-3.5">
+            <article key={payout.id} className="rounded-xl border border-[var(--rule)] bg-white px-4 py-3.5">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="truncate text-[14px] font-semibold text-[#1f3b39]">
+                  <p className="truncate text-[14px] font-semibold text-[var(--ink)]">
                     {payout.customerName ?? "Client"}
                   </p>
-                  <p className="truncate text-[11.5px] text-[#9aacaa]">
+                  <p className="truncate text-[11.5px] text-[var(--ink-3)]">
                     {scope === "team" && (payout.recipientUid === uid ? "You" : payout.recipientName)}
                     {scope === "team" ? " · " : ""}
                     {payout.percentage}% share
                     {payout.finalizedAt ? ` · ${formatBusinessDate(payout.finalizedAt)}` : ""}
                   </p>
                 </div>
-                <p className="shrink-0 text-[15px] font-bold tabular-nums text-[#2f7d78]">
+                <p className="shrink-0 text-[15px] font-bold tabular-nums text-[var(--brand)]">
                   {formatMoney(payout.amount)}
                 </p>
               </div>
@@ -123,10 +123,10 @@ export function EarningsPanel({
           ))}
         </div>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-[#e0eeec] bg-white">
+        <div className="overflow-hidden rounded-xl border border-[var(--rule)] bg-white">
           <table className="w-full table-fixed">
             <thead>
-              <tr className="border-b border-[#f0f6f5] text-left text-[11px] tracking-[0.6px] text-[#7e918f] uppercase">
+              <tr className="border-b border-[var(--paper-2)] text-left text-[11px] tracking-[0.6px] text-[var(--ink-3)] uppercase">
                 <th className="px-4 py-3 font-semibold">Client</th>
                 {scope === "team" && <th className="px-4 py-3 font-semibold">Recipient</th>}
                 <th className="w-[86px] px-4 py-3 text-right font-semibold">Share</th>
@@ -136,22 +136,22 @@ export function EarningsPanel({
             </thead>
             <tbody>
               {payouts.map((payout) => (
-                <tr key={payout.id} className="border-b border-[#f6faf9] last:border-0">
-                  <td className="truncate px-4 py-3 text-[13px] text-[#1f3b39]">
+                <tr key={payout.id} className="border-b border-[var(--paper)] last:border-0">
+                  <td className="truncate px-4 py-3 text-[13px] text-[var(--ink)]">
                     {payout.customerName ?? "Client"}
                   </td>
                   {scope === "team" && (
-                    <td className="truncate px-4 py-3 text-[13px] text-[#5b6d6b]">
+                    <td className="truncate px-4 py-3 text-[13px] text-[var(--ink-2)]">
                       {payout.recipientUid === uid ? "You" : payout.recipientName}
                     </td>
                   )}
-                  <td className="px-4 py-3 text-right text-[13px] tabular-nums text-[#5b6d6b]">
+                  <td className="px-4 py-3 text-right text-[13px] tabular-nums text-[var(--ink-2)]">
                     {payout.percentage}%
                   </td>
-                  <td className="px-4 py-3 text-right text-[13px] font-semibold tabular-nums text-[#2f7d78]">
+                  <td className="px-4 py-3 text-right text-[13px] font-semibold tabular-nums text-[var(--brand)]">
                     {formatMoney(payout.amount)}
                   </td>
-                  <td className="px-4 py-3 text-right text-[12px] tabular-nums text-[#9aacaa]">
+                  <td className="px-4 py-3 text-right text-[12px] tabular-nums text-[var(--ink-3)]">
                     {payout.finalizedAt ? formatBusinessDate(payout.finalizedAt) : "—"}
                   </td>
                 </tr>
@@ -163,7 +163,7 @@ export function EarningsPanel({
 
       {/* The one thing this screen deliberately does not show, said plainly —
           otherwise its absence reads as a bug. */}
-      <p className="mt-4 text-[12px] text-[#9aacaa]">
+      <p className="mt-4 text-[12px] text-[var(--ink-3)]">
         {scope === "team"
           ? "Company profit and other sub admins' shares are not shown here — only your own team's."
           : "Only your own share is shown. Company profit and colleagues' commissions are not visible."}
@@ -184,15 +184,15 @@ function Tile({
   note: string;
 }) {
   return (
-    <div className="rounded-xl border border-[#e0eeec] bg-white px-5 py-4">
-      <p className="flex items-center gap-2 text-[11px] font-semibold tracking-[0.6px] text-[#7e918f] uppercase">
-        <span style={{ color: "#2f7d78" }} aria-hidden>
+    <div className="rounded-xl border border-[var(--rule)] bg-white px-5 py-4">
+      <p className="flex items-center gap-2 text-[11px] font-semibold tracking-[0.6px] text-[var(--ink-3)] uppercase">
+        <span style={{ color: "var(--brand)" }} aria-hidden>
           {icon}
         </span>
         {label}
       </p>
-      <p className="mt-1.5 text-[22px] font-bold tabular-nums text-[#1f3b39]">{value}</p>
-      <p className="text-[12px] text-[#9aacaa]">{note}</p>
+      <p className="mt-1.5 text-[22px] font-bold tabular-nums text-[var(--ink)]">{value}</p>
+      <p className="text-[12px] text-[var(--ink-3)]">{note}</p>
     </div>
   );
 }

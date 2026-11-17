@@ -254,7 +254,7 @@ export function MobileTabBar({
                 background: "transparent",
                 cursor: "pointer",
                 WebkitTapHighlightColor: "transparent",
-                color: active ? M.tealDeep : "#93a5a3",
+                color: active ? M.tealDeep : "var(--ink-3)",
                 transition: "color 160ms ease",
               }}
             >
@@ -455,7 +455,7 @@ function CentreMenu({
                       gap: 12,
                       padding: "12px 12px",
                       borderRadius: 14,
-                      background: active ? "#e8f5f3" : "transparent",
+                      background: active ? "var(--brand-wash)" : "transparent",
                       textDecoration: "none",
                       WebkitTapHighlightColor: "transparent",
                     }}
@@ -465,7 +465,7 @@ function CentreMenu({
                         width: 40,
                         height: 40,
                         borderRadius: 12,
-                        background: active ? M.teal : "#e8f5f3",
+                        background: active ? M.teal : "var(--brand-wash)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -475,10 +475,10 @@ function CentreMenu({
                       <CentreGlyph icon={item.icon} stroke={active ? "#fff" : M.tealDeep} size={19} />
                     </span>
                     <span style={{ minWidth: 0 }}>
-                      <span style={{ display: "block", fontSize: 15, fontWeight: 700, color: "#2b3a39" }}>
+                      <span style={{ display: "block", fontSize: 15, fontWeight: 700, color: "var(--ink)" }}>
                         {item.label}
                       </span>
-                      <span style={{ display: "block", fontSize: 12.5, color: "#7e918f", marginTop: 1 }}>
+                      <span style={{ display: "block", fontSize: 12.5, color: "var(--ink-3)", marginTop: 1 }}>
                         {item.hint}
                       </span>
                     </span>

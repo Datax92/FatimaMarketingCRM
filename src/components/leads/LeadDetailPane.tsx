@@ -125,9 +125,9 @@ function todayInputValue(): string {
 }
 
 const INPUT_CLASS =
-  "w-full rounded-md border border-[#dceae8] bg-[#f7fbfa] px-3 py-2.5 text-[13.5px] text-[#2b3a39] outline-none transition-colors placeholder:text-[#9aacaa] focus:border-[#4f9c99] focus:bg-white focus:ring-2 focus:ring-[#4f9c99]/15 disabled:opacity-60";
+  "w-full rounded-md border border-[var(--rule)] bg-[var(--brand-wash)] px-3 py-2.5 text-[13.5px] text-[var(--ink)] outline-none transition-colors placeholder:text-[var(--ink-3)] focus:border-[var(--brand-2)] focus:bg-white focus:ring-2 focus:ring-[var(--brand-2)]/15 disabled:opacity-60";
 
-const FIELD_LABEL_CLASS = "flex flex-col gap-1.5 text-xs text-[#5b6d6b]";
+const FIELD_LABEL_CLASS = "flex flex-col gap-1.5 text-xs text-[var(--ink-2)]";
 
 export function LeadDetailPane({
   lead,
@@ -204,11 +204,11 @@ export function LeadDetailPane({
     // single column sizes to max-content, so on a phone the header's buttons
     // pushed the whole pane wider than the viewport and the frame clipped it.
     // minmax(0,1fr) lets every row shrink and its children truncate instead.
-    <div className="animate-lead-pane grid h-full min-h-0 grid-cols-1 grid-rows-[auto_auto_auto_auto_1fr] overflow-hidden bg-linear-to-b from-[#f3faf9] to-[#e6f1f0]">
+    <div className="animate-lead-pane grid h-full min-h-0 grid-cols-1 grid-rows-[auto_auto_auto_auto_1fr] overflow-hidden bg-linear-to-b from-[var(--brand-wash)] to-[var(--rule)]">
       {/* ---------------------------------------------------------------- */}
       {/* Identity header                                                  */}
       {/* ---------------------------------------------------------------- */}
-      <header className="flex min-h-[78px] flex-wrap items-center gap-4 bg-[#4f9c99] px-5 py-4 text-white sm:px-[26px]">
+      <header className="flex min-h-[78px] flex-wrap items-center gap-4 bg-[var(--brand-2)] px-5 py-4 text-white sm:px-[26px]">
         <button
           onClick={onClose}
           aria-label="Back to lead list"
@@ -248,7 +248,7 @@ export function LeadDetailPane({
               href={waUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-[13px] text-[#2f7d78] transition-colors hover:bg-[#eafaf8]"
+              className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-[13px] text-[var(--brand)] transition-colors hover:bg-[var(--brand-wash)]"
             >
               <MessageCircle size={15} className="shrink-0" />
               <span className="hidden sm:inline">WhatsApp</span>
@@ -276,17 +276,17 @@ export function LeadDetailPane({
       {/* ---------------------------------------------------------------- */}
       {/* Facts strip                                                      */}
       {/* ---------------------------------------------------------------- */}
-      <div className="grid grid-cols-2 gap-px border-b border-[#dceae8] bg-[#dceae8] lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-px border-b border-[var(--rule)] bg-[var(--rule)] lg:grid-cols-4">
         <FactCell icon={<Phone size={13} />} label="PHONE">
-          {lead.phone ? formatPhone(lead.phone) : <span className="text-[#9aacaa]">Not provided</span>}
+          {lead.phone ? formatPhone(lead.phone) : <span className="text-[var(--ink-3)]">Not provided</span>}
         </FactCell>
 
         <FactCell icon={<Mail size={13} />} label="EMAIL" title={lead.email || undefined}>
-          {lead.email || <span className="text-[#9aacaa]">Not provided</span>}
+          {lead.email || <span className="text-[var(--ink-3)]">Not provided</span>}
         </FactCell>
 
         <FactCell icon={<MapPin size={13} />} label="CITY / AREA">
-          {lead.city || <span className="text-[#9aacaa]">Not specified</span>}
+          {lead.city || <span className="text-[var(--ink-3)]">Not specified</span>}
         </FactCell>
 
         <FactCell
@@ -296,28 +296,28 @@ export function LeadDetailPane({
             userRole === "admin" && !closed && onReassignRequest ? (
               <button
                 onClick={onReassignRequest}
-                className="text-[11.5px] text-[#2f7d78] transition-colors hover:underline"
+                className="text-[11.5px] text-[var(--brand)] transition-colors hover:underline"
               >
                 Reassign
               </button>
             ) : undefined
           }
         >
-          {lead.assignedUserId ? (assigneeName ?? "Assigned") : <span className="text-[#c08a2e]">(Unassigned)</span>}
+          {lead.assignedUserId ? (assigneeName ?? "Assigned") : <span className="text-[var(--warn)]">(Unassigned)</span>}
         </FactCell>
       </div>
 
       {/* ---------------------------------------------------------------- */}
       {/* Pipeline stage bar                                               */}
       {/* ---------------------------------------------------------------- */}
-      <div className="flex flex-wrap items-center justify-between gap-x-5 gap-y-2 border-b border-[#dceae8] bg-[#eef6f5] px-5 py-2.5 sm:px-[26px]">
+      <div className="flex flex-wrap items-center justify-between gap-x-5 gap-y-2 border-b border-[var(--rule)] bg-[var(--brand-wash)] px-5 py-2.5 sm:px-[26px]">
         <div className="flex flex-wrap items-center gap-x-3.5 gap-y-2">
           <div className="flex items-center gap-2">
             {/* The formal state machine is the *Status*; the commercial read
                 on the same lead is the *Stage* control further along this bar.
                 They were both called "stage" before, which made the two
                 impossible to talk about. */}
-            <label htmlFor="pipeline-stage" className="text-[12.5px] text-[#5b6d6b]">
+            <label htmlFor="pipeline-stage" className="text-[12.5px] text-[var(--ink-2)]">
               Pipeline Status:
             </label>
             <StageSelect lead={lead} disabled={closed} getIdToken={getIdToken} onResult={setBanner} />
@@ -329,7 +329,7 @@ export function LeadDetailPane({
                 key={stage}
                 title={LEAD_STATUS_LABELS[stage]}
                 className={`animate-stage-dot h-1 w-[26px] rounded-sm ${
-                  lostLead ? "bg-[#e0a49b]" : i <= stageIndex ? "bg-[#4f9c99]" : "bg-[#d6e7e5]"
+                  lostLead ? "bg-[var(--bad)]" : i <= stageIndex ? "bg-[var(--brand-2)]" : "bg-[var(--rule)]"
                 }`}
                 style={{ animationDelay: `${i * 45}ms` }}
               />
@@ -343,8 +343,8 @@ export function LeadDetailPane({
           <PipelineStageControl lead={lead} userRole={userRole} getIdToken={getIdToken} onResult={setBanner} />
         </div>
 
-        <div className="flex items-center gap-1.5 text-[12.5px] text-[#5b6d6b]">
-          <Clock size={14} className="shrink-0 text-[#7e918f]" />
+        <div className="flex items-center gap-1.5 text-[12.5px] text-[var(--ink-2)]">
+          <Clock size={14} className="shrink-0 text-[var(--ink-3)]" />
           <span>Created: {formatBusinessDateTime(lead.createdAt)}</span>
         </div>
       </div>
@@ -358,8 +358,8 @@ export function LeadDetailPane({
         )}
 
         {lead.intakeWarning && (
-          <div className="flex items-center gap-2 border-b border-[#f0d9a8] bg-[#fdf6e7] px-5 py-2.5 text-xs text-[#8a6420] sm:px-[26px]">
-            <AlertTriangle size={15} className="shrink-0 text-[#c08a2e]" />
+          <div className="flex items-center gap-2 border-b border-[var(--accent-edge)] bg-[var(--warn-wash)] px-5 py-2.5 text-xs text-[var(--warn)] sm:px-[26px]">
+            <AlertTriangle size={15} className="shrink-0 text-[var(--warn)]" />
             <span>Contact details could not be retrieved from Meta. Please confirm or update manually.</span>
           </div>
         )}
@@ -370,8 +370,8 @@ export function LeadDetailPane({
             aria-live="polite"
             className={`flex items-start justify-between gap-3 border-b px-5 py-2.5 text-xs sm:px-[26px] ${
               banner.tone === "error"
-                ? "border-[#f0c4bd] bg-[#fdeeeb] text-[#a33a29]"
-                : "border-[#bfe0dc] bg-[#eef8f7] text-[#2f7d78]"
+                ? "border-[var(--bad-edge)] bg-[var(--bad-wash)] text-[var(--bad)]"
+                : "border-[var(--brand-edge)] bg-[var(--brand-wash)] text-[var(--brand)]"
             }`}
           >
             <span>{banner.text}</span>
@@ -382,7 +382,7 @@ export function LeadDetailPane({
         )}
 
         {/* Tab bar */}
-        <div className="flex items-center gap-1 overflow-x-auto border-b border-[#dceae8] bg-[#fbfdfd] px-5 sm:px-[26px]">
+        <div className="flex items-center gap-1 overflow-x-auto border-b border-[var(--rule)] bg-[var(--card)] px-5 sm:px-[26px]">
           {tabs.map((tab) => {
             const active = tab.key === activeTab;
             return (
@@ -391,21 +391,21 @@ export function LeadDetailPane({
                 onClick={() => setActiveTab(tab.key)}
                 aria-current={active ? "page" : undefined}
                 className={`flex shrink-0 items-center gap-2 border-b-2 px-1 py-3.5 text-sm whitespace-nowrap transition-colors ${
-                  active ? "border-[#3f8f8a] text-[#2f7d78]" : "border-transparent text-[#6c7d7b] hover:text-[#2f7d78]"
+                  active ? "border-[var(--brand)] text-[var(--brand)]" : "border-transparent text-[var(--ink-2)] hover:text-[var(--brand)]"
                 } mr-6 last:mr-0`}
               >
                 <span>{tab.label}</span>
                 {tab.count !== null && tab.count > 0 && (
                   <span
                     className={`min-w-[22px] rounded-full px-[7px] py-px text-center text-[11.5px] ${
-                      active ? "bg-[#dcecea] text-[#2f7d78]" : "bg-[#eef5f4] text-[#7e918f]"
+                      active ? "bg-[var(--rule)] text-[var(--brand)]" : "bg-[var(--paper-2)] text-[var(--ink-3)]"
                     }`}
                   >
                     {tab.count}
                   </span>
                 )}
                 {tab.key === "DEAL_ENTRY" && deal && (
-                  <span className="rounded-full bg-[#dcecea] px-2 py-px text-[11px] text-[#2f7d78]">Closed</span>
+                  <span className="rounded-full bg-[var(--rule)] px-2 py-px text-[11px] text-[var(--brand)]">Closed</span>
                 )}
               </button>
             );
@@ -418,7 +418,7 @@ export function LeadDetailPane({
       {/* ---------------------------------------------------------------- */}
       <div className="teal-scrollbar min-h-0 overflow-y-auto px-5 pt-[22px] pb-[30px] sm:px-[26px]">
         {historyError && (
-          <p className="mb-4 rounded-lg border border-[#f0c4bd] bg-[#fdeeeb] p-3.5 text-xs text-[#a33a29]">
+          <p className="mb-4 rounded-lg border border-[var(--bad-edge)] bg-[var(--bad-wash)] p-3.5 text-xs text-[var(--bad)]">
             {historyError}
           </p>
         )}
@@ -460,7 +460,7 @@ export function LeadDetailPane({
                 onDone={() => setActiveTab("FOLLOW_UPS")}
               />
             ) : (
-              <div className="rounded-lg border border-dashed border-[#cfe2e0] bg-white/70 p-8 text-center text-[13px] text-[#7e918f]">
+              <div className="rounded-lg border border-dashed border-[var(--rule-2)] bg-white/70 p-8 text-center text-[13px] text-[var(--ink-3)]">
                 {closed
                   ? "This lead is closed and has no deal entry."
                   : isManagerView
@@ -492,15 +492,15 @@ function FactCell({
   title?: string;
 }) {
   return (
-    <div className="min-w-0 bg-[#fbfdfd] px-5 py-3">
+    <div className="min-w-0 bg-[var(--card)] px-5 py-3">
       <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-1.5 text-[11px] tracking-[0.6px] text-[#7e918f]">
-          <span className="shrink-0 text-[#4f9c99]">{icon}</span>
+        <div className="flex items-center gap-1.5 text-[11px] tracking-[0.6px] text-[var(--ink-3)]">
+          <span className="shrink-0 text-[var(--brand-2)]">{icon}</span>
           <span>{label}</span>
         </div>
         {action}
       </div>
-      <p className="mt-1 truncate text-sm text-[#2b3a39]" title={title}>
+      <p className="mt-1 truncate text-sm text-[var(--ink)]" title={title}>
         {children}
       </p>
     </div>
@@ -554,7 +554,7 @@ function StageSelect({
       value={lead.status}
       disabled={disabled || busy}
       onChange={(e) => handleChange(e.target.value)}
-      className="cursor-pointer rounded-md border border-[#cfe2e0] bg-white px-3 py-1.5 text-[13px] text-[#2b3a39] outline-none transition-colors focus:border-[#4f9c99] focus:ring-2 focus:ring-[#4f9c99]/15 disabled:cursor-not-allowed disabled:opacity-60"
+      className="cursor-pointer rounded-md border border-[var(--rule-2)] bg-white px-3 py-1.5 text-[13px] text-[var(--ink)] outline-none transition-colors focus:border-[var(--brand-2)] focus:ring-2 focus:ring-[var(--brand-2)]/15 disabled:cursor-not-allowed disabled:opacity-60"
     >
       {orphan && <option value={orphan}>{statusLabel(orphan)}</option>}
 
@@ -644,10 +644,10 @@ function PipelineStageControl({
 
   return (
     <div className="flex flex-wrap items-center gap-2" title={explainPipelineStage(lead)}>
-      <span className="text-[12.5px] text-[#5b6d6b]">Pipeline Stage:</span>
+      <span className="text-[12.5px] text-[var(--ink-2)]">Pipeline Stage:</span>
 
       {notStarted && (
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-[#dceae8] bg-[#f3faf9] px-2.5 py-1 text-[12px] font-semibold text-[#5b6d6b]">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--rule)] bg-[var(--brand-wash)] px-2.5 py-1 text-[12px] font-semibold text-[var(--ink-2)]">
           Not started — add the first Remark to reach P3
         </span>
       )}
@@ -669,7 +669,7 @@ function PipelineStageControl({
 
       {/* §3 — the warning, and the decision, in the place the stage is read. */}
       {coldPending && (
-        <span className="inline-flex flex-wrap items-center gap-2 rounded-full border border-[#f0e0c0] bg-[#fdf5e6] px-2.5 py-1 text-[11.5px] text-[#a5762a]">
+        <span className="inline-flex flex-wrap items-center gap-2 rounded-full border border-[var(--accent-edge)] bg-[var(--warn-wash)] px-2.5 py-1 text-[11.5px] text-[var(--warn)]">
           <AlertTriangle size={12} className="shrink-0" />
           Requires verification before being moved to Cold
           {canReview && (
@@ -678,7 +678,7 @@ function PipelineStageControl({
                 type="button"
                 disabled={busy}
                 onClick={() => review(true)}
-                className="rounded-full bg-[#4d7590] px-2.5 py-0.5 text-[11px] font-semibold text-white disabled:opacity-50"
+                className="rounded-full bg-[var(--brand-2)] px-2.5 py-0.5 text-[11px] font-semibold text-white disabled:opacity-50"
               >
                 Verify Cold
               </button>
@@ -686,7 +686,7 @@ function PipelineStageControl({
                 type="button"
                 disabled={busy}
                 onClick={() => review(false)}
-                className="rounded-full border border-[#e0d0a8] px-2.5 py-0.5 text-[11px] font-semibold text-[#a5762a] disabled:opacity-50"
+                className="rounded-full border border-[var(--accent-edge)] px-2.5 py-0.5 text-[11px] font-semibold text-[var(--warn)] disabled:opacity-50"
               >
                 Keep working
               </button>
@@ -695,7 +695,7 @@ function PipelineStageControl({
         </span>
       )}
 
-      <span className="hidden text-[11.5px] text-[#9aacaa] xl:inline">{explainPipelineStage(lead)}</span>
+      <span className="hidden text-[11.5px] text-[var(--ink-3)] xl:inline">{explainPipelineStage(lead)}</span>
       <span className="sr-only">{explainPipelineStage(lead)}</span>
     </div>
   );
@@ -732,12 +732,12 @@ function AcceptBanner({
   };
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#cfe2e0] bg-[#e8f5f3] px-5 py-3 sm:px-[26px]">
+    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--rule-2)] bg-[var(--brand-wash)] px-5 py-3 sm:px-[26px]">
       <div>
-        <h3 className="text-[13px] font-medium text-[#2f7d78]">
+        <h3 className="text-[13px] font-medium text-[var(--brand)]">
           {userRole === "admin" ? "Awaiting Employee Acceptance" : "New Lead Assigned To You"}
         </h3>
-        <p className="mt-0.5 text-[11.5px] text-[#5b6d6b]">
+        <p className="mt-0.5 text-[11.5px] text-[var(--ink-2)]">
           {userRole === "admin"
             ? `Assigned employee has ${ACCEPT_WINDOW_MINUTES} minutes to accept. You can force-accept for them here.`
             : `Please accept this lead within ${ACCEPT_WINDOW_MINUTES} minutes to prevent auto-reassignment.`}
@@ -746,7 +746,7 @@ function AcceptBanner({
       <button
         onClick={handleAccept}
         disabled={busy}
-        className="rounded-full bg-[#3f8f8a] px-4 py-2 text-[13px] text-white transition-colors hover:bg-[#2f7d78] disabled:opacity-50"
+        className="rounded-full bg-[var(--brand)] px-4 py-2 text-[13px] text-white transition-colors hover:bg-[var(--brand)] disabled:opacity-50"
       >
         {busy ? "Accepting…" : userRole === "admin" ? "Force Accept" : "Accept Lead"}
       </button>
@@ -905,8 +905,8 @@ function FollowUpsPanel({
     <div>
       <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h3 className="text-[19px] font-medium text-[#2b3a39]">Communication History</h3>
-          <p className="mt-0.5 text-[12.5px] text-[#7e918f]">
+          <h3 className="text-[19px] font-medium text-[var(--ink)]">Communication History</h3>
+          <p className="mt-0.5 text-[12.5px] text-[var(--ink-3)]">
             Immutable log of all interactions, calls, and discussions.
           </p>
         </div>
@@ -915,7 +915,7 @@ function FollowUpsPanel({
             onClick={() => setShowForm(true)}
             disabled={loggedToday}
             title={loggedToday ? "One entry per lead per day. Add the next one tomorrow." : undefined}
-            className="inline-flex shrink-0 items-center gap-2 rounded-full bg-[#3f8f8a] px-4 py-2 text-[13px] text-white transition-colors hover:bg-[#2f7d78] disabled:cursor-not-allowed disabled:opacity-45"
+            className="inline-flex shrink-0 items-center gap-2 rounded-full bg-[var(--brand)] px-4 py-2 text-[13px] text-white transition-colors hover:bg-[var(--brand)] disabled:cursor-not-allowed disabled:opacity-45"
           >
             <Plus size={14} />
             <span>{loggedToday ? "Logged Today" : `Add ${entryWord}`}</span>
@@ -924,24 +924,24 @@ function FollowUpsPanel({
       </div>
 
       {showForm && (
-        <form onSubmit={submit} className="mb-4 space-y-3.5 rounded-lg border border-[#e0eeec] bg-white p-4">
-          <div className="flex items-center justify-between border-b border-[#f0f6f5] pb-2.5">
-            <span className="text-[13.5px] text-[#2b3a39]">
+        <form onSubmit={submit} className="mb-4 space-y-3.5 rounded-lg border border-[var(--rule)] bg-white p-4">
+          <div className="flex items-center justify-between border-b border-[var(--paper-2)] pb-2.5">
+            <span className="text-[13.5px] text-[var(--ink)]">
               {editingId
                 ? `Editing this ${entryWord.toLowerCase()}`
                 : isFirstEntry
                   ? "Opening remark"
                   : "Log new follow-up"}
             </span>
-            <span className="flex items-center gap-1.5 text-[11.5px] text-[#9aacaa]">
-              <Clock size={12} className="text-[#4f9c99]" />
+            <span className="flex items-center gap-1.5 text-[11.5px] text-[var(--ink-3)]">
+              <Clock size={12} className="text-[var(--brand-2)]" />
               {formatBusinessDateTime(new Date())}
             </span>
           </div>
 
           <label className={FIELD_LABEL_CLASS}>
             <span>
-              Discussion Summary <span className="text-[#e05a4a]">*</span>
+              Discussion Summary <span className="text-[var(--bad)]">*</span>
             </span>
             <textarea
               required
@@ -953,24 +953,24 @@ function FollowUpsPanel({
             />
           </label>
 
-          <div className="rounded-md border border-[#dceae8] bg-[#f7fbfa] px-3 py-2.5">
+          <div className="rounded-md border border-[var(--rule)] bg-[var(--brand-wash)] px-3 py-2.5">
             <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-              <label className="flex cursor-pointer items-center gap-2 text-xs text-[#5b6d6b]">
+              <label className="flex cursor-pointer items-center gap-2 text-xs text-[var(--ink-2)]">
                 <input
                   type="checkbox"
                   checked={callMade}
                   onChange={(e) => setCallMade(e.target.checked)}
-                  className="h-4 w-4 accent-[#3f8f8a]"
+                  className="h-4 w-4 accent-[var(--brand)]"
                 />
                 <span>Phone Call Made</span>
               </label>
 
-              <label className="flex cursor-pointer items-center gap-2 text-xs text-[#5b6d6b]">
+              <label className="flex cursor-pointer items-center gap-2 text-xs text-[var(--ink-2)]">
                 <input
                   type="checkbox"
                   checked={meetingHeld}
                   onChange={(e) => setMeetingHeld(e.target.checked)}
-                  className="h-4 w-4 accent-[#3f8f8a]"
+                  className="h-4 w-4 accent-[var(--brand)]"
                 />
                 <span>Meeting Held</span>
               </label>
@@ -980,12 +980,12 @@ function FollowUpsPanel({
                   the diary for Thursday. Counted in the range by `entryTally`,
                   so it appears on the dossier and in Reports beside the calls
                   that produced it. */}
-              <label className="flex cursor-pointer items-center gap-2 text-xs text-[#5b6d6b]">
+              <label className="flex cursor-pointer items-center gap-2 text-xs text-[var(--ink-2)]">
                 <input
                   type="checkbox"
                   checked={meetingAligned}
                   onChange={(e) => setMeetingAligned(e.target.checked)}
-                  className="h-4 w-4 accent-[#3f8f8a]"
+                  className="h-4 w-4 accent-[var(--brand)]"
                 />
                 <span>Meeting Aligned</span>
               </label>
@@ -993,18 +993,18 @@ function FollowUpsPanel({
               {/* Counted separately from a meeting in Reports (§4): a client
                   who came to the site is a different signal from one who took
                   a meeting, and the two are often not the same visit. */}
-              <label className="flex cursor-pointer items-center gap-2 text-xs text-[#5b6d6b]">
+              <label className="flex cursor-pointer items-center gap-2 text-xs text-[var(--ink-2)]">
                 <input
                   type="checkbox"
                   checked={siteVisit}
                   onChange={(e) => setSiteVisit(e.target.checked)}
-                  className="h-4 w-4 accent-[#3f8f8a]"
+                  className="h-4 w-4 accent-[var(--brand)]"
                 />
                 <span>Site Visit</span>
               </label>
 
               {callMade && (
-                <div className="flex items-center gap-1.5 text-xs text-[#5b6d6b]">
+                <div className="flex items-center gap-1.5 text-xs text-[var(--ink-2)]">
                   <span>Count:</span>
                   <input
                     type="number"
@@ -1013,17 +1013,17 @@ function FollowUpsPanel({
                     value={callCount}
                     onChange={(e) => setCallCount(e.target.value)}
                     aria-label="Number of calls made"
-                    className="w-14 rounded border border-[#dceae8] bg-white py-1 text-center text-xs text-[#2b3a39]"
+                    className="w-14 rounded border border-[var(--rule)] bg-white py-1 text-center text-xs text-[var(--ink)]"
                   />
                 </div>
               )}
             </div>
 
             {callMade && (
-              <div className="mt-3 border-t border-[#e4f0ee] pt-3">
+              <div className="mt-3 border-t border-[var(--rule)] pt-3">
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-                  <span className="text-xs text-[#5b6d6b]">
-                    Call duration <span className="text-[#e05a4a]">*</span>
+                  <span className="text-xs text-[var(--ink-2)]">
+                    Call duration <span className="text-[var(--bad)]">*</span>
                   </span>
                   <div className="flex items-center gap-1.5">
                     <input
@@ -1034,9 +1034,9 @@ function FollowUpsPanel({
                       onChange={(e) => setCallMinutes(e.target.value)}
                       placeholder="0"
                       aria-label="Call duration minutes"
-                      className="w-16 rounded border border-[#dceae8] bg-white py-1 text-center text-xs text-[#2b3a39]"
+                      className="w-16 rounded border border-[var(--rule)] bg-white py-1 text-center text-xs text-[var(--ink)]"
                     />
-                    <span className="text-xs text-[#9aacaa]">min</span>
+                    <span className="text-xs text-[var(--ink-3)]">min</span>
                     <input
                       type="number"
                       min="0"
@@ -1045,21 +1045,21 @@ function FollowUpsPanel({
                       onChange={(e) => setCallSeconds(e.target.value)}
                       placeholder="00"
                       aria-label="Call duration seconds"
-                      className="w-16 rounded border border-[#dceae8] bg-white py-1 text-center text-xs text-[#2b3a39]"
+                      className="w-16 rounded border border-[var(--rule)] bg-white py-1 text-center text-xs text-[var(--ink)]"
                     />
-                    <span className="text-xs text-[#9aacaa]">sec</span>
+                    <span className="text-xs text-[var(--ink-3)]">sec</span>
                   </div>
 
                   <span
                     className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11.5px] ${
-                      willCount ? "bg-[#e8f5f3] text-[#2f7d78]" : "bg-[#f4f0ea] text-[#94836a]"
+                      willCount ? "bg-[var(--brand-wash)] text-[var(--brand)]" : "bg-[var(--warn-wash)] text-[var(--ink-3)]"
                     }`}
                   >
                     <PhoneCall size={11} />
                     {willCount ? "Counts as a connect" : "Not a connect"}
                   </span>
                 </div>
-                <p className="mt-2 text-[11.5px] text-[#9aacaa]">
+                <p className="mt-2 text-[11.5px] text-[var(--ink-3)]">
                   A call counts towards your Connects KPI only at{" "}
                   {formatDuration(CONNECT_MIN_SECONDS)} or longer.
                 </p>
@@ -1083,14 +1083,14 @@ function FollowUpsPanel({
                 setShowForm(false);
                 setEditingId(null);
               }}
-              className="rounded-full border border-[#cfe2e0] bg-white px-5 py-2 text-[13px] text-[#5b6d6b] transition-colors hover:bg-[#f3faf9]"
+              className="rounded-full border border-[var(--rule-2)] bg-white px-5 py-2 text-[13px] text-[var(--ink-2)] transition-colors hover:bg-[var(--brand-wash)]"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={busy || !message.trim() || (callMade && durationSeconds === 0)}
-              className="rounded-full bg-[#3f8f8a] px-5 py-2 text-[13px] text-white transition-colors hover:bg-[#2f7d78] disabled:opacity-50"
+              className="rounded-full bg-[var(--brand)] px-5 py-2 text-[13px] text-white transition-colors hover:bg-[var(--brand)] disabled:opacity-50"
             >
               {busy ? "Saving…" : `Save ${entryWord}`}
             </button>
@@ -1099,10 +1099,10 @@ function FollowUpsPanel({
       )}
 
       {followUps.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-[#cfe2e0] bg-white/70 p-10 text-center">
-          <MessageCircle className="mx-auto mb-2 text-[#a9cfcc]" size={28} />
-          <p className="text-[13.5px] text-[#2b3a39]">Nothing logged yet</p>
-          <p className="mt-0.5 text-[11.5px] text-[#9aacaa]">
+        <div className="rounded-lg border border-dashed border-[var(--rule-2)] bg-white/70 p-10 text-center">
+          <MessageCircle className="mx-auto mb-2 text-[var(--brand-edge)]" size={28} />
+          <p className="text-[13.5px] text-[var(--ink)]">Nothing logged yet</p>
+          <p className="mt-0.5 text-[11.5px] text-[var(--ink-3)]">
             Start with a remark — your opening note on this lead. Every call and meeting after it is
             a follow-up, and the whole history is kept permanently.
           </p>
@@ -1111,9 +1111,9 @@ function FollowUpsPanel({
         <div className="flex flex-col gap-3">
           {/* Chronological: the Remark first, then each Follow-Up after it. */}
           {toChronological(followUps).map((fu, index) => (
-            <article key={fu.id} className="rounded-lg border border-[#e0eeec] bg-white px-4 py-3.5">
-              <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-[#f0f6f5] pb-2.5">
-                <div className="flex flex-wrap items-center gap-2 text-[13.5px] text-[#2b3a39]">
+            <article key={fu.id} className="rounded-lg border border-[var(--rule)] bg-white px-4 py-3.5">
+              <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-[var(--paper-2)] pb-2.5">
+                <div className="flex flex-wrap items-center gap-2 text-[13.5px] text-[var(--ink)]">
                   {/* The stored kind when there is one; position for entries
                       written before it was recorded. */}
                   <span
@@ -1121,8 +1121,8 @@ function FollowUpsPanel({
                     style={
                       (fu.kind ? FOLLOW_UP_KIND_LABELS[fu.kind] : entryLabelAt(index, followUps.length, false)) ===
                       FOLLOW_UP_KIND_LABELS.REMARK
-                        ? { background: "#fdf1e3", color: "#a4682a" }
-                        : { background: "#e2f0ee", color: "#2f7d78" }
+                        ? { background: "var(--warn-wash)", color: "var(--warn)" }
+                        : { background: "var(--brand-wash)", color: "var(--brand)" }
                     }
                   >
                     {fu.kind ? FOLLOW_UP_KIND_LABELS[fu.kind] : entryLabelAt(index, followUps.length, false)}
@@ -1135,16 +1135,16 @@ function FollowUpsPanel({
                       one with no number at all, which is exactly the entry a
                       reader is looking for. The Remark takes no number: it is
                       the one entry that is named rather than counted. */}
-                  {index > 0 && <span className="text-[#9aacaa]">#{index}</span>}
-                  <span className="text-[#7e918f]">· {fu.authorEmail ?? "Team Member"}</span>
+                  {index > 0 && <span className="text-[var(--ink-3)]">#{index}</span>}
+                  <span className="text-[var(--ink-3)]">· {fu.authorEmail ?? "Team Member"}</span>
                   {(fu.revisions?.length ?? 0) > 0 && (
-                    <span className="rounded-full bg-[#f2f8f7] px-2 py-0.5 text-[10.5px] text-[#5b6d6b]">
+                    <span className="rounded-full bg-[var(--brand-wash)] px-2 py-0.5 text-[10.5px] text-[var(--ink-2)]">
                       edited {fu.revisions!.length}×
                     </span>
                   )}
                 </div>
 
-                <div className="flex items-center gap-2.5 text-xs text-[#9aacaa]">
+                <div className="flex items-center gap-2.5 text-xs text-[var(--ink-3)]">
                   <span>{formatBusinessDateTime(fu.occurredAt ?? fu.createdAt)}</span>
                   {/* §2 — the newest entry stays editable; the rest are locked,
                       and the lock is shown rather than the button silently
@@ -1154,14 +1154,14 @@ function FollowUpsPanel({
                       <button
                         type="button"
                         onClick={() => startEdit(fu)}
-                        className="rounded-full border border-[#cfe2e0] px-2.5 py-0.5 text-[11px] font-medium text-[#2f7d78] transition-colors hover:bg-[#f3faf9]"
+                        className="rounded-full border border-[var(--rule-2)] px-2.5 py-0.5 text-[11px] font-medium text-[var(--brand)] transition-colors hover:bg-[var(--brand-wash)]"
                       >
                         Edit
                       </button>
                     ) : (
                       <span
                         title="Only the latest entry can be edited. Older ones are part of the permanent record."
-                        className="inline-flex items-center gap-1 text-[11px] text-[#b3c4c2]"
+                        className="inline-flex items-center gap-1 text-[11px] text-[var(--rule-2)]"
                       >
                         <Lock size={10} /> Locked
                       </span>
@@ -1170,23 +1170,23 @@ function FollowUpsPanel({
                 </div>
               </div>
 
-              <p className="mt-2.5 text-[13.5px] leading-relaxed whitespace-pre-wrap text-[#3c4d4b]">{fu.message}</p>
+              <p className="mt-2.5 text-[13.5px] leading-relaxed whitespace-pre-wrap text-[var(--ink-2)]">{fu.message}</p>
 
               {/* §2 — what it said before, kept rather than destroyed. Oldest
                   first, so it reads as a trail toward the text above. */}
               {(fu.revisions?.length ?? 0) > 0 && (
-                <details className="mt-2.5 rounded-lg border border-[#f0f6f5] bg-[#f9fcfc] px-3 py-2">
-                  <summary className="cursor-pointer text-[11.5px] text-[#7e918f]">
+                <details className="mt-2.5 rounded-lg border border-[var(--paper-2)] bg-[var(--brand-wash)] px-3 py-2">
+                  <summary className="cursor-pointer text-[11.5px] text-[var(--ink-3)]">
                     Previous versions ({fu.revisions!.length})
                   </summary>
                   <ol className="mt-2 space-y-2">
                     {fu.revisions!.map((revision, revisionIndex) => (
-                      <li key={revisionIndex} className="border-l-2 border-[#dceae8] pl-2.5">
-                        <p className="text-[11px] text-[#9aacaa]">
+                      <li key={revisionIndex} className="border-l-2 border-[var(--rule)] pl-2.5">
+                        <p className="text-[11px] text-[var(--ink-3)]">
                           {revision.editedByEmail ?? "Team Member"}
                           {revision.editedAt ? ` · ${formatBusinessDateTime(revision.editedAt)}` : ""}
                         </p>
-                        <p className="text-[12.5px] whitespace-pre-wrap text-[#5b6d6b]">
+                        <p className="text-[12.5px] whitespace-pre-wrap text-[var(--ink-2)]">
                           {revision.message ?? "(empty)"}
                         </p>
                       </li>
@@ -1198,7 +1198,7 @@ function FollowUpsPanel({
               {(fu.callMade || fu.meetingHeld || fu.meetingAligned || fu.siteVisit || fu.whatsappNote) && (
                 <div className="mt-2.5 flex flex-wrap items-center gap-2">
                   {fu.callMade && (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#e8f5f3] px-3 py-1 text-[11.5px] text-[#2f7d78]">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--brand-wash)] px-3 py-1 text-[11.5px] text-[var(--brand)]">
                       <PhoneCall size={12} />
                       <span>
                         Phone Call{fu.callCount && fu.callCount > 1 ? ` (${fu.callCount}×)` : ""}
@@ -1207,12 +1207,12 @@ function FollowUpsPanel({
                     </span>
                   )}
                   {fu.connect && (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#3f8f8a] px-3 py-1 text-[11.5px] text-white">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--brand)] px-3 py-1 text-[11.5px] text-white">
                       <span>Connect</span>
                     </span>
                   )}
                   {fu.meetingHeld && (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#e8f5f3] px-3 py-1 text-[11.5px] text-[#2f7d78]">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--brand-wash)] px-3 py-1 text-[11.5px] text-[var(--brand)]">
                       <Users size={12} />
                       <span>Meeting</span>
                     </span>
@@ -1221,19 +1221,19 @@ function FollowUpsPanel({
                       the other a meeting that took place. Both can be true on
                       one entry — a meeting happened and the next was booked. */}
                   {fu.meetingAligned && (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#e8f5f3] px-3 py-1 text-[11.5px] text-[#2f7d78]">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--brand-wash)] px-3 py-1 text-[11.5px] text-[var(--brand)]">
                       <CalendarCheck size={12} />
                       <span>Meeting aligned</span>
                     </span>
                   )}
                   {fu.siteVisit && (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#e8f5f3] px-3 py-1 text-[11.5px] text-[#2f7d78]">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--brand-wash)] px-3 py-1 text-[11.5px] text-[var(--brand)]">
                       <MapPin size={12} />
                       <span>Site visit</span>
                     </span>
                   )}
                   {fu.whatsappNote && (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#e8f5f3] px-3 py-1 text-[11.5px] text-[#2f7d78]">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--brand-wash)] px-3 py-1 text-[11.5px] text-[var(--brand)]">
                       <MessageCircle size={12} />
                       <span>{fu.whatsappNote}</span>
                     </span>
@@ -1263,17 +1263,17 @@ function AuditPanel({
 }) {
   return (
     <div>
-      <h3 className="text-[19px] font-medium text-[#2b3a39]">Audit Trail</h3>
-      <p className="mt-0.5 mb-4 text-[12.5px] text-[#7e918f]">
+      <h3 className="text-[19px] font-medium text-[var(--ink)]">Audit Trail</h3>
+      <p className="mt-0.5 mb-4 text-[12.5px] text-[var(--ink-3)]">
         Every system and user action on this lead, in order.
       </p>
 
       {events === null ? (
-        <div className="rounded-lg border border-dashed border-[#cfe2e0] bg-white/70 p-10 text-center text-[13px] text-[#9aacaa]">
+        <div className="rounded-lg border border-dashed border-[var(--rule-2)] bg-white/70 p-10 text-center text-[13px] text-[var(--ink-3)]">
           Loading the audit trail…
         </div>
       ) : events.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-[#cfe2e0] bg-white/70 p-10 text-center text-[13px] text-[#9aacaa]">
+        <div className="rounded-lg border border-dashed border-[var(--rule-2)] bg-white/70 p-10 text-center text-[13px] text-[var(--ink-3)]">
           No audit events recorded yet.
         </div>
       ) : (
@@ -1281,20 +1281,20 @@ function AuditPanel({
           {events.map((event, i) => (
             <li key={event.id} className="grid grid-cols-[20px_1fr_auto] items-start gap-4 pb-4.5">
               <div className="flex flex-col items-center gap-1 pt-1">
-                <span className="h-[9px] w-[9px] shrink-0 rounded-full bg-[#4f9c99]" />
-                {i < events.length - 1 && <span className="min-h-[26px] w-px flex-1 bg-[#d6e7e5]" />}
+                <span className="h-[9px] w-[9px] shrink-0 rounded-full bg-[var(--brand-2)]" />
+                {i < events.length - 1 && <span className="min-h-[26px] w-px flex-1 bg-[var(--rule)]" />}
               </div>
 
               <div className="min-w-0">
-                <p className="text-[13.5px] text-[#2b3a39]">{EVENT_LABELS[event.type] ?? event.type}</p>
-                <p className="mt-0.5 text-xs text-[#7e918f]">
+                <p className="text-[13.5px] text-[var(--ink)]">{EVENT_LABELS[event.type] ?? event.type}</p>
+                <p className="mt-0.5 text-xs text-[var(--ink-3)]">
                   {event.actorUid?.startsWith("system") ? "System automation" : `User ${event.actorUid.slice(0, 6)}`}
                 </p>
                 {event.meta && Object.keys(event.meta).length > 0 && (
-                  <dl className="mt-1.5 rounded-md border border-[#e0eeec] bg-[#f7fbfa] px-2.5 py-2 text-[11.5px] text-[#5b6d6b]">
+                  <dl className="mt-1.5 rounded-md border border-[var(--rule)] bg-[var(--brand-wash)] px-2.5 py-2 text-[11.5px] text-[var(--ink-2)]">
                     {Object.entries(event.meta).map(([key, value]) => (
                       <div key={key} className="truncate">
-                        <dt className="inline text-[#9aacaa]">{key}:</dt>{" "}
+                        <dt className="inline text-[var(--ink-3)]">{key}:</dt>{" "}
                         <dd className="inline">{String(value ?? "—")}</dd>
                       </div>
                     ))}
@@ -1302,7 +1302,7 @@ function AuditPanel({
                 )}
               </div>
 
-              <span className="shrink-0 text-xs whitespace-nowrap text-[#9aacaa]">
+              <span className="shrink-0 text-xs whitespace-nowrap text-[var(--ink-3)]">
                 {formatBusinessDateTime(event.at)}
               </span>
             </li>
@@ -1314,7 +1314,7 @@ function AuditPanel({
         <button
           type="button"
           onClick={onLoadMore}
-          className="mt-1 inline-flex items-center rounded-full border border-[#cfe2e0] bg-white px-4 py-2 text-[12.5px] text-[#2f7d78] transition-colors hover:border-[#8cc3bf]"
+          className="mt-1 inline-flex items-center rounded-full border border-[var(--rule-2)] bg-white px-4 py-2 text-[12.5px] text-[var(--brand)] transition-colors hover:border-[var(--brand-edge)]"
         >
           Load older events
         </button>
@@ -1446,26 +1446,26 @@ function DealEntryForm({
 
   return (
     <form onSubmit={submit} className="max-w-[840px]">
-      <div className="overflow-hidden rounded-xl border border-[#e0eeec] bg-white">
-        <div className="border-b border-[#f0f6f5] px-6 py-5">
-          <h3 className="text-lg font-medium text-[#2b3a39]">Record Won Deal</h3>
-          <p className="mt-0.5 text-[12.5px] text-[#7e918f]">
+      <div className="overflow-hidden rounded-xl border border-[var(--rule)] bg-white">
+        <div className="border-b border-[var(--paper-2)] px-6 py-5">
+          <h3 className="text-lg font-medium text-[var(--ink)]">Record Won Deal</h3>
+          <p className="mt-0.5 text-[12.5px] text-[var(--ink-3)]">
             Confirm settlement figures. Closing this lead records revenue permanently.
           </p>
         </div>
 
-        <fieldset className="border-b border-[#f0f6f5] px-6 py-5">
-          <legend className="mb-3.5 text-[11.5px] tracking-[1.1px] text-[#4f9c99]">CUSTOMER DETAILS</legend>
+        <fieldset className="border-b border-[var(--paper-2)] px-6 py-5">
+          <legend className="mb-3.5 text-[11.5px] tracking-[1.1px] text-[var(--brand-2)]">CUSTOMER DETAILS</legend>
           <div className="grid gap-x-4.5 gap-y-3.5 sm:grid-cols-2">
             <label className={FIELD_LABEL_CLASS}>
               <span>
-                Full Name <span className="text-[#e05a4a]">*</span>
+                Full Name <span className="text-[var(--bad)]">*</span>
               </span>
               <input required value={name} onChange={(e) => setName(e.target.value)} className={INPUT_CLASS} />
             </label>
             <label className={FIELD_LABEL_CLASS}>
               <span>
-                Phone Number <span className="text-[#e05a4a]">*</span>
+                Phone Number <span className="text-[var(--bad)]">*</span>
               </span>
               <input
                 required
@@ -1491,11 +1491,11 @@ function DealEntryForm({
           </div>
         </fieldset>
 
-        <fieldset className="border-b border-[#f0f6f5] px-6 py-5">
-          <legend className="mb-3.5 text-[11.5px] tracking-[1.1px] text-[#4f9c99]">PACKAGE / SERVICE</legend>
+        <fieldset className="border-b border-[var(--paper-2)] px-6 py-5">
+          <legend className="mb-3.5 text-[11.5px] tracking-[1.1px] text-[var(--brand-2)]">PACKAGE / SERVICE</legend>
           <label className={FIELD_LABEL_CLASS}>
             <span>
-              Description <span className="text-[#e05a4a]">*</span>
+              Description <span className="text-[var(--bad)]">*</span>
             </span>
             <textarea
               required
@@ -1509,7 +1509,7 @@ function DealEntryForm({
         </fieldset>
 
         <fieldset className="px-6 py-5">
-          <legend className="mb-3.5 text-[11.5px] tracking-[1.1px] text-[#4f9c99]">FINANCIAL BREAKDOWN</legend>
+          <legend className="mb-3.5 text-[11.5px] tracking-[1.1px] text-[var(--brand-2)]">FINANCIAL BREAKDOWN</legend>
 
           {/* **The type first, because it decides everything under it.** Four
               buttons rather than a select: they carry a line of explanation
@@ -1531,8 +1531,8 @@ function DealEntryForm({
                   onClick={() => setDealType(type)}
                   className={`rounded-lg border px-3.5 py-2.5 text-left transition-colors ${
                     on
-                      ? "border-[#3f8f8a] bg-[#e2f0ee] text-[#2f7d78]"
-                      : "border-[#dceae8] bg-white text-[#5b6d6b] hover:border-[#bfe0dc]"
+                      ? "border-[var(--brand)] bg-[var(--brand-wash)] text-[var(--brand)]"
+                      : "border-[var(--rule)] bg-white text-[var(--ink-2)] hover:border-[var(--brand-edge)]"
                   }`}
                 >
                   <span className="block text-[13px] font-semibold">{DEAL_TYPE_LABELS[type]}</span>
@@ -1548,7 +1548,7 @@ function DealEntryForm({
               <>
                 <label className={FIELD_LABEL_CLASS}>
                   <span>
-                    Total Price (PKR) <span className="text-[#e05a4a]">*</span>
+                    Total Price (PKR) <span className="text-[var(--bad)]">*</span>
                   </span>
                   <input
                     required
@@ -1559,7 +1559,7 @@ function DealEntryForm({
                     placeholder="0"
                     className={`${INPUT_CLASS} tabular-nums`}
                   />
-                  <span className="text-[11px] text-[#9aacaa]">
+                  <span className="text-[11px] text-[var(--ink-3)]">
                     The agreed sale price, before any discount.
                   </span>
                 </label>
@@ -1573,7 +1573,7 @@ function DealEntryForm({
                     placeholder="0"
                     className={`${INPUT_CLASS} tabular-nums`}
                   />
-                  <span className="text-[11px] text-[#9aacaa]">
+                  <span className="text-[11px] text-[var(--ink-3)]">
                     Comes off the total price.
                   </span>
                 </label>
@@ -1581,11 +1581,11 @@ function DealEntryForm({
                   <label className={FIELD_LABEL_CLASS}>
                     <span className="flex flex-wrap items-center justify-between gap-2">
                       <span>
-                        {DOWN_PAYMENT_KIND_LABELS[downPaymentKind]} (PKR) <span className="text-[#e05a4a]">*</span>
+                        {DOWN_PAYMENT_KIND_LABELS[downPaymentKind]} (PKR) <span className="text-[var(--bad)]">*</span>
                       </span>
                       {/* What the money is called. A label only — the Cut is
                           paid from it either way. */}
-                      <span role="radiogroup" aria-label="Down payment kind" className="inline-flex rounded-md border border-[#dceae8] p-0.5">
+                      <span role="radiogroup" aria-label="Down payment kind" className="inline-flex rounded-md border border-[var(--rule)] p-0.5">
                         {DOWN_PAYMENT_KINDS.map((kind) => (
                           <button
                             key={kind}
@@ -1594,7 +1594,7 @@ function DealEntryForm({
                             aria-checked={downPaymentKind === kind}
                             onClick={() => setDownPaymentKind(kind)}
                             className={`rounded px-2 py-0.5 text-[11px] ${
-                              downPaymentKind === kind ? "bg-[#e2f0ee] text-[#2f7d78]" : "text-[#7e918f]"
+                              downPaymentKind === kind ? "bg-[var(--brand-wash)] text-[var(--brand)]" : "text-[var(--ink-3)]"
                             }`}
                           >
                             {DOWN_PAYMENT_KIND_LABELS[kind]}
@@ -1611,7 +1611,7 @@ function DealEntryForm({
                       placeholder="0"
                       className={`${INPUT_CLASS} tabular-nums`}
                     />
-                    <span className="text-[11px] text-[#9aacaa]">
+                    <span className="text-[11px] text-[var(--ink-3)]">
                       What the client has handed over so far. The Cut is paid from this.
                     </span>
                   </label>
@@ -1621,7 +1621,7 @@ function DealEntryForm({
                      puts a wrong word on a permanent record. */
                   <label className={FIELD_LABEL_CLASS}>
                     <span>
-                      Confirmation (PKR) <span className="text-[#e05a4a]">*</span>
+                      Confirmation (PKR) <span className="text-[var(--bad)]">*</span>
                     </span>
                     <input
                       required
@@ -1632,7 +1632,7 @@ function DealEntryForm({
                       placeholder="0"
                       className={`${INPUT_CLASS} tabular-nums`}
                     />
-                    <span className="text-[11px] text-[#9aacaa]">
+                    <span className="text-[11px] text-[var(--ink-3)]">
                       What the client paid to confirm. More may follow later.
                     </span>
                   </label>
@@ -1647,7 +1647,7 @@ function DealEntryForm({
                     placeholder="0"
                     className={`${INPUT_CLASS} tabular-nums`}
                   />
-                  <span className="text-[11px] text-[#9aacaa]">
+                  <span className="text-[11px] text-[var(--ink-3)]">
                     Anything else off the price — a file traded in.
                   </span>
                 </label>
@@ -1662,9 +1662,9 @@ function DealEntryForm({
                     aria-readonly="true"
                     value={totalPrice === "" ? "" : formatAmount(amounts.remaining ?? 0)}
                     placeholder="0"
-                    className={`${INPUT_CLASS} tabular-nums bg-[#eef5f4] text-[#5b6d6b]`}
+                    className={`${INPUT_CLASS} tabular-nums bg-[var(--paper-2)] text-[var(--ink-2)]`}
                   />
-                  <span className="text-[11px] text-[#9aacaa]">
+                  <span className="text-[11px] text-[var(--ink-3)]">
                     Total &minus; Discount &minus; Adjustment. Calculated. The Cut is a percentage of this.
                   </span>
                 </label>
@@ -1676,7 +1676,7 @@ function DealEntryForm({
               <>
                 <label className={FIELD_LABEL_CLASS}>
                   <span>
-                    Amount Received (PKR) <span className="text-[#e05a4a]">*</span>
+                    Amount Received (PKR) <span className="text-[var(--bad)]">*</span>
                   </span>
                   <input
                     required
@@ -1687,7 +1687,7 @@ function DealEntryForm({
                     placeholder="0"
                     className={`${INPUT_CLASS} tabular-nums`}
                   />
-                  <span className="text-[11px] text-[#9aacaa]">
+                  <span className="text-[11px] text-[var(--ink-3)]">
                     {dealType === "LUMP_SUM"
                       ? "What the client paid the builder. Not our revenue — but the Cut is a percentage of it."
                       : "Money received this cycle. The Cut is a percentage of this."}
@@ -1703,7 +1703,7 @@ function DealEntryForm({
                     placeholder="0"
                     className={`${INPUT_CLASS} tabular-nums`}
                   />
-                  <span className="text-[11px] text-[#9aacaa]">
+                  <span className="text-[11px] text-[var(--ink-3)]">
                     What is payable out of the amount received.
                   </span>
                 </label>
@@ -1716,9 +1716,9 @@ function DealEntryForm({
                       aria-readonly="true"
                       value={receivedAmount === "" ? "" : formatAmount(amounts.remaining ?? 0)}
                       placeholder="0"
-                      className={`${INPUT_CLASS} tabular-nums bg-[#eef5f4] text-[#5b6d6b]`}
+                      className={`${INPUT_CLASS} tabular-nums bg-[var(--paper-2)] text-[var(--ink-2)]`}
                     />
-                    <span className="text-[11px] text-[#9aacaa]">
+                    <span className="text-[11px] text-[var(--ink-3)]">
                       Amount Received &minus; Payable Amount. Calculated.
                     </span>
                   </label>
@@ -1729,7 +1729,7 @@ function DealEntryForm({
                      that no figure on this form predicts. */
                   <label className={FIELD_LABEL_CLASS}>
                     <span>
-                      Commission (PKR) <span className="text-[#e05a4a]">*</span>
+                      Commission (PKR) <span className="text-[var(--bad)]">*</span>
                     </span>
                     <input
                       required
@@ -1740,7 +1740,7 @@ function DealEntryForm({
                       placeholder="0"
                       className={`${INPUT_CLASS} tabular-nums`}
                     />
-                    <span className="text-[11px] text-[#9aacaa]">
+                    <span className="text-[11px] text-[var(--ink-3)]">
                       What the builder pays us. This is the company&rsquo;s revenue, and the Cut comes out of it.
                     </span>
                   </label>
@@ -1791,7 +1791,7 @@ function DealEntryForm({
           {amountErrors.length > 0 && (
             <p
               role="alert"
-              className="mt-4 rounded-lg border border-[#f0c4bd] bg-[#fdeeeb] px-4 py-3 text-[12.5px] text-[#a33a29]"
+              className="mt-4 rounded-lg border border-[var(--bad-edge)] bg-[var(--bad-wash)] px-4 py-3 text-[12.5px] text-[var(--bad)]"
             >
               {amountErrors[0]}
             </p>
@@ -1810,32 +1810,32 @@ function DealEntryForm({
             a second answer to a question that must have one.
           */}
           <div
-            className="mt-4 rounded-lg border border-[#bfe0dc] bg-[#eef8f7] px-4.5 py-3.5"
+            className="mt-4 rounded-lg border border-[var(--brand-edge)] bg-[var(--brand-wash)] px-4.5 py-3.5"
             aria-live="polite"
           >
             <div className="flex flex-wrap items-center justify-between gap-4">
               <span className="min-w-0">
-                <span className="block text-xs tracking-[1px] text-[#2f7d78]">
+                <span className="block text-xs tracking-[1px] text-[var(--brand)]">
                   CUT BASE — {CUT_BASE_LABELS[dealType].toUpperCase()}
                 </span>
-                <span className="mt-0.5 block text-[11px] text-[#5f8b88]">
+                <span className="mt-0.5 block text-[11px] text-[var(--ink-3)]">
                   The admin&rsquo;s percentage is a percentage of this.
                 </span>
               </span>
-              <span className="text-[17px] font-medium tabular-nums text-[#2f7d78]">
+              <span className="text-[17px] font-medium tabular-nums text-[var(--brand)]">
                 {started ? formatMoney(amounts.cutBase) : "—"}
               </span>
             </div>
-            <div className="mt-2.5 flex flex-wrap items-center justify-between gap-4 border-t border-[#cfe6e2] pt-2.5">
+            <div className="mt-2.5 flex flex-wrap items-center justify-between gap-4 border-t border-[var(--brand-edge)] pt-2.5">
               <span className="min-w-0">
-                <span className="block text-xs tracking-[1px] text-[#2f7d78]">
+                <span className="block text-xs tracking-[1px] text-[var(--brand)]">
                   PAID FROM — {payoutSourceLabel(dealType, downPaymentKind).toUpperCase()}
                 </span>
-                <span className="mt-0.5 block text-[11px] text-[#5f8b88]">
+                <span className="mt-0.5 block text-[11px] text-[var(--ink-3)]">
                   The company keeps what is left of this after the Cut.
                 </span>
               </span>
-              <span className="text-[17px] font-medium tabular-nums text-[#2f7d78]">
+              <span className="text-[17px] font-medium tabular-nums text-[var(--brand)]">
                 {started ? formatMoney(amounts.payoutSource) : "—"}
               </span>
             </div>
@@ -1844,7 +1844,7 @@ function DealEntryForm({
           <button
             type="submit"
             disabled={busy || amountErrors.length > 0}
-            className="mt-4 w-full rounded-lg bg-[#3f8f8a] py-3 text-sm text-white transition-colors hover:bg-[#2f7d78] disabled:opacity-50"
+            className="mt-4 w-full rounded-lg bg-[var(--brand)] py-3 text-sm text-white transition-colors hover:bg-[var(--brand)] disabled:opacity-50"
           >
             {busy ? "Saving Deal…" : "Close Deal & Settle Revenue"}
           </button>
@@ -1866,12 +1866,12 @@ function DealRecord({
   const [notice, setNotice] = useState<string | null>(null);
   const printReceipt = usePrintReceipt();
   return (
-    <div className="max-w-[840px] overflow-hidden rounded-xl border border-[#bfe0dc] bg-white">
-      <div className="flex items-center gap-2.5 border-b border-[#f0f6f5] px-6 py-5">
-        <CheckCircle2 className="shrink-0 text-[#3f8f8a]" size={20} />
+    <div className="max-w-[840px] overflow-hidden rounded-xl border border-[var(--brand-edge)] bg-white">
+      <div className="flex items-center gap-2.5 border-b border-[var(--paper-2)] px-6 py-5">
+        <CheckCircle2 className="shrink-0 text-[var(--brand)]" size={20} />
         <div className="min-w-0 flex-1">
-          <h3 className="text-lg font-medium text-[#2b3a39]">Confirmed Deal Record</h3>
-          <p className="text-[12.5px] text-[#7e918f]">
+          <h3 className="text-lg font-medium text-[var(--ink)]">Confirmed Deal Record</h3>
+          <p className="text-[12.5px] text-[var(--ink-3)]">
             Settled {formatBusinessDate(deal.dealDate ?? deal.enteredAt)}
           </p>
         </div>
@@ -1879,7 +1879,7 @@ function DealRecord({
           <button
             type="button"
             onClick={() => printReceipt(deal)}
-            className="flex items-center gap-1.5 rounded-full border border-[#dceae8] px-3.5 py-1.5 text-[12.5px] text-[#2f7d78] hover:bg-[#eef8f7]"
+            className="flex items-center gap-1.5 rounded-full border border-[var(--rule)] px-3.5 py-1.5 text-[12.5px] text-[var(--brand)] hover:bg-[var(--brand-wash)]"
           >
             <Printer size={14} />
             Print
@@ -1888,7 +1888,7 @@ function DealRecord({
             <button
               type="button"
               onClick={() => setEditing(true)}
-              className="shrink-0 rounded-full border border-[#dceae8] px-3.5 py-1.5 text-[12.5px] text-[#2f7d78] hover:bg-[#eef8f7]"
+              className="shrink-0 rounded-full border border-[var(--rule)] px-3.5 py-1.5 text-[12.5px] text-[var(--brand)] hover:bg-[var(--brand-wash)]"
             >
               Edit deal
             </button>
@@ -1896,7 +1896,7 @@ function DealRecord({
         </div>
       </div>
       {notice && (
-        <p role="status" className="border-b border-[#f0f6f5] bg-[#eef8f7] px-6 py-2.5 text-[12.5px] text-[#2f7d78]">
+        <p role="status" className="border-b border-[var(--paper-2)] bg-[var(--brand-wash)] px-6 py-2.5 text-[12.5px] text-[var(--brand)]">
           {notice}
         </p>
       )}
@@ -1912,7 +1912,7 @@ function DealRecord({
         />
       )}
 
-      <div className="grid grid-cols-2 gap-px bg-[#e0eeec] sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-px bg-[var(--rule)] sm:grid-cols-4">
         {[
           ["CUSTOMER", deal.customer?.name || "—"],
           ["CONTACT", deal.customer?.phone ? formatPhone(deal.customer.phone) : "—"],
@@ -1921,16 +1921,16 @@ function DealRecord({
           ["CATEGORY", deal.dealCategory || "—"],
         ].map(([label, value]) => (
           <div key={label} className="min-w-0 bg-white px-5 py-3">
-            <p className="text-[11px] tracking-[0.6px] text-[#7e918f]">{label}</p>
-            <p className="mt-1 truncate text-sm text-[#2b3a39]">{value}</p>
+            <p className="text-[11px] tracking-[0.6px] text-[var(--ink-3)]">{label}</p>
+            <p className="mt-1 truncate text-sm text-[var(--ink)]">{value}</p>
           </div>
         ))}
       </div>
 
       {deal.serviceDescription && (
-        <div className="border-t border-[#f0f6f5] px-6 py-4">
-          <p className="text-[11.5px] tracking-[1.1px] text-[#4f9c99]">PACKAGE / SERVICE</p>
-          <p className="mt-1 text-[13.5px] text-[#3c4d4b]">{deal.serviceDescription}</p>
+        <div className="border-t border-[var(--paper-2)] px-6 py-4">
+          <p className="text-[11.5px] tracking-[1.1px] text-[var(--brand-2)]">PACKAGE / SERVICE</p>
+          <p className="mt-1 text-[13.5px] text-[var(--ink-2)]">{deal.serviceDescription}</p>
         </div>
       )}
 
@@ -1955,11 +1955,11 @@ function DealRecord({
 function DealFigures({ deal }: { deal: NonNullable<ReturnType<typeof useDealForLead>["deal"]> }) {
   return (
     <>
-      <div className="grid grid-cols-2 gap-3 border-t border-[#f0f6f5] px-6 py-5 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 border-t border-[var(--paper-2)] px-6 py-5 sm:grid-cols-4">
         {dealFigureRows(deal).map((row) => (
-          <div key={row.label} className="rounded-lg bg-[#f7fbfa] px-3 py-2.5 text-center">
-            <p className="text-[11px] tracking-[0.6px] text-[#7e918f]">{row.label.toUpperCase()}</p>
-            <p className="mt-0.5 text-sm tabular-nums text-[#2b3a39]">
+          <div key={row.label} className="rounded-lg bg-[var(--brand-wash)] px-3 py-2.5 text-center">
+            <p className="text-[11px] tracking-[0.6px] text-[var(--ink-3)]">{row.label.toUpperCase()}</p>
+            <p className="mt-0.5 text-sm tabular-nums text-[var(--ink)]">
               {row.value === null ? "—" : formatMoney(row.value)}
             </p>
           </div>
@@ -1969,17 +1969,17 @@ function DealFigures({ deal }: { deal: NonNullable<ReturnType<typeof useDealForL
       {/* **The two Cut figures, named.** They are what Profit Distribution will
           work from, and on three of the four types they are different numbers.
           The Cut itself is not here: the admin finalises it on that screen. */}
-      <div className="grid grid-cols-1 gap-3 border-t border-[#f0f6f5] px-6 pb-5 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 border-t border-[var(--paper-2)] px-6 pb-5 sm:grid-cols-2">
         {dealCutRows(deal).map((row) => (
           <div
             key={row.label}
-            className="rounded-lg border border-[#bfe0dc] bg-[#eef8f7] px-3 py-2.5 text-center"
+            className="rounded-lg border border-[var(--brand-edge)] bg-[var(--brand-wash)] px-3 py-2.5 text-center"
           >
-            <p className="text-[11px] tracking-[0.6px] text-[#2f7d78]">{row.label.toUpperCase()}</p>
-            <p className="mt-0.5 text-sm font-medium tabular-nums text-[#2f7d78]">
+            <p className="text-[11px] tracking-[0.6px] text-[var(--brand)]">{row.label.toUpperCase()}</p>
+            <p className="mt-0.5 text-sm font-medium tabular-nums text-[var(--brand)]">
               {formatMoney(row.value)}
             </p>
-            <p className="mt-0.5 text-[10px] text-[#5f8b88]">{row.note}</p>
+            <p className="mt-0.5 text-[10px] text-[var(--ink-3)]">{row.note}</p>
           </div>
         ))}
       </div>

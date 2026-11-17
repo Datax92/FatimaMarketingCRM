@@ -298,7 +298,7 @@ export function DayDetailPanel({
               </label>
 
               {error && (
-                <p style={{ fontSize: 12.5, color: "#a33a29", fontWeight: 600 }} role="alert">
+                <p style={{ fontSize: 12.5, color: "var(--bad)", fontWeight: 600 }} role="alert">
                   {error}
                 </p>
               )}

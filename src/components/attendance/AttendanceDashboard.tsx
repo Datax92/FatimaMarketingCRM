@@ -37,9 +37,9 @@ import { ATTENDANCE_TONES, StatusPill } from "./attendanceChrome";
 
 const DASH_CSS = `
 .att-row { transition: background-color 140ms ease; }
-.att-row:hover { background: #f7fbfa; }
+.att-row:hover { background: var(--brand-wash); }
 .att-stat { transition: border-color 160ms ease; }
-.att-stat:hover { border-color: #b6d9d5; }
+.att-stat:hover { border-color: var(--brand-edge); }
 @keyframes att-in { from { opacity: 0; transform: translate3d(0, 8px, 0); } to { opacity: 1; transform: none; } }
 .att-in { animation: att-in 300ms cubic-bezier(0.22,0.61,0.36,1) both; }
 @media (prefers-reduced-motion: reduce) {
@@ -288,7 +288,7 @@ export function AttendanceDashboard({ basePath }: { basePath: string }) {
               A link rather than a second pair of buttons: the same document
               written from two places is how a day ends up with two stories. */}
           <Link
-            href="/home"
+            href="/dashboard"
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -318,7 +318,7 @@ export function AttendanceDashboard({ basePath }: { basePath: string }) {
           style={{
             marginBottom: 16,
             borderRadius: 12,
-            border: "1px solid #f0c4bd",
+            border: "1px solid var(--bad-edge)",
             background: E.redBg,
             color: E.redInk,
             padding: "11px 14px",

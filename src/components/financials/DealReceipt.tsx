@@ -9,6 +9,7 @@
  * the company header, client details, deal figures, and a signature line.
  */
 
+import { COMPANY as COMPANY_NAME, COMPANY_ADDRESS, COMPANY_PHONE } from "@/lib/brand";
 import { useCallback, useRef } from "react";
 import { formatMoney } from "@/lib/money";
 import { dealFigureRows, readDealType, DEAL_TYPE_LABELS } from "@/lib/dealAmounts";
@@ -17,10 +18,9 @@ import { formatBusinessDate } from "@/lib/dates";
 import type { DealRecord } from "@/hooks/useFinancials";
 
 const COMPANY = {
-  name: "MAHZIYAR REAL ESTATE MARKETING",
-  address:
-    "First Floor, Benazir Plaza, Office # 113 Jinnah Ave, Block H G 7/2 Blue Area, Islamabad, 44000",
-  phone: "0312 5772180",
+  name: COMPANY_NAME.toUpperCase(),
+  address: COMPANY_ADDRESS,
+  phone: COMPANY_PHONE,
 };
 
 // The frame is same-origin, so an unescaped customer name would run as script in the CRM.
@@ -223,10 +223,10 @@ function buildReceiptHtml(deal: DealRecord, employeeName?: string): string {
 <body>
 <div class="receipt">
   <div class="header">
-    <img src="/mahziyar-logo.png" alt="Mahziyar" />
+    <img src="/fatima-logo.svg" alt="${COMPANY.name}" />
     <div class="header-text">
       <h1>${COMPANY.name}</h1>
-      <p>${COMPANY.address}<br />Phone: ${COMPANY.phone}</p>
+      <p>${COMPANY.address}${COMPANY.phone ? `<br />Phone: ${COMPANY.phone}` : ""}</p>
     </div>
   </div>
 

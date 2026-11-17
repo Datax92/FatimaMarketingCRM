@@ -89,8 +89,8 @@ function compactDate(value: { toDate?: () => Date } | Date | null | undefined): 
 
 /** Same three tones as the desktop list, so read state means one thing. */
 const ROW_TONES = {
-  selected: { background: "#c6e0dc", border: M.teal },
-  unopened: { background: "#e2f0ee", border: "#c9dedb" },
+  selected: { background: "var(--rule-2)", border: M.teal },
+  unopened: { background: "var(--brand-wash)", border: "var(--rule-2)" },
   opened: { background: M.cardBg, border: M.cardBorder },
 } as const;
 
@@ -485,8 +485,8 @@ export function MobileLeads({
             role="status"
             style={{
               borderRadius: M.rowRadius,
-              border: "1px solid #bfe0dc",
-              background: "#eef8f7",
+              border: "1px solid var(--brand-edge)",
+              background: "var(--brand-wash)",
               color: M.tealDeep,
               padding: "11px 13px",
               fontSize: 12.5,
@@ -501,9 +501,9 @@ export function MobileLeads({
             role="alert"
             style={{
               borderRadius: M.rowRadius,
-              border: "1px solid #f0c4bd",
-              background: "#fdeeeb",
-              color: "#a33a29",
+              border: "1px solid var(--bad-edge)",
+              background: "var(--bad-wash)",
+              color: "var(--bad)",
               padding: "11px 13px",
               fontSize: 12.5,
               fontWeight: 600,
@@ -576,7 +576,7 @@ export function MobileLeads({
                     fontSize: 14,
                     fontWeight: 700,
                     letterSpacing: "0.2px",
-                    color: "#4a5c5a",
+                    color: "var(--ink-2)",
                     flexShrink: 0,
                   }}
                   aria-hidden
@@ -618,7 +618,7 @@ export function MobileLeads({
                     <span style={{ fontSize: 12, fontWeight: 700, color: accent, flexShrink: 0 }}>
                       {LEAD_STATUS_LABELS[lead.status] ?? lead.status}
                     </span>
-                    <span style={{ fontSize: 12, fontWeight: 500, color: "#a0b2b0", flexShrink: 0 }}>·</span>
+                    <span style={{ fontSize: 12, fontWeight: 500, color: "var(--ink-3)", flexShrink: 0 }}>·</span>
                     <span
                       style={{
                         fontSize: 12,

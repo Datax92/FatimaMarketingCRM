@@ -79,9 +79,9 @@ import {
 } from "lucide-react";
 
 const STATUS_TONE: Record<DataBankStatus, { bg: string; text: string; dot: string }> = {
-  NEW: { bg: "#eef6fb", text: "#3f7ea3", dot: "#3f7ea3" },
-  CONTACTED: { bg: "#e8f5f3", text: "#2f7d78", dot: "#2f7d78" },
-  NOT_INTERESTED: { bg: "#f2f7f6", text: "#8fa2a0", dot: "#a9bcba" },
+  NEW: { bg: "var(--brand-wash)", text: "var(--brand-2)", dot: "var(--brand-2)" },
+  CONTACTED: { bg: "var(--brand-wash)", text: "var(--brand)", dot: "var(--brand)" },
+  NOT_INTERESTED: { bg: "var(--paper-2)", text: "var(--ink-3)", dot: "var(--ink-3)" },
 };
 
 /**
@@ -244,7 +244,7 @@ export function FolderWorkspace({ folderId }: { folderId: string }) {
 
   if (!folder) {
     return (
-      <div className="-m-6 min-h-full bg-[#e9f1f0] px-6 py-10 md:-m-8">
+      <div className="-m-6 min-h-full bg-[var(--paper)] px-6 py-10 md:-m-8">
         {/* Two different failures, said apart: a folder that is gone, and one
             that exists but was never assigned to this sub admin. Reporting the
             second as the first sent people looking for deleted data. */}
@@ -259,7 +259,7 @@ export function FolderWorkspace({ folderId }: { folderId: string }) {
         />
         <Link
           href={role === "subadmin" ? "/subadmin/data-bank" : "/admin/data-bank"}
-          className="mt-4 inline-block text-[13.5px] text-[#2f7d78]"
+          className="mt-4 inline-block text-[13.5px] text-[var(--brand)]"
         >
           ← Back to the Data Bank
         </Link>
@@ -270,12 +270,12 @@ export function FolderWorkspace({ folderId }: { folderId: string }) {
   const showDetailOnMobile = view === "ASSIGNED" ? openAssigned !== null : selected !== null;
 
   return (
-    <div className="leads-shell -m-6 grid grid-cols-1 overflow-hidden bg-[#e9f1f0] text-[#2b3a39] md:-m-8 lg:grid-cols-[372px_1fr]">
+    <div className="leads-shell -m-6 grid grid-cols-1 overflow-hidden bg-[var(--paper)] text-[var(--ink)] md:-m-8 lg:grid-cols-[372px_1fr]">
       {/* ================================================================= */}
       {/* Left — record list                                                */}
       {/* ================================================================= */}
       <section
-        className={`min-w-0 flex-col border-r border-[#dceae8] bg-[#fbfdfd] ${
+        className={`min-w-0 flex-col border-r border-[var(--rule)] bg-[var(--card)] ${
           showDetailOnMobile ? "hidden min-h-0 lg:flex" : "flex min-h-0"
         }`}
         aria-label={`${folder.name} records`}
@@ -286,7 +286,7 @@ export function FolderWorkspace({ folderId }: { folderId: string }) {
           gives every heading its own colour, which beats the one inherited
           from this teal parent.
         */}
-        <div className="flex min-h-[78px] shrink-0 items-center justify-between gap-3 bg-[#4f9c99] px-5 py-3.5 text-white">
+        <div className="flex min-h-[78px] shrink-0 items-center justify-between gap-3 bg-[var(--brand-2)] px-5 py-3.5 text-white">
           <div className="flex min-w-0 items-center gap-2.5">
             <Link
               href={role === "subadmin" ? "/subadmin/data-bank" : "/admin/data-bank"}
@@ -337,7 +337,7 @@ export function FolderWorkspace({ folderId }: { folderId: string }) {
             </button>
             <button
               onClick={() => setFormFor({ record: null })}
-              className="inline-flex items-center gap-1.5 rounded-full bg-white py-1.5 pr-3 pl-2.5 text-[12.5px] text-[#2f7d78] transition-colors hover:bg-[#eafaf8] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              className="inline-flex items-center gap-1.5 rounded-full bg-white py-1.5 pr-3 pl-2.5 text-[12.5px] text-[var(--brand)] transition-colors hover:bg-[var(--brand-wash)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
               <Plus size={13} strokeWidth={2.2} />
               <span>Add</span>
@@ -347,19 +347,19 @@ export function FolderWorkspace({ folderId }: { folderId: string }) {
 
         {/* Search — 16px / 18px / 10px, matching the pipeline list exactly */}
         <div className="flex shrink-0 items-center gap-2.5 px-[18px] pt-4 pb-2.5">
-          <div className="flex flex-1 items-center gap-2 rounded-md border border-[#dceae8] bg-[#eef5f4] px-3 py-2 focus-within:border-[#4f9c99] focus-within:ring-2 focus-within:ring-[#4f9c99]/15">
-            <Search size={16} className="shrink-0 text-[#7e918f]" />
+          <div className="flex flex-1 items-center gap-2 rounded-md border border-[var(--rule)] bg-[var(--paper-2)] px-3 py-2 focus-within:border-[var(--brand-2)] focus-within:ring-2 focus-within:ring-[var(--brand-2)]/15">
+            <Search size={16} className="shrink-0 text-[var(--ink-3)]" />
             <input
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search Data"
               aria-label="Search this folder by name or phone number"
-              className="min-w-0 flex-1 bg-transparent text-[13.5px] text-[#2b3a39] outline-none placeholder:text-[#7e918f]"
+              className="min-w-0 flex-1 bg-transparent text-[13.5px] text-[var(--ink)] outline-none placeholder:text-[var(--ink-3)]"
             />
           </div>
           <div
-            className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-md border border-[#dceae8] bg-[#eef5f4] text-[#5b6d6b]"
+            className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-md border border-[var(--rule)] bg-[var(--paper-2)] text-[var(--ink-2)]"
             aria-hidden
           >
             <SlidersHorizontal size={17} />
@@ -390,14 +390,14 @@ export function FolderWorkspace({ folderId }: { folderId: string }) {
                 }}
                 className={`inline-flex flex-1 items-center justify-center gap-2 rounded-full border px-3 py-2 text-[12.5px] transition-colors ${
                   active
-                    ? "border-[#2f7d78] bg-[#2f7d78] text-white"
-                    : "border-[#cfe2e0] bg-white text-[#5b6d6b] hover:border-[#8cc3bf]"
+                    ? "border-[var(--brand)] bg-[var(--brand)] text-white"
+                    : "border-[var(--rule-2)] bg-white text-[var(--ink-2)] hover:border-[var(--brand-edge)]"
                 }`}
               >
                 <span>{label}</span>
                 <span
                   className={`rounded-full px-1.5 text-[11px] tabular-nums ${
-                    active ? "bg-white/20 text-white" : "bg-[#eef5f4] text-[#5b6d6b]"
+                    active ? "bg-white/20 text-white" : "bg-[var(--paper-2)] text-[var(--ink-2)]"
                   }`}
                 >
                   {count.toLocaleString()}
@@ -424,8 +424,8 @@ export function FolderWorkspace({ folderId }: { folderId: string }) {
                   onClick={() => setStatus(key)}
                   className={`relative inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-2 text-[12.5px] transition-colors ${
                     active
-                      ? "border-[#4f9c99] bg-[#4f9c99] text-white"
-                      : "border-[#cfe2e0] bg-white text-[#5b6d6b] hover:border-[#8cc3bf]"
+                      ? "border-[var(--brand-2)] bg-[var(--brand-2)] text-white"
+                      : "border-[var(--rule-2)] bg-white text-[var(--ink-2)] hover:border-[var(--brand-edge)]"
                   }`}
                 >
                   <span>{key === "ALL" ? "All" : RECORD_STATUS_LABELS[key]}</span>
@@ -443,24 +443,24 @@ export function FolderWorkspace({ folderId }: { folderId: string }) {
             <button
               onClick={() => setPickerOpen((open) => !open)}
               aria-expanded={pickerOpen}
-              className="flex w-full items-center gap-2 rounded-md border border-[#dceae8] bg-white px-3 py-2 text-left text-[13px] text-[#2b3a39] transition-colors hover:border-[#8cc3bf]"
+              className="flex w-full items-center gap-2 rounded-md border border-[var(--rule)] bg-white px-3 py-2 text-left text-[13px] text-[var(--ink)] transition-colors hover:border-[var(--brand-edge)]"
             >
-              <UserCheck size={15} className="shrink-0 text-[#4f9c99]" />
-              <span className="text-[#7e918f]">Assigned to</span>
+              <UserCheck size={15} className="shrink-0 text-[var(--brand-2)]" />
+              <span className="text-[var(--ink-3)]">Assigned to</span>
               <span className="min-w-0 flex-1 truncate">
                 {pickedAssignee ? pickedAssignee.name : "Everyone"}
               </span>
-              <span className="rounded-full bg-[#eef5f4] px-1.5 text-[11px] tabular-nums text-[#5b6d6b]">
+              <span className="rounded-full bg-[var(--paper-2)] px-1.5 text-[11px] tabular-nums text-[var(--ink-2)]">
                 {(pickedAssignee?.count ?? assigned.items.length).toLocaleString()}
               </span>
               <ChevronDown
                 size={15}
-                className={`shrink-0 text-[#7e918f] transition-transform ${pickerOpen ? "rotate-180" : ""}`}
+                className={`shrink-0 text-[var(--ink-3)] transition-transform ${pickerOpen ? "rotate-180" : ""}`}
               />
             </button>
             {pickerOpen && (
               <ul
-                className="teal-scrollbar mt-1.5 max-h-[260px] overflow-y-auto rounded-md border border-[#dceae8] bg-white py-1"
+                className="teal-scrollbar mt-1.5 max-h-[260px] overflow-y-auto rounded-md border border-[var(--rule)] bg-white py-1"
                 aria-label="People these records are assigned to"
               >
                 {[{ uid: null as string | null, name: "Everyone", count: assigned.items.length }, ...assignees].map(
@@ -474,14 +474,14 @@ export function FolderWorkspace({ folderId }: { folderId: string }) {
                             setPickerOpen(false);
                           }}
                           className={`flex w-full items-center gap-2.5 px-3 py-2 text-left text-[13px] transition-colors ${
-                            active ? "bg-[#e8f5f3] text-[#1f5c58]" : "text-[#2b3a39] hover:bg-[#f3faf9]"
+                            active ? "bg-[var(--brand-wash)] text-[var(--brand-dk)]" : "text-[var(--ink)] hover:bg-[var(--brand-wash)]"
                           }`}
                         >
                           <span className="flex w-4 shrink-0 justify-center">
-                            {active && <Check size={14} className="text-[#2f7d78]" />}
+                            {active && <Check size={14} className="text-[var(--brand)]" />}
                           </span>
                           <span className="min-w-0 flex-1 truncate">{entry.name}</span>
-                          <span className="rounded-full bg-[#eef5f4] px-2 py-px text-[11.5px] tabular-nums text-[#2f7d78]">
+                          <span className="rounded-full bg-[var(--paper-2)] px-2 py-px text-[11.5px] tabular-nums text-[var(--brand)]">
                             {entry.count.toLocaleString()}
                           </span>
                         </button>
@@ -490,7 +490,7 @@ export function FolderWorkspace({ folderId }: { folderId: string }) {
                   }
                 )}
                 {assignees.length === 0 && (
-                  <li className="px-3 py-2 text-[12.5px] text-[#9aacaa]">Nothing assigned yet.</li>
+                  <li className="px-3 py-2 text-[12.5px] text-[var(--ink-3)]">Nothing assigned yet.</li>
                 )}
               </ul>
             )}
@@ -498,7 +498,7 @@ export function FolderWorkspace({ folderId }: { folderId: string }) {
         )}
 
         {query.trim() && view === "UNASSIGNED" && (
-          <p className="shrink-0 px-[18px] pb-2 text-[12px] text-[#9aacaa]">
+          <p className="shrink-0 px-[18px] pb-2 text-[12px] text-[var(--ink-3)]">
             Searching by {query.replace(/\D/g, "").length >= 7 ? "phone number" : "name (from the start)"}.
           </p>
         )}
@@ -531,7 +531,7 @@ export function FolderWorkspace({ folderId }: { folderId: string }) {
                 {banner.href && (
                   <Link
                     href={banner.href}
-                    className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-[#2f7d78] px-3 py-1.5 text-[12px] text-white transition-colors hover:bg-[#1f5c58]"
+                    className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-[var(--brand)] px-3 py-1.5 text-[12px] text-white transition-colors hover:bg-[var(--brand-dk)]"
                   >
                     <span>Open it in the pipeline</span>
                     <ArrowUpRight size={13} />
@@ -596,9 +596,9 @@ export function FolderWorkspace({ folderId }: { folderId: string }) {
           {view === "ASSIGNED" ? (
             <>
               {assigned.loading ? (
-                <p className="px-3 py-10 text-center text-[13px] text-[#8fa2a0]">Loading…</p>
+                <p className="px-3 py-10 text-center text-[13px] text-[var(--ink-3)]">Loading…</p>
               ) : assignedVisible.length === 0 ? (
-                <p className="px-3 py-10 text-center text-[13px] text-[#8fa2a0]">
+                <p className="px-3 py-10 text-center text-[13px] text-[var(--ink-3)]">
                   {query.trim()
                     ? `Nothing assigned matches “${query.trim()}”.`
                     : assigned.items.length === 0
@@ -623,17 +623,17 @@ export function FolderWorkspace({ folderId }: { folderId: string }) {
                           return next;
                         })
                       }
-                      className="h-4 w-4 shrink-0 accent-[#2f7d78]"
+                      className="h-4 w-4 shrink-0 accent-[var(--brand)]"
                     />
                     <AssignedLeadRow
                       name={item.name}
                       phone={item.phone}
                       kindLabel={item.kind === "LEAD" ? "Lead" : "In their Data Bank"}
-                      ringColor={item.kind === "LEAD" ? "#2f7d78" : "#4d7590"}
+                      ringColor={item.kind === "LEAD" ? "var(--brand)" : "var(--brand-2)"}
                       chip={
                         item.kind === "LEAD"
-                          ? { text: item.assigneeName || "Unassigned", background: "#e8f5f3", color: "#2f7d78", title: `Assigned to ${item.assigneeName}` }
-                          : { text: item.assigneeName || "Unassigned", background: "#eaf1f6", color: "#4d7590", title: `Assigned to ${item.assigneeName}` }
+                          ? { text: item.assigneeName || "Unassigned", background: "var(--brand-wash)", color: "var(--brand)", title: `Assigned to ${item.assigneeName}` }
+                          : { text: item.assigneeName || "Unassigned", background: "var(--brand-wash)", color: "var(--brand-2)", title: `Assigned to ${item.assigneeName}` }
                       }
                       active={active}
                       seen={seen}
@@ -652,9 +652,9 @@ export function FolderWorkspace({ folderId }: { folderId: string }) {
               </div>
             </>
           ) : page.loading ? (
-            <p className="px-3 py-10 text-center text-[13px] text-[#8fa2a0]">Loading…</p>
+            <p className="px-3 py-10 text-center text-[13px] text-[var(--ink-3)]">Loading…</p>
           ) : page.records.length === 0 ? (
-            <p className="px-3 py-10 text-center text-[13px] text-[#8fa2a0]">
+            <p className="px-3 py-10 text-center text-[13px] text-[var(--ink-3)]">
               {query.trim() ? `Nothing matches “${query.trim()}”.` : "No records in this filter."}
             </p>
           ) : (
@@ -680,7 +680,7 @@ export function FolderWorkspace({ folderId }: { folderId: string }) {
                         return next;
                       })
                     }
-                    className="h-4 w-4 shrink-0 accent-[#2f7d78]"
+                    className="h-4 w-4 shrink-0 accent-[var(--brand)]"
                   />
                 <button
                   onClick={() => {
@@ -695,10 +695,10 @@ export function FolderWorkspace({ folderId }: { folderId: string }) {
                     background: shade.background,
                     borderColor: shade.border,
                   }}
-                  className="animate-lead-row grid w-full min-w-0 flex-1 grid-cols-[44px_1fr_auto] items-center gap-3 rounded-lg border px-3.5 py-3 text-left transition-colors hover:border-[#8cc3bf]"
+                  className="animate-lead-row grid w-full min-w-0 flex-1 grid-cols-[44px_1fr_auto] items-center gap-3 rounded-lg border px-3.5 py-3 text-left transition-colors hover:border-[var(--brand-edge)]"
                 >
                   <span
-                    className="flex h-11 w-11 items-center justify-center rounded-full border-2 bg-white text-[13.5px] font-medium text-[#4a5c5a]"
+                    className="flex h-11 w-11 items-center justify-center rounded-full border-2 bg-white text-[13.5px] font-medium text-[var(--ink-2)]"
                     style={{ borderColor: tone.dot }}
                     aria-hidden
                   >
@@ -713,20 +713,20 @@ export function FolderWorkspace({ folderId }: { folderId: string }) {
                       {!seen && !active && (
                         <span
                           className="h-[7px] w-[7px] shrink-0 rounded-full"
-                          style={{ background: "#3f8f8a" }}
+                          style={{ background: "var(--brand)" }}
                           aria-hidden
                         />
                       )}
-                      <span className="truncate text-sm font-medium text-[#2b3a39]">{record.name}</span>
+                      <span className="truncate text-sm font-medium text-[var(--ink)]">{record.name}</span>
                       {!seen && !active && <span className="sr-only">(not opened yet)</span>}
                     </span>
-                    <span className="mt-0.5 block truncate text-[11.5px] tabular-nums text-[#7e918f]">
+                    <span className="mt-0.5 block truncate text-[11.5px] tabular-nums text-[var(--ink-3)]">
                       {record.phone || "No number"}
                     </span>
                   </span>
 
                   <span className="flex flex-col items-end gap-1.5">
-                    <span className="text-right text-[11.5px] leading-tight text-[#5b6d6b]">
+                    <span className="text-right text-[11.5px] leading-tight text-[var(--ink-2)]">
                       {record.createdAt ? formatBusinessDateTime(record.createdAt) : "—"}
                     </span>
                     <span
@@ -1025,7 +1025,7 @@ function RecordPane({
 
   return (
     <div className="animate-lead-pane flex h-full min-h-0 flex-col">
-      <div className="flex shrink-0 items-center gap-3.5 bg-[#4f9c99] px-5 py-4 text-white">
+      <div className="flex shrink-0 items-center gap-3.5 bg-[var(--brand-2)] px-5 py-4 text-white">
         <button
           onClick={onBack}
           aria-label="Back to the list"
@@ -1077,14 +1077,14 @@ function RecordPane({
         </div>
       </div>
 
-      <div className="teal-scrollbar min-h-0 flex-1 space-y-4 overflow-y-auto bg-[#f3faf9] px-5 py-5 sm:px-6">
+      <div className="teal-scrollbar min-h-0 flex-1 space-y-4 overflow-y-auto bg-[var(--brand-wash)] px-5 py-5 sm:px-6">
         {error && <Banner tone="error" text={error} />}
 
         {/*
           The facts strip the leads detail pane opens with, carrying what is
           true of every record whatever columns its source has.
         */}
-        <div className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-[#e0eeec] bg-[#e0eeec] sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-[var(--rule)] bg-[var(--rule)] sm:grid-cols-4">
           <Fact label="Status" value={RECORD_STATUS_LABELS[record.status]} />
           <Fact label="Source" value={folder.code || folder.name} />
           <Fact label="Added" value={record.createdAt ? formatBusinessDate(record.createdAt) : "—"} />
@@ -1099,20 +1099,20 @@ function RecordPane({
           than a line takes the full width back, so an address is never
           squeezed into half a pane.
         */}
-        <div className="overflow-hidden rounded-xl border border-[#e0eeec] bg-white">
-          <div className="flex items-center justify-between gap-3 border-b border-[#f0f6f5] px-5 py-3">
-            <span className="text-[11px] tracking-[0.9px] text-[#9aacaa] uppercase">
+        <div className="overflow-hidden rounded-xl border border-[var(--rule)] bg-white">
+          <div className="flex items-center justify-between gap-3 border-b border-[var(--paper-2)] px-5 py-3">
+            <span className="text-[11px] tracking-[0.9px] text-[var(--ink-3)] uppercase">
               {folder.name} record
             </span>
             <button
               onClick={onEdit}
-              className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] text-[#2f7d78] transition-colors hover:bg-[#eef7f6]"
+              className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] text-[var(--brand)] transition-colors hover:bg-[var(--brand-wash)]"
             >
               <Pencil size={12} />
               <span>Edit</span>
             </button>
           </div>
-          <dl className="grid grid-cols-1 gap-px bg-[#f0f6f5] sm:grid-cols-2">
+          <dl className="grid grid-cols-1 gap-px bg-[var(--paper-2)] sm:grid-cols-2">
             {folder.fields.map((field) => {
               const value = record.values[field.key]?.trim() ?? "";
               // The two role fields are what makes the row dialable and
@@ -1123,20 +1123,20 @@ function RecordPane({
                   key={field.key}
                   className={`bg-white px-5 py-3 ${value.length > 46 ? "sm:col-span-2" : ""}`}
                 >
-                  <dt className="flex items-center gap-1.5 text-[11.5px] tracking-[0.3px] text-[#9aacaa]">
+                  <dt className="flex items-center gap-1.5 text-[11.5px] tracking-[0.3px] text-[var(--ink-3)]">
                     <span>{field.label}</span>
                     {isRole && (
-                      <span className="rounded bg-[#eef7f6] px-1.5 py-px text-[10px] text-[#2f7d78]">
+                      <span className="rounded bg-[var(--brand-wash)] px-1.5 py-px text-[10px] text-[var(--brand)]">
                         {field.key === folder.roles.name ? "name" : "phone"}
                       </span>
                     )}
                   </dt>
                   <dd
-                    className={`mt-1 min-w-0 text-[13.5px] break-words text-[#2b3a39] ${
+                    className={`mt-1 min-w-0 text-[13.5px] break-words text-[var(--ink)] ${
                       field.key === folder.roles.phone ? "tabular-nums" : ""
                     }`}
                   >
-                    {value || <span className="text-[#c3d5d3]">—</span>}
+                    {value || <span className="text-[var(--rule-2)]">—</span>}
                   </dd>
                 </div>
               );
@@ -1144,8 +1144,8 @@ function RecordPane({
           </dl>
         </div>
 
-        <div className="rounded-xl border border-[#e0eeec] bg-white px-5 py-4">
-          <div className="text-[11px] tracking-[0.9px] text-[#9aacaa] uppercase">Call status</div>
+        <div className="rounded-xl border border-[var(--rule)] bg-white px-5 py-4">
+          <div className="text-[11px] tracking-[0.9px] text-[var(--ink-3)] uppercase">Call status</div>
           <div className="mt-2.5 flex flex-wrap gap-2">
             {RECORD_STATUSES.map((key) => {
               const active = record.status === key;
@@ -1156,8 +1156,8 @@ function RecordPane({
                   disabled={busy || active}
                   className={`rounded-full border px-4 py-2 text-[13px] transition-colors ${
                     active
-                      ? "border-[#3f8f8a] bg-[#3f8f8a] text-white"
-                      : "border-[#dceae8] bg-white text-[#5b6d6b] hover:border-[#8cc3bf] disabled:opacity-50"
+                      ? "border-[var(--brand)] bg-[var(--brand)] text-white"
+                      : "border-[var(--rule)] bg-white text-[var(--ink-2)] hover:border-[var(--brand-edge)] disabled:opacity-50"
                   }`}
                 >
                   {RECORD_STATUS_LABELS[key]}
@@ -1167,20 +1167,20 @@ function RecordPane({
           </div>
 
           <label className="mt-4 block">
-            <span className="text-[11px] tracking-[0.9px] text-[#9aacaa] uppercase">Note</span>
+            <span className="text-[11px] tracking-[0.9px] text-[var(--ink-3)] uppercase">Note</span>
             <textarea
               rows={2}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="What happened on the call"
-              className="mt-1.5 w-full resize-y rounded-md border border-[#dceae8] bg-[#f7fbfa] px-3 py-2.5 text-[13.5px] text-[#2b3a39] outline-none focus:border-[#4f9c99] focus:bg-white"
+              className="mt-1.5 w-full resize-y rounded-md border border-[var(--rule)] bg-[var(--brand-wash)] px-3 py-2.5 text-[13.5px] text-[var(--ink)] outline-none focus:border-[var(--brand-2)] focus:bg-white"
             />
           </label>
           {notes !== (record.notes ?? "") && (
             <button
               onClick={() => void saveNotes()}
               disabled={busy}
-              className="mt-2 rounded-full bg-[#3f8f8a] px-5 py-2 text-[13px] text-white transition-colors hover:bg-[#2f7d78] disabled:opacity-50"
+              className="mt-2 rounded-full bg-[var(--brand)] px-5 py-2 text-[13px] text-white transition-colors hover:bg-[var(--brand)] disabled:opacity-50"
             >
               Save note
             </button>
@@ -1188,12 +1188,12 @@ function RecordPane({
         </div>
 
         {/* Promotion — the point of the whole Data Bank. */}
-        <div className="rounded-xl border border-[#bfe0dc] bg-[#e8f5f3] px-5 py-4">
-          <div className="flex items-center gap-2 text-[14.5px] text-[#1f5c58]">
+        <div className="rounded-xl border border-[var(--brand-edge)] bg-[var(--brand-wash)] px-5 py-4">
+          <div className="flex items-center gap-2 text-[14.5px] text-[var(--brand-dk)]">
             <ArrowUpRight size={17} />
             <span>Hand this record on</span>
           </div>
-          <p className="mt-1 text-[12.5px] text-[#3c4d4b]">
+          <p className="mt-1 text-[12.5px] text-[var(--ink-2)]">
             Either way it moves to this folder&rsquo;s <strong className="font-medium">Assigned</strong> list,
             under that person&rsquo;s name, and every field above travels with it.
           </p>
@@ -1202,7 +1202,7 @@ function RecordPane({
               value={assignee}
               onChange={(e) => setAssignee(e.target.value)}
               aria-label="Assign this lead to"
-              className="min-w-[200px] flex-1 rounded-md border border-[#bfe0dc] bg-white px-3 py-2.5 text-[13.5px] text-[#2b3a39] outline-none focus:border-[#4f9c99]"
+              className="min-w-[200px] flex-1 rounded-md border border-[var(--brand-edge)] bg-white px-3 py-2.5 text-[13.5px] text-[var(--ink)] outline-none focus:border-[var(--brand-2)]"
             >
               <option value="">Choose who this goes to…</option>
               {groupAssignOptions(assignOptions).map((section) => (
@@ -1218,17 +1218,17 @@ function RecordPane({
             <button
               onClick={() => void promote()}
               disabled={busy || !assignee}
-              className="rounded-full bg-[#2f7d78] px-6 py-2.5 text-[13.5px] text-white transition-colors hover:bg-[#1f5c58] disabled:opacity-50"
+              className="rounded-full bg-[var(--brand)] px-6 py-2.5 text-[13.5px] text-white transition-colors hover:bg-[var(--brand-dk)] disabled:opacity-50"
             >
               {busy ? "Working…" : handoff ? "Hand to manager" : "Promote to lead"}
             </button>
           </div>
           {assignOptions.length === 0 && (
-            <p className="mt-2 text-[12.5px] text-[#a5762a]">
+            <p className="mt-2 text-[12.5px] text-[var(--warn)]">
               Nobody to assign to — resume someone in the Employee Directory first.
             </p>
           )}
-          <p className="mt-2 text-[12px] text-[#3c4d4b]">
+          <p className="mt-2 text-[12px] text-[var(--ink-2)]">
             An <strong className="font-medium">employee</strong> gets a lead in their pipeline.{" "}
             <strong className="font-medium">You</strong> get a lead in your Client section. A{" "}
             <strong className="font-medium">manager</strong> gets the record in their own Data
@@ -1239,7 +1239,7 @@ function RecordPane({
         <button
           onClick={() => void remove()}
           disabled={busy}
-          className="inline-flex items-center gap-2 rounded-full border border-[#f0c4bd] bg-white px-5 py-2.5 text-[13px] text-[#c0574a] transition-colors hover:bg-[#fdeeec] disabled:opacity-50"
+          className="inline-flex items-center gap-2 rounded-full border border-[var(--bad-edge)] bg-white px-5 py-2.5 text-[13px] text-[var(--bad)] transition-colors hover:bg-[var(--bad-wash)] disabled:opacity-50"
         >
           <Trash2 size={14} />
           <span>Remove from this folder</span>
@@ -1253,8 +1253,8 @@ function RecordPane({
 function Fact({ label, value }: { label: string; value: string }) {
   return (
     <div className="bg-white px-4 py-3">
-      <div className="text-[11px] tracking-[0.9px] text-[#9aacaa] uppercase">{label}</div>
-      <div className="mt-1 truncate text-[13.5px] text-[#2b3a39]" title={value}>
+      <div className="text-[11px] tracking-[0.9px] text-[var(--ink-3)] uppercase">{label}</div>
+      <div className="mt-1 truncate text-[13.5px] text-[var(--ink)]" title={value}>
         {value}
       </div>
     </div>

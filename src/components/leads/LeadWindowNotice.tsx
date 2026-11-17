@@ -25,10 +25,10 @@ export function LeadWindowNotice({ subject = "Some figures" }: { subject?: strin
   return (
     <div
       className="mb-4 flex items-start gap-2.5 rounded-xl border px-3.5 py-3 text-[12.5px]"
-      style={{ borderColor: "#e3d3ab", background: "#fdf8ec", color: "#8a6321" }}
+      style={{ borderColor: "var(--accent-edge)", background: "var(--warn-wash)", color: "var(--accent-ink)" }}
       role="status"
     >
-      <AlertTriangle size={15} className="mt-px shrink-0" style={{ color: "#a8823a" }} />
+      <AlertTriangle size={15} className="mt-px shrink-0" style={{ color: "var(--warn)" }} />
       <span>
         <strong className="font-semibold">The pipeline is larger than this screen loads.</strong>{" "}
         {subject} may be short, because only the newest leads are held in memory and the

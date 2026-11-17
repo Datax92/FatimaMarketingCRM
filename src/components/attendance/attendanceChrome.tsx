@@ -70,13 +70,13 @@ export interface StatusTone {
  * there.
  */
 export const ATTENDANCE_TONES: Record<AttendanceStatus, StatusTone> = {
-  PRESENT: { soft: "#eaf6f4", border: "#cbe6e2", text: "#2f7d78", solid: "#2f7d78", onSolid: "#fff", letter: "P", chip: "#e8f5f3" },
-  LATE: { soft: "#fdf4e6", border: "#f0e2c6", text: "#8a6321", solid: "#8a6321", onSolid: "#fff", letter: "L", chip: "#fdf5e6" },
-  ABSENT: { soft: "#fdeeec", border: "#f5d9d5", text: "#a8483c", solid: "#a8483c", onSolid: "#fff", letter: "A", chip: "#fdeeec" },
-  LEAVE: { soft: "#fbf8e4", border: "#eee6c2", text: "#8a7a21", solid: "#8a7a21", onSolid: "#fff", letter: "V", chip: "#fbf8e4" },
-  OFF: { soft: "#f2f6f6", border: "#e2eae9", text: "#8fa2a0", solid: "#c3d2d0", onSolid: "#25403e", letter: "—", chip: "#f2f6f6" },
-  // The design's empty day: #fbfdfd ground, #eef4f3 border, the number in #b6cbc9.
-  UNRECORDED: { soft: "#fbfdfd", border: "#eef4f3", text: "#b6cbc9", solid: "#e6eeed", onSolid: "#5b6d6b", letter: "·", chip: "#fbfdfd" },
+  PRESENT: { soft: "var(--brand-wash)", border: "var(--brand-edge)", text: "var(--brand)", solid: "var(--brand)", onSolid: "#fff", letter: "P", chip: "var(--brand-wash)" },
+  LATE: { soft: "var(--warn-wash)", border: "var(--accent-edge)", text: "var(--accent-ink)", solid: "var(--accent-ink)", onSolid: "#fff", letter: "L", chip: "var(--warn-wash)" },
+  ABSENT: { soft: "var(--bad-wash)", border: "var(--bad-edge)", text: "var(--bad)", solid: "var(--bad)", onSolid: "#fff", letter: "A", chip: "var(--bad-wash)" },
+  LEAVE: { soft: "var(--warn-wash)", border: "var(--accent-edge)", text: "var(--warn)", solid: "var(--warn)", onSolid: "#fff", letter: "V", chip: "var(--warn-wash)" },
+  OFF: { soft: "var(--paper-2)", border: "var(--rule)", text: "var(--ink-3)", solid: "var(--rule-2)", onSolid: "var(--brand-dk)", letter: "—", chip: "var(--paper-2)" },
+  // The design's empty day: var(--card) ground, var(--paper-2) border, the number in var(--rule-2).
+  UNRECORDED: { soft: "var(--card)", border: "var(--paper-2)", text: "var(--rule-2)", solid: "var(--rule)", onSolid: "var(--ink-2)", letter: "·", chip: "var(--card)" },
 };
 
 /** The four §3 names, in the order a legend should read them. */
@@ -222,25 +222,25 @@ const MARKED = new Set<AttendanceStatus>(LEGEND_STATUSES);
 
 /** The design's own greys for the frame, the empty day and the today mark. */
 const CAL = {
-  frame: "#e2ecea",
-  hair: "#eef4f3",
-  ink: "#141f1e",
-  eyebrow: "#6c7d7b",
-  muted: "#5b6d6b",
-  dow: "#8fa2a0",
-  emptyNumber: "#b6cbc9",
-  emptyGround: "#fbfdfd",
-  today: "#3f8f8a",
-  teal: "#2f7d78",
-  tile: "#e4f0ef",
-  toggle: "#f0f6f5",
+  frame: "var(--rule)",
+  hair: "var(--paper-2)",
+  ink: "var(--ink)",
+  eyebrow: "var(--ink-2)",
+  muted: "var(--ink-2)",
+  dow: "var(--ink-3)",
+  emptyNumber: "var(--rule-2)",
+  emptyGround: "var(--card)",
+  today: "var(--brand)",
+  teal: "var(--brand)",
+  tile: "var(--rule)",
+  toggle: "var(--paper-2)",
   activeShadow: "0 1px 3px rgba(31,92,88,0.14)",
 } as const;
 
 const CALENDAR_CSS = `
 .att-cell { transition: transform 200ms cubic-bezier(0.22,0.61,0.36,1), box-shadow 200ms ease; }
 .att-cell:hover { transform: translateY(-1px); }
-.att-cell:focus-visible { outline: 2px solid #2f7d78; outline-offset: 2px; }
+.att-cell:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 @keyframes att-cell-in { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: none; } }
 .att-cell-in { animation: att-cell-in 260ms cubic-bezier(0.22,0.61,0.36,1) both; }
 @media (prefers-reduced-motion: reduce) {
@@ -481,9 +481,9 @@ const SCOPES: { key: CalendarScope; label: string; d: string }[] = [
 ];
 
 const PANEL_CSS = `
-.att-step:hover:not(:disabled) { background: #f4f8f7 !important; color: #2f7d78 !important; }
-.att-step:focus-visible, .att-scope:focus-visible { outline: 2px solid #2f7d78; outline-offset: 2px; }
-.att-select:focus-visible { border-color: #3f8f8a !important; box-shadow: 0 0 0 3px #d6ebe8; }
+.att-step:hover:not(:disabled) { background: var(--paper-2) !important; color: var(--brand) !important; }
+.att-step:focus-visible, .att-scope:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.att-select:focus-visible { border-color: var(--brand) !important; box-shadow: 0 0 0 3px var(--brand-edge); }
 `;
 
 /**
@@ -733,8 +733,8 @@ export function CalendarPersonPicker({
           width: 32,
           height: 32,
           borderRadius: "50%",
-          background: "#f2f8f7",
-          border: "1.5px solid #b6d9d5",
+          background: "var(--brand-wash)",
+          border: "1.5px solid var(--brand-edge)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",

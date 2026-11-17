@@ -397,7 +397,7 @@ export function MobileEmployees({
             margin: "14px 18px 0",
             padding: 3,
             borderRadius: 999,
-            background: "#dceae8",
+            background: "var(--rule)",
             flexShrink: 0,
           }}
         >
@@ -468,7 +468,7 @@ export function MobileEmployees({
                 fontWeight: 700,
                 cursor: "pointer",
                 fontFamily: "inherit",
-                border: `1px solid ${active ? E.teal : "#dceae8"}`,
+                border: `1px solid ${active ? E.teal : "var(--rule)"}`,
                 background: active ? E.teal : "#fff",
                 color: active ? "#fff" : E.muted,
                 WebkitTapHighlightColor: "transparent",
@@ -503,7 +503,7 @@ export function MobileEmployees({
             padding: "13px 16px",
             borderRadius: 16,
             border: `1px dashed ${E.teal}`,
-            background: "#e8f5f3",
+            background: "var(--brand-wash)",
             color: E.tealInk,
             fontSize: 13.5,
             fontWeight: 700,
@@ -690,8 +690,8 @@ function ManagerCard({
       }
       style={{
         animationDelay: `${Math.min(index, 8) * 42}ms`,
-        background: "#fbfdfd",
-        border: "1px solid #dceae8",
+        background: "var(--card)",
+        border: "1px solid var(--rule)",
         borderRadius: 18,
         padding: "14px 15px",
         cursor: onOpen ? "pointer" : "default",
@@ -707,7 +707,7 @@ function ManagerCard({
             width: 42,
             height: 42,
             borderRadius: 13,
-            background: "#e8f5f3",
+            background: "var(--brand-wash)",
             color: E.tealInk,
             fontSize: 14,
             fontWeight: 800,
@@ -730,7 +730,7 @@ function ManagerCard({
           >
             {manager.name}
             {manager.status === "DISABLED" && (
-              <span style={{ marginLeft: 7, fontSize: 10, fontWeight: 800, color: "#a5762a" }}>INACTIVE</span>
+              <span style={{ marginLeft: 7, fontSize: 10, fontWeight: 800, color: "var(--warn)" }}>INACTIVE</span>
             )}
           </div>
           <div
@@ -758,8 +758,8 @@ function ManagerCard({
               fontSize: 9.5,
               fontWeight: 800,
               letterSpacing: "0.7px",
-              border: `1px solid ${manager.managerKind === "HR" ? "#c9dedb" : "#dceae8"}`,
-              background: manager.managerKind === "HR" ? "#e2f0ee" : "#fff",
+              border: `1px solid ${manager.managerKind === "HR" ? "var(--rule-2)" : "var(--rule)"}`,
+              background: manager.managerKind === "HR" ? "var(--brand-wash)" : "#fff",
               color: manager.managerKind === "HR" ? E.teal : E.label,
             }}
           >
@@ -780,7 +780,7 @@ function ManagerCard({
           style={{
             flexShrink: 0,
             borderRadius: 999,
-            border: "1px solid #dceae8",
+            border: "1px solid var(--rule)",
             background: "#fff",
             color: E.tealInk,
             padding: "7px 13px",
@@ -803,7 +803,7 @@ function ManagerCard({
           gap: 8,
           marginTop: 13,
           paddingTop: 12,
-          borderTop: "1px solid #eef4f3",
+          borderTop: "1px solid var(--paper-2)",
         }}
       >
         <ManagerFigure label="Team" value={String(manager.headcount)} />
@@ -930,7 +930,7 @@ function RosterCard({
             {employee.name}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4, minWidth: 0 }}>
-            <span style={{ fontSize: 12, fontWeight: 700, flexShrink: 0, color: active ? E.teal : "#93a5a3" }}>
+            <span style={{ fontSize: 12, fontWeight: 700, flexShrink: 0, color: active ? E.teal : "var(--ink-3)" }}>
               {active ? "Active" : "Inactive"}
             </span>
             <span style={{ fontSize: 12, color: E.hair, flexShrink: 0 }}>·</span>
@@ -967,7 +967,7 @@ function RosterCard({
           gap: 10,
           marginTop: 14,
           paddingTop: 13,
-          borderTop: "1px solid #f0f6f5",
+          borderTop: "1px solid var(--paper-2)",
         }}
       >
         {[
@@ -1381,7 +1381,7 @@ export function ProfileOverlay({
           margin: "14px 18px 0",
           padding: 4,
           borderRadius: 999,
-          background: "#dceae8",
+          background: "var(--rule)",
         }}
       >
         {(isManager ? MANAGER_PROFILE_TABS : PROFILE_TABS).map((option) => {
@@ -1405,7 +1405,7 @@ export function ProfileOverlay({
                 cursor: "pointer",
                 whiteSpace: "nowrap",
                 fontFamily: "inherit",
-                color: active ? E.tealInk : "#6c7d7b",
+                color: active ? E.tealInk : "var(--ink-2)",
                 background: active ? "#fff" : "transparent",
                 WebkitTapHighlightColor: "transparent",
                 transition: "background-color 160ms ease, color 160ms ease",
@@ -1554,8 +1554,8 @@ function MobileTeamRoster({
             gap: 11,
             width: "100%",
             textAlign: "left",
-            background: "#fbfdfd",
-            border: "1px solid #dceae8",
+            background: "var(--card)",
+            border: "1px solid var(--rule)",
             borderRadius: 16,
             padding: "12px 13px",
             cursor: onOpen ? "pointer" : "default",
@@ -1572,7 +1572,7 @@ function MobileTeamRoster({
               width: 38,
               height: 38,
               borderRadius: 12,
-              background: "#e8f5f3",
+              background: "var(--brand-wash)",
               color: E.tealInk,
               fontSize: 13,
               fontWeight: 800,
@@ -1595,7 +1595,7 @@ function MobileTeamRoster({
             >
               {member.name}
               {member.status === "DISABLED" && (
-                <span style={{ marginLeft: 6, fontSize: 10, fontWeight: 800, color: "#a4682a" }}>
+                <span style={{ marginLeft: 6, fontSize: 10, fontWeight: 800, color: "var(--warn)" }}>
                   INACTIVE
                 </span>
               )}
@@ -1725,7 +1725,7 @@ function MobileAssignedLeads({
                   justifyContent: "center",
                   fontSize: 12.5,
                   fontWeight: 700,
-                  color: "#4a5c5a",
+                  color: "var(--ink-2)",
                   flexShrink: 0,
                 }}
                 aria-hidden
@@ -1777,7 +1777,7 @@ function MobileAssignedLeads({
                 color: E.faint,
                 marginTop: 11,
                 paddingTop: 10,
-                borderTop: "1px solid #f0f6f5",
+                borderTop: "1px solid var(--paper-2)",
               }}
             >
               {lead.campaignName ? `${source} · ${lead.campaignName}` : source}
@@ -1859,7 +1859,7 @@ function MobileDeals({ deals, empty }: { deals: DealRecord[]; empty: boolean }) 
               gap: 10,
               marginTop: 12,
               paddingTop: 11,
-              borderTop: "1px solid #f0f6f5",
+              borderTop: "1px solid var(--paper-2)",
             }}
           >
             <div>
@@ -1879,7 +1879,7 @@ function MobileDeals({ deals, empty }: { deals: DealRecord[]; empty: boolean }) 
               </div>
             </div>
             <div style={{ padding: "8px 12px", borderRadius: 14, background: E.tint }}>
-              <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: "0.9px", textTransform: "uppercase", color: "#7fb0ab" }}>
+              <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: "0.9px", textTransform: "uppercase", color: "var(--ink-3)" }}>
                 Profit
               </div>
               <div
@@ -2335,9 +2335,9 @@ function MobileNotice({
         alignItems: "flex-start",
         justifyContent: "space-between",
         gap: 10,
-        border: `1px solid ${error ? "#f0c4bd" : "#bfe0dc"}`,
+        border: `1px solid ${error ? "var(--bad-edge)" : "var(--brand-edge)"}`,
         background: error ? E.redBg : E.tealTint,
-        color: error ? "#a33a29" : E.deep,
+        color: error ? "var(--bad)" : E.deep,
         borderRadius: 14,
         padding: "11px 13px",
         fontSize: 12.5,

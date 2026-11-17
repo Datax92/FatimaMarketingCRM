@@ -25,24 +25,24 @@ import { Download } from "lucide-react";
 /* -------------------------------------------------------------------------- */
 
 export const X = {
-  ink: "#141f1e",
-  body: "#3c4d4b",
-  muted: "#5b6d6b",
-  faint: "#6c7d7b",
-  line: "#e2ecea",
-  hair: "#f2f7f6",
-  rowLine: "#f2f7f6",
-  panelLine: "#eef4f3",
-  well: "#f7fbfa",
-  tint: "#f2f8f7",
-  track: "#dceae8",
-  teal: "#3f8f8a",
-  deep: "#2f7d78",
-  darkest: "#1f5c58",
-  gradient: "linear-gradient(115deg,#1f5c58 0%,#3f8f8a 66%,#4fa39c 100%)",
+  ink: "var(--ink)",
+  body: "var(--ink-2)",
+  muted: "var(--ink-2)",
+  faint: "var(--ink-2)",
+  line: "var(--rule)",
+  hair: "var(--paper-2)",
+  rowLine: "var(--paper-2)",
+  panelLine: "var(--paper-2)",
+  well: "var(--brand-wash)",
+  tint: "var(--brand-wash)",
+  track: "var(--rule)",
+  teal: "var(--brand)",
+  deep: "var(--brand)",
+  darkest: "var(--brand-dk)",
+  gradient: "linear-gradient(115deg,var(--brand-dk) 0%,var(--brand) 66%,var(--brand-2) 100%)",
 } as const;
 
-/** The design's own field: a `#f7fbfa` well with a 10px radius. */
+/** The design's own field: a `var(--brand-wash)` well with a 10px radius. */
 export const designField: CSSProperties = {
   width: "100%",
   border: `1px solid ${X.line}`,
@@ -50,7 +50,7 @@ export const designField: CSSProperties = {
   borderRadius: 10,
   padding: "10px 12px",
   fontWeight: 600,
-  color: "#22302f",
+  color: "var(--ink)",
   outline: "none",
   fontFamily: "inherit",
 };
@@ -79,10 +79,10 @@ export interface Tone {
  * invoice do not arrive in two different blues.
  */
 const CAT_META: Record<string, Tone & { d: string }> = {
-  salaries: { color: "#2f7d78", tint: "#e8f5f3", d: "M12 11a3.4 3.4 0 1 0 0-6.8 3.4 3.4 0 0 0 0 6.8ZM5 20c0-3.3 3.1-5.2 7-5.2s7 1.9 7 5.2" },
-  marketing: { color: "#3f7ea3", tint: "#eef6fb", d: "M4 16l5-5 4 3 7-8M15 6h6v6" },
-  utilities: { color: "#a5762a", tint: "#fdf5e6", d: "M13 3 5 14h6l-1 7 8-11h-6z" },
-  office: { color: "#6b6ea8", tint: "#eeeff8", d: "M3 21h18M5 21V7l7-4 7 4v14M9 11h2M13 11h2M9 15h2M13 15h2" },
+  salaries: { color: "var(--brand)", tint: "var(--brand-wash)", d: "M12 11a3.4 3.4 0 1 0 0-6.8 3.4 3.4 0 0 0 0 6.8ZM5 20c0-3.3 3.1-5.2 7-5.2s7 1.9 7 5.2" },
+  marketing: { color: "var(--brand-2)", tint: "var(--brand-wash)", d: "M4 16l5-5 4 3 7-8M15 6h6v6" },
+  utilities: { color: "var(--warn)", tint: "var(--warn-wash)", d: "M13 3 5 14h6l-1 7 8-11h-6z" },
+  office: { color: "#6b6ea8", tint: "var(--brand-wash)", d: "M3 21h18M5 21V7l7-4 7 4v14M9 11h2M13 11h2M9 15h2M13 15h2" },
 };
 
 /** Every other category this app offers, pointed at one of the four above. */
@@ -104,10 +104,10 @@ export function catMeta(category: string): Tone & { d: string } {
 
 /** The status palette. Three tones, and every other status maps onto one. */
 export const TONE = {
-  good: { color: "#2f7d78", tint: "#e8f5f3" },
-  warn: { color: "#a5762a", tint: "#fdf5e6" },
-  bad: { color: "#a8483c", tint: "#fdeeec" },
-  quiet: { color: "#6c7d7b", tint: "#f2f7f6" },
+  good: { color: "var(--brand)", tint: "var(--brand-wash)" },
+  warn: { color: "var(--warn)", tint: "var(--warn-wash)" },
+  bad: { color: "var(--bad)", tint: "var(--bad-wash)" },
+  quiet: { color: "var(--ink-2)", tint: "var(--paper-2)" },
 } as const satisfies Record<string, Tone>;
 
 /**
@@ -354,7 +354,7 @@ export function StatCards({ cards, isMobile }: { cards: StatCard[]; isMobile: bo
               </div>
             </div>
             <div style={{ fontSize: isMobile ? 21 : 25, fontWeight: 800, letterSpacing: "-0.9px", marginTop: 9, color: c.color, fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{c.value}</div>
-            <div style={{ height: 5, borderRadius: 999, background: "#eef4f3", marginTop: 11, overflow: "hidden" }}>
+            <div style={{ height: 5, borderRadius: 999, background: "var(--paper-2)", marginTop: 11, overflow: "hidden" }}>
               <div style={{ height: "100%", borderRadius: 999, width: `${Math.max(3, Math.min(100, c.pct))}%`, background: c.accent }} />
             </div>
             <div style={{ fontSize: 11.5, fontWeight: 500, color: X.faint, marginTop: 7 }}>{c.note}</div>
@@ -369,7 +369,7 @@ export function StatCards({ cards, isMobile }: { cards: StatCard[]; isMobile: bo
 /* Tabs                                                                        */
 /* -------------------------------------------------------------------------- */
 
-/** A segmented control on one `#dceae8` track, with the active pill in white. */
+/** A segmented control on one `var(--rule)` track, with the active pill in white. */
 export function Segmented<T extends string>({ tabs, value, onChange, isMobile }: {
   tabs: ReadonlyArray<{ key: T; label: string; d: string }>;
   value: T; onChange: (next: T) => void; isMobile: boolean;
@@ -466,7 +466,7 @@ export function FilterPanel({
           <span style={{ display: "flex", alignItems: "center", gap: 9, border: `1px solid ${X.line}`, background: X.well, borderRadius: 10, padding: "10px 13px" }}>
             <SearchIcon />
             <input value={search} onChange={(event) => onSearch(event.target.value)} placeholder="Title, payee or note"
-              style={{ flex: 1, minWidth: 0, border: "none", outline: "none", background: "transparent", fontSize: 13.5, fontWeight: 500, color: "#22302f", fontFamily: "inherit" }} />
+              style={{ flex: 1, minWidth: 0, border: "none", outline: "none", background: "transparent", fontSize: 13.5, fontWeight: 500, color: "var(--ink)", fontFamily: "inherit" }} />
           </span>
         </label>
 
@@ -484,7 +484,7 @@ export function FilterPanel({
         <button type="button" onClick={onDownload} disabled={!canDownload} className="acc-press"
           style={{
             display: "flex", alignItems: "center", gap: 8, padding: "11px 18px", borderRadius: 10,
-            border: "1px solid #d6e5e3", background: "#fff", color: X.body,
+            border: "1px solid var(--rule)", background: "#fff", color: X.body,
             fontSize: 13, fontWeight: 700, fontFamily: "inherit", whiteSpace: "nowrap",
             cursor: canDownload ? "pointer" : "not-allowed", opacity: canDownload ? 1 : 0.5,
           }}>
@@ -498,7 +498,7 @@ export function FilterPanel({
 
 function SearchIcon({ size = 15 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#8fa2a0" strokeWidth="2" aria-hidden>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="var(--ink-3)" strokeWidth="2" aria-hidden>
       <circle cx="11" cy="11" r="6.5" /><path d="m16 16 4.5 4.5" />
     </svg>
   );
@@ -512,7 +512,7 @@ export function MobileSearch({ value, onChange, placeholder }: {
     <div style={{ display: "flex", alignItems: "center", gap: 9, background: "#fff", border: `1px solid ${X.line}`, borderRadius: 999, padding: "11px 16px" }}>
       <SearchIcon size={16} />
       <input value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder} aria-label={placeholder}
-        style={{ flex: 1, minWidth: 0, border: "none", outline: "none", background: "transparent", fontSize: 16, fontWeight: 500, color: "#22302f", fontFamily: "inherit" }} />
+        style={{ flex: 1, minWidth: 0, border: "none", outline: "none", background: "transparent", fontSize: 16, fontWeight: 500, color: "var(--ink)", fontFamily: "inherit" }} />
     </div>
   );
 }
@@ -526,9 +526,9 @@ export function MobileSort({ value, onChange, options }: {
 }) {
   return (
     <label style={{ display: "flex", alignItems: "center", gap: 10, background: "#fff", border: `1px solid ${X.line}`, borderRadius: 999, padding: "6px 8px 6px 16px" }}>
-      <span style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: "1.3px", textTransform: "uppercase", color: "#93a5a3", flexShrink: 0 }}>Sort</span>
+      <span style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: "1.3px", textTransform: "uppercase", color: "var(--ink-3)", flexShrink: 0 }}>Sort</span>
       <select value={value} onChange={(event) => onChange(event.target.value)} aria-label="Sort expenses"
-        style={{ flex: 1, minWidth: 0, border: "none", outline: "none", background: "transparent", fontSize: 16, fontWeight: 600, color: "#22302f", fontFamily: "inherit", padding: "5px 0", cursor: "pointer" }}>
+        style={{ flex: 1, minWidth: 0, border: "none", outline: "none", background: "transparent", fontSize: 16, fontWeight: 600, color: "var(--ink)", fontFamily: "inherit", padding: "5px 0", cursor: "pointer" }}>
         {options.map((option) => (
           <option key={option.value} value={option.value}>{option.label}</option>
         ))}
@@ -583,9 +583,9 @@ export interface RowAction {
 }
 
 const ACTION_TONE: Record<RowAction["tone"], { color: string; border: string; hover: string }> = {
-  good: { color: "#2f7d78", border: "#cfe2e0", hover: "#f2f8f7" },
-  bad: { color: "#a8483c", border: "#f0dcd8", hover: "#fdeeec" },
-  quiet: { color: "#5b6d6b", border: "#e2ecea", hover: "#f4f8f7" },
+  good: { color: "var(--brand)", border: "var(--rule-2)", hover: "var(--brand-wash)" },
+  bad: { color: "var(--bad)", border: "var(--bad-edge)", hover: "var(--bad-wash)" },
+  quiet: { color: "var(--ink-2)", border: "var(--rule)", hover: "var(--paper-2)" },
 };
 
 export interface ExpenseRowModel {
@@ -651,7 +651,7 @@ export function ExpenseList({
         <div style={{ padding: isMobile ? "46px 12px" : "54px 20px", textAlign: "center", fontSize: 13.5, fontWeight: 500, color: X.faint }}>{empty}</div>
       ) : (
         <>
-          <div style={isMobile ? { display: "flex", flexDirection: "column", gap: 11, padding: 14, background: "#f6faf9" } : undefined}>
+          <div style={isMobile ? { display: "flex", flexDirection: "column", gap: 11, padding: 14, background: "var(--paper)" } : undefined}>
             {rows.map((row) => (
               <ExpenseRow key={row.id} row={row} isMobile={isMobile} formatMoney={fmt} />
             ))}
@@ -806,9 +806,9 @@ export interface Figure {
 
 const FIGURE_COLOR = {
   ink: X.ink,
-  good: "#2f7d78",
-  warn: "#a5762a",
-  bad: "#a8483c",
+  good: "var(--brand)",
+  warn: "var(--warn)",
+  bad: "var(--bad)",
   muted: X.faint,
 } as const;
 
@@ -1028,7 +1028,7 @@ export function ExpenseDetail({
       {payment && payment.paid > 0 && (
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
           <Figure label={figureLabels.paid} value={fmt(payment.paid)} color={X.deep} />
-          <Figure label={figureLabels.outstanding} value={fmt(payment.outstanding)} color={payment.outstanding > 0 ? "#a5762a" : X.faint} />
+          <Figure label={figureLabels.outstanding} value={fmt(payment.outstanding)} color={payment.outstanding > 0 ? "var(--warn)" : X.faint} />
         </div>
       )}
 
@@ -1090,7 +1090,7 @@ export function ExpenseDetail({
                   {leg.dayKey}{leg.by ? ` · ${leg.by}` : ""}{leg.note ? ` · ${leg.note}` : ""}
                 </div>
               </div>
-              <span style={{ fontSize: 13.5, fontWeight: 800, color: legsIn ? X.deep : "#a8483c", fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>
+              <span style={{ fontSize: 13.5, fontWeight: 800, color: legsIn ? X.deep : "var(--bad)", fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>
                 {legsIn ? "+" : "−"}{fmt(leg.amount)}
               </span>
             </div>

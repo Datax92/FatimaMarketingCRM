@@ -254,14 +254,14 @@ export function PersonalExpensesView() {
   const statCards = useMemo<StatCard[]>(() => {
     const pct = (n: number) => (summary.spent ? Math.round((n / summary.spent) * 100) : 0);
     return [
-      { label: "Total Spent", value: formatMoney(summary.spent), note: "every record in range", pill: `${summary.count} recs`, pct: 100, color: "#141f1e", accent: "#3f8f8a", icon: ICON.receipt },
-      { label: "This Month", value: formatMoney(summary.month), note: "your own spending", pill: null, pct: pct(summary.month), color: "#141f1e", accent: "#4fa39c", icon: ICON.calendar },
+      { label: "Total Spent", value: formatMoney(summary.spent), note: "every record in range", pill: `${summary.count} recs`, pct: 100, color: "var(--ink)", accent: "var(--brand)", icon: ICON.receipt },
+      { label: "This Month", value: formatMoney(summary.month), note: "your own spending", pill: null, pct: pct(summary.month), color: "var(--ink)", accent: "var(--brand-2)", icon: ICON.calendar },
       // **The figure this screen exists for**: money still out of pocket.
-      { label: "Not Paid Back", value: formatMoney(summary.unpaid), note: summary.unpaid > 0 ? `${summary.unpaidCount} still owed to you` : "everything is paid back", pill: summary.unpaid > 0 ? "Owed" : "Clear", tone: summary.unpaid > 0 ? "warn" : "good", pct: pct(summary.unpaid), color: summary.unpaid > 0 ? "#a5762a" : "#2f7d78", accent: "#c99a2e", icon: ICON.clock },
+      { label: "Not Paid Back", value: formatMoney(summary.unpaid), note: summary.unpaid > 0 ? `${summary.unpaidCount} still owed to you` : "everything is paid back", pill: summary.unpaid > 0 ? "Owed" : "Clear", tone: summary.unpaid > 0 ? "warn" : "good", pct: pct(summary.unpaid), color: summary.unpaid > 0 ? "var(--warn)" : "var(--brand)", accent: "var(--accent)", icon: ICON.clock },
       {
         label: "Paid Back", value: formatMoney(summary.paid),
         note: canPay ? "open to see which account paid, or reverse" : `${pct(summary.paid)}% of what you spent`,
-        pill: `${pct(summary.paid)}%`, tone: "good", pct: pct(summary.paid), color: "#2f7d78", accent: "#2f7d78", icon: ICON.check,
+        pill: `${pct(summary.paid)}%`, tone: "good", pct: pct(summary.paid), color: "var(--brand)", accent: "var(--brand)", icon: ICON.check,
         onClick: canPay ? () => setShowingPayments(true) : undefined,
       },
     ];
@@ -477,7 +477,7 @@ export function PersonalExpensesView() {
       </ExpenseHero>
 
       {banner && (
-        <p role="status" style={{ borderRadius: 12, background: banner.ok ? "#e8f5f3" : "#fdeeec", border: `1px solid ${banner.ok ? "#bfe0dc" : "#f0c4bd"}`, padding: "11px 14px", fontSize: 12.5, fontWeight: 600, color: banner.ok ? X.deep : "#a33a29" }}>
+        <p role="status" style={{ borderRadius: 12, background: banner.ok ? "var(--brand-wash)" : "var(--bad-wash)", border: `1px solid ${banner.ok ? "var(--brand-edge)" : "var(--bad-edge)"}`, padding: "11px 14px", fontSize: 12.5, fontWeight: 600, color: banner.ok ? X.deep : "var(--bad)" }}>
           {banner.text}
         </p>
       )}
@@ -625,7 +625,7 @@ export function PersonalExpensesView() {
                 Keep it
               </button>
               <button type="button" disabled={busyId === deleting.expense.id} onClick={() => void confirmDelete()}
-                style={{ borderRadius: 10, border: "none", background: "#a8483c", color: "#fff", padding: "10px 20px", fontSize: 13.5, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", opacity: busyId === deleting.expense.id ? 0.5 : 1 }}>
+                style={{ borderRadius: 10, border: "none", background: "var(--bad)", color: "#fff", padding: "10px 20px", fontSize: 13.5, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", opacity: busyId === deleting.expense.id ? 0.5 : 1 }}>
                 {busyId === deleting.expense.id ? "Deleting…" : "Delete"}
               </button>
             </div>
@@ -634,7 +634,7 @@ export function PersonalExpensesView() {
             <strong style={{ color: X.ink }}>{deleting.expense.title}</strong> · {formatMoney(deleting.expense.amount)} · {deleting.expense.dayKey}
           </p>
           {deleting.payments > 0 ? (
-            <p style={{ marginTop: 10, borderRadius: 10, background: "#fdf5e6", border: "1px solid #ecdcae", padding: "11px 13px", fontSize: 12.5, fontWeight: 600, color: "#8a6321", lineHeight: 1.6 }}>
+            <p style={{ marginTop: 10, borderRadius: 10, background: "var(--warn-wash)", border: "1px solid var(--accent-edge)", padding: "11px 13px", fontSize: 12.5, fontWeight: 600, color: "var(--accent-ink)", lineHeight: 1.6 }}>
               {formatMoney(deleting.total)} has been paid back for this from {deleting.payments} account
               {deleting.payments === 1 ? "" : "s"}. Deleting it removes {deleting.payments === 1 ? "that movement" : "those movements"} too
               and puts the money back — otherwise the account would show cash gone for a record that no longer exists.
@@ -783,7 +783,7 @@ function ExpenseForm({ expense, categories, onClose, getIdToken, onSaved }: {
           </L>
         </div>
       </OverlayCard>
-      {error && <p role="alert" style={{ color: "#a33a29", fontSize: 12.5, fontWeight: 600, marginTop: 10 }}>{error}</p>}
+      {error && <p role="alert" style={{ color: "var(--bad)", fontSize: 12.5, fontWeight: 600, marginTop: 10 }}>{error}</p>}
     </OverlayPanel>
   );
 }

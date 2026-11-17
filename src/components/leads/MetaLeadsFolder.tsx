@@ -52,8 +52,8 @@ const PAGE_SIZE = 15;
 /** Waiting reads amber — it has a clock on it; everything else reads as the folder's teal. */
 function chipFor(lead: Lead): RowChip {
   return lead.status === "ASSIGNED"
-    ? { text: "Waiting for you", background: "#fdf3e3", color: "#8a6321" }
-    : { text: statusLabel(lead.status), background: "#e8f5f3", color: "#2f7d78" };
+    ? { text: "Waiting for you", background: "var(--warn-wash)", color: "var(--accent-ink)" }
+    : { text: statusLabel(lead.status), background: "var(--brand-wash)", color: "var(--brand)" };
 }
 
 /** Who holds a lead, for a team row's chip. */
@@ -66,8 +66,8 @@ function holderOf(lead: Lead, me: string | undefined): string {
 function teamChipFor(lead: Lead, me: string | undefined): RowChip {
   const holder = holderOf(lead, me);
   return lead.status === "ASSIGNED"
-    ? { text: `Waiting · ${holder}`, background: "#fdf3e3", color: "#8a6321", title: `Offered to ${holder}` }
-    : { text: holder, background: "#e8f5f3", color: "#2f7d78", title: `${statusLabel(lead.status)} · held by ${holder}` };
+    ? { text: `Waiting · ${holder}`, background: "var(--warn-wash)", color: "var(--accent-ink)", title: `Offered to ${holder}` }
+    : { text: holder, background: "var(--brand-wash)", color: "var(--brand)", title: `${statusLabel(lead.status)} · held by ${holder}` };
 }
 
 export function MetaLeadsFolder({ folderId, scope = "own" }: { folderId: string; scope?: "own" | "team" }) {
@@ -151,13 +151,13 @@ export function MetaLeadsFolder({ folderId, scope = "own" }: { folderId: string;
 
   const list = (
     <section
-      className="flex min-h-0 min-w-0 flex-1 flex-col border-r border-[#dceae8] bg-[#fbfdfd]"
+      className="flex min-h-0 min-w-0 flex-1 flex-col border-r border-[var(--rule)] bg-[var(--card)]"
       aria-label={`${name} leads`}
       style={isMobile ? { borderRight: "none", borderRadius: 16, overflow: "hidden" } : undefined}
     >
       {/* Same 78px teal band as the admin's folder. `text-white` on the <h1> is
           load-bearing: @layer base gives every heading its own colour. */}
-      <div className="flex min-h-[78px] shrink-0 items-center justify-between gap-3 bg-[#4f9c99] px-5 py-3.5 text-white">
+      <div className="flex min-h-[78px] shrink-0 items-center justify-between gap-3 bg-[var(--brand-2)] px-5 py-3.5 text-white">
         <div className="flex min-w-0 items-center gap-2.5">
           <Link
             href={backHref}
@@ -189,15 +189,15 @@ export function MetaLeadsFolder({ folderId, scope = "own" }: { folderId: string;
       </div>
 
       <div className="flex shrink-0 items-center gap-2.5 px-[18px] pt-4 pb-2.5">
-        <div className="flex flex-1 items-center gap-2 rounded-md border border-[#dceae8] bg-[#eef5f4] px-3 py-2 focus-within:border-[#4f9c99]">
-          <Search size={16} className="shrink-0 text-[#7e918f]" />
+        <div className="flex flex-1 items-center gap-2 rounded-md border border-[var(--rule)] bg-[var(--paper-2)] px-3 py-2 focus-within:border-[var(--brand-2)]">
+          <Search size={16} className="shrink-0 text-[var(--ink-3)]" />
           <input
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search leads"
             aria-label="Search this campaign's leads by name or phone number"
-            className="min-w-0 flex-1 bg-transparent text-[#2b3a39] outline-none placeholder:text-[#7e918f]"
+            className="min-w-0 flex-1 bg-transparent text-[var(--ink)] outline-none placeholder:text-[var(--ink-3)]"
             // 16 on the phone, or iOS Safari zooms on focus.
             style={{ fontSize: isMobile ? 16 : 13.5 }}
           />
@@ -210,7 +210,7 @@ export function MetaLeadsFolder({ folderId, scope = "own" }: { folderId: string;
             value={holder}
             onChange={(event) => setHolder(event.target.value)}
             aria-label="Show the leads one person holds"
-            className="w-full cursor-pointer rounded-md border border-[#dceae8] bg-white px-3 py-2 text-[#2b3a39] outline-none focus:border-[#4f9c99]"
+            className="w-full cursor-pointer rounded-md border border-[var(--rule)] bg-white px-3 py-2 text-[var(--ink)] outline-none focus:border-[var(--brand-2)]"
             style={{ fontSize: isMobile ? 16 : 13 }}
           >
             <option value="">Everyone on the team · {inFolder.length.toLocaleString()}</option>
@@ -234,14 +234,14 @@ export function MetaLeadsFolder({ folderId, scope = "own" }: { folderId: string;
               onClick={() => setView(key)}
               className={`inline-flex flex-1 items-center justify-center gap-2 rounded-full border px-3 py-2 text-[12.5px] transition-colors ${
                 active
-                  ? "border-[#2f7d78] bg-[#2f7d78] text-white"
-                  : "border-[#cfe2e0] bg-white text-[#5b6d6b] hover:border-[#8cc3bf]"
+                  ? "border-[var(--brand)] bg-[var(--brand)] text-white"
+                  : "border-[var(--rule-2)] bg-white text-[var(--ink-2)] hover:border-[var(--brand-edge)]"
               }`}
             >
               <span>{label}</span>
               <span
                 className={`rounded-full px-1.5 text-[11px] tabular-nums ${
-                  active ? "bg-white/20 text-white" : "bg-[#eef5f4] text-[#5b6d6b]"
+                  active ? "bg-white/20 text-white" : "bg-[var(--paper-2)] text-[var(--ink-2)]"
                 }`}
               >
                 {count.toLocaleString()}
@@ -259,7 +259,7 @@ export function MetaLeadsFolder({ folderId, scope = "own" }: { folderId: string;
 
       <div className="teal-scrollbar flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto px-3.5 pb-5">
         {visible.length === 0 ? (
-          <p className="px-3 py-10 text-center text-[13px] text-[#8fa2a0]">
+          <p className="px-3 py-10 text-center text-[13px] text-[var(--ink-3)]">
             {query.trim()
               ? `Nothing matches “${query.trim()}”.`
               : inFolder.length === 0
@@ -278,7 +278,7 @@ export function MetaLeadsFolder({ folderId, scope = "own" }: { folderId: string;
                 name={lead.name || "Unnamed lead"}
                 phone={lead.phone}
                 kindLabel="Lead"
-                ringColor={lead.status === "ASSIGNED" ? "#c9973a" : "#2f7d78"}
+                ringColor={lead.status === "ASSIGNED" ? "var(--accent)" : "var(--brand)"}
                 chip={team ? teamChipFor(lead, user?.uid) : chipFor(lead)}
                 active={lead.id === selectedId}
                 seen={isOpened(lead.id)}
@@ -319,7 +319,7 @@ export function MetaLeadsFolder({ folderId, scope = "own" }: { folderId: string;
   }
 
   return (
-    <div className="leads-shell -m-6 grid grid-cols-1 overflow-hidden bg-[#e9f1f0] text-[#2b3a39] md:-m-8 lg:grid-cols-[372px_1fr]">
+    <div className="leads-shell -m-6 grid grid-cols-1 overflow-hidden bg-[var(--paper)] text-[var(--ink)] md:-m-8 lg:grid-cols-[372px_1fr]">
       <div className={`min-h-0 min-w-0 ${selected ? "hidden lg:flex" : "flex"} flex-col`}>{list}</div>
       <section
         className={`min-h-0 min-w-0 overflow-hidden ${selected ? "block" : "hidden lg:block"}`}

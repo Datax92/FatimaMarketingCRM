@@ -9,7 +9,7 @@
  * design actually specifies.
  *
  * They are written as **inline styles**, not Tailwind classes. Tailwind only
- * emits an arbitrary value like `bg-[#3d8b85]` if its content scanner saw that
+ * emits an arbitrary value like `bg-[var(--brand-2)]` if its content scanner saw that
  * exact string in a file it was watching; a stale cache or a partial copy drops
  * the rule silently and the card renders with no background at all. This screen
  * has to be exact on machines we do not control, so nothing about it depends on
@@ -23,38 +23,38 @@ import type { CSSProperties, ReactNode } from "react";
 
 /** Straight from the design file. */
 export const D = {
-  page: "#e9f1f0",
-  ink: "#22302f",
-  body: "#3c4d4b",
-  muted: "#5b6d6b",
-  axis: "#8fa2a0",
-  monthLabel: "#7e918f",
+  page: "var(--paper)",
+  ink: "var(--ink)",
+  body: "var(--ink-2)",
+  muted: "var(--ink-2)",
+  axis: "var(--ink-3)",
+  monthLabel: "var(--ink-3)",
 
-  cardBg: "#fbfdfd",
-  cardBorder: "#dceae8",
+  cardBg: "var(--card)",
+  cardBorder: "var(--rule)",
   cardRadius: 12,
 
-  teal: "#3f8f8a",
-  tealDeep: "#2f7d78",
-  tealDark: "#1f5c58",
-  tealLight: "#4f9c99",
-  amber: "#e0b44f",
-  red: "#c0574a",
+  teal: "var(--brand)",
+  tealDeep: "var(--brand)",
+  tealDark: "var(--brand-dk)",
+  tealLight: "var(--brand-2)",
+  amber: "var(--accent)",
+  red: "var(--bad)",
 
-  donutTrack: "#e6f1f0",
-  targetTrack: "#e0eeec",
-  rowDivider: "#f0f6f5",
+  donutTrack: "var(--rule)",
+  targetTrack: "var(--rule)",
+  rowDivider: "var(--paper-2)",
 
-  attendanceBg: "linear-gradient(135deg,#2f7d78 0%,#3f8f8a 100%)",
-  mtdBg: "linear-gradient(135deg,#4f9c99 0%,#5aa9a5 100%)",
-  ytdBg: "linear-gradient(135deg,#5fa7ab 0%,#6fb4b6 100%)",
+  attendanceBg: "linear-gradient(135deg,var(--brand) 0%,var(--brand) 100%)",
+  mtdBg: "linear-gradient(135deg,var(--brand-2) 0%,var(--brand-2) 100%)",
+  ytdBg: "linear-gradient(135deg,var(--brand-2) 0%,var(--brand-2) 100%)",
   cardShadow: "0 8px 22px rgba(31,92,88,0.16)",
   gaugeShadow: "0 8px 22px rgba(31,92,88,0.14)",
 
   /** The series colours the KPI-YTD chart and its legend share. */
-  series: ["#3f8f8a", "#1f4f4c", "#8cc3bf"] as const,
+  series: ["var(--brand)", "var(--brand-dk)", "var(--brand-edge)"] as const,
   /** Per-metric ring colour once the target is met. */
-  kpiOnTarget: ["#3f8f8a", "#3f8f8a", "#4f9c99"] as const,
+  kpiOnTarget: ["var(--brand)", "var(--brand)", "var(--brand-2)"] as const,
 
   chartHeight: 184,
   /** The chart's y-axis is fixed at 0 / 500 / 1000 in the design. */
@@ -414,7 +414,7 @@ export function PortfolioRow({
           fontSize: 14,
           fontWeight: 700,
           color: "#fff",
-          background: filled ? D.teal : "#a9cfcc",
+          background: filled ? D.teal : "var(--brand-edge)",
         }}
       >
         {label.charAt(0)}
@@ -430,7 +430,7 @@ export function PortfolioRow({
             height: "100%",
             borderRadius: 4,
             width: `${width}%`,
-            background: filled ? "linear-gradient(90deg,#3f8f8a,#5fb3ae)" : "transparent",
+            background: filled ? "linear-gradient(90deg,var(--brand),var(--brand-2))" : "transparent",
             transition: "width 600ms ease-out",
           }}
         />

@@ -165,7 +165,7 @@ export function LeaveRequestModal({
             </label>
           </div>
 
-          <p style={{ fontSize: 12.5, color: overBalance ? "#8a6a17" : A.muted, fontWeight: 600 }}>
+          <p style={{ fontSize: 12.5, color: overBalance ? "var(--warn)" : A.muted, fontWeight: 600 }}>
             {days} day{days === 1 ? "" : "s"} requested
             {overBalance && balance
               ? ` — that is ${days - balance.remaining} more than the ${balance.remaining} you have left. You can still send it; your approver will decide.`
@@ -184,7 +184,7 @@ export function LeaveRequestModal({
           </label>
 
           {error && (
-            <p role="alert" style={{ fontSize: 12.5, color: "#a33a29", fontWeight: 600 }}>
+            <p role="alert" style={{ fontSize: 12.5, color: "var(--bad)", fontWeight: 600 }}>
               {error}
             </p>
           )}

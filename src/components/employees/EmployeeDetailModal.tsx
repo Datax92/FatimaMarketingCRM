@@ -620,7 +620,7 @@ export function EmployeeDetailModal({
                   fontWeight: 700,
                   letterSpacing: "-0.2px",
                   fontFamily: "inherit",
-                  color: active ? E.tealInk : "#7e918f",
+                  color: active ? E.tealInk : "var(--ink-3)",
                   flexShrink: 0,
                 }}
               >
@@ -634,7 +634,7 @@ export function EmployeeDetailModal({
                       fontSize: 11,
                       fontWeight: 700,
                       textAlign: "center",
-                      background: active ? "#dcecea" : E.rowBorder,
+                      background: active ? "var(--rule)" : E.rowBorder,
                       color: active ? E.tealInk : E.label,
                     }}
                   >
@@ -750,7 +750,7 @@ export function EmployeeDetailModal({
               height: "min(92vh, 100dvh)",
               borderRadius: 18,
               overflow: "hidden",
-              background: "#f3faf9",
+              background: "var(--brand-wash)",
               boxShadow: "0 26px 64px rgba(15,42,40,0.32)",
             }}
           >
@@ -830,7 +830,7 @@ function AssignedLeads({
                 justifyContent: "center",
                 fontSize: 13,
                 fontWeight: 700,
-                color: "#4a5c5a",
+                color: "var(--ink-2)",
                 flexShrink: 0,
               }}
               aria-hidden
@@ -1032,7 +1032,7 @@ function DealsList({ deals, empty }: { deals: DealRecord[]; empty: boolean }) {
                 fontWeight: 700,
                 letterSpacing: "1.1px",
                 textTransform: "uppercase",
-                color: "#7fb0ab",
+                color: "var(--ink-3)",
               }}
             >
               Profit

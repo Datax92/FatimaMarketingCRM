@@ -5,7 +5,7 @@
  *
  * The colour tokens are **imported from the attendance module rather than
  * restated**. Both modules are the same product and the same teal, and a
- * second copy of `#2f7d78` is how two screens end up almost matching. The card
+ * second copy of `var(--brand)` is how two screens end up almost matching. The card
  * and figure primitives are re-exported for the same reason: these screens sit
  * beside the attendance ones in the sidebar, and they should not look like a
  * different application.
@@ -42,16 +42,16 @@ interface Tone {
  * column of months says how far each one got without reading a word.
  */
 const PAYROLL_TONES: Record<PayrollStatus, Tone> = {
-  DRAFT: { soft: "#f2f6f6", border: "#dceae8", text: "#5b6d6b", solid: "#9aacaa" },
-  REVIEWED: { soft: "#eef6fb", border: "#cfe2ee", text: "#3f7ea3", solid: "#4d86a8" },
-  APPROVED: { soft: "#e4f3ec", border: "#bfe3d2", text: "#1f7a52", solid: "#2f9e68" },
-  PAID: { soft: "#e2f0ee", border: "#bcdcd8", text: "#1f5c58", solid: "#2f7d78" },
+  DRAFT: { soft: "var(--paper-2)", border: "var(--rule)", text: "var(--ink-2)", solid: "var(--ink-3)" },
+  REVIEWED: { soft: "var(--brand-wash)", border: "var(--brand-edge)", text: "var(--brand-2)", solid: "var(--brand-2)" },
+  APPROVED: { soft: "var(--good-wash)", border: "var(--good-edge)", text: "var(--good)", solid: "var(--good)" },
+  PAID: { soft: "var(--brand-wash)", border: "var(--brand-edge)", text: "var(--brand-dk)", solid: "var(--brand)" },
 };
 
 const EXPENSE_TONES: Record<ExpenseStatus, Tone> = {
-  PENDING: { soft: "#fdf5e0", border: "#ecdcae", text: "#8a6a17", solid: "#d9ad2b" },
-  APPROVED: { soft: "#e4f3ec", border: "#bfe3d2", text: "#1f7a52", solid: "#2f9e68" },
-  REJECTED: { soft: "#fdeeeb", border: "#f0c4bd", text: "#a33a29", solid: "#c0503c" },
+  PENDING: { soft: "var(--warn-wash)", border: "var(--accent-edge)", text: "var(--warn)", solid: "var(--accent)" },
+  APPROVED: { soft: "var(--good-wash)", border: "var(--good-edge)", text: "var(--good)", solid: "var(--good)" },
+  REJECTED: { soft: "var(--bad-wash)", border: "var(--bad-edge)", text: "var(--bad)", solid: "var(--bad)" },
 };
 
 function Pill({ tone, label, size }: { tone: Tone; label: string; size: "sm" | "md" }) {
@@ -122,9 +122,9 @@ export function Banner({
         padding: "10px 14px",
         fontSize: 13,
         fontWeight: 600,
-        border: `1px solid ${ok ? "#bfe3d2" : "#f0c4bd"}`,
-        background: ok ? "#e4f3ec" : "#fdeeeb",
-        color: ok ? "#1f7a52" : "#a33a29",
+        border: `1px solid ${ok ? "var(--good-edge)" : "var(--bad-edge)"}`,
+        background: ok ? "var(--good-wash)" : "var(--bad-wash)",
+        color: ok ? "var(--good)" : "var(--bad)",
       }}
     >
       {children}
@@ -249,7 +249,7 @@ export function PrimaryButton({
     tone === "quiet"
       ? { background: F.surface, color: F.muted, border: `1px solid ${F.line}` }
       : tone === "danger"
-        ? { background: "#fff", color: "#a33a29", border: "1px solid #f0c4bd" }
+        ? { background: "#fff", color: "var(--bad)", border: "1px solid var(--bad-edge)" }
         : { background: F.teal, color: "#fff", border: "none" };
 
   return (

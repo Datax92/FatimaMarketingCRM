@@ -10,7 +10,7 @@
  * building a screen from a screenshot, so nothing here is guessed.
  *
  * **Inline styles, not Tailwind.** Same reason as the desktop dashboard: a
- * content scanner that never saw a `bg-[#3f8f8a]` string emits no rule and the
+ * content scanner that never saw a `bg-[var(--brand)]` string emits no rule and the
  * element renders with no background at all. Inline styles cannot be missed.
  *
  * **The mockups' phone frame is not reproduced.** The `.dc.html` files draw a
@@ -26,38 +26,38 @@ import type { CSSProperties, ReactNode } from "react";
 
 export const M = {
   /* ---- ground ---- */
-  page: "#e9f1f0",
-  cardBg: "#fbfdfd",
-  cardBorder: "#dceae8",
+  page: "var(--paper)",
+  cardBg: "var(--card)",
+  cardBorder: "var(--rule)",
 
   /* ---- ink ---- */
-  ink: "#22302f",
-  body: "#3c4d4b",
-  muted: "#5b6d6b",
-  faint: "#8fa2a0",
-  fainter: "#9aacaa",
-  ghost: "#a9bcba",
+  ink: "var(--ink)",
+  body: "var(--ink-2)",
+  muted: "var(--ink-2)",
+  faint: "var(--ink-3)",
+  fainter: "var(--ink-3)",
+  ghost: "var(--ink-3)",
 
   /* ---- teal ---- */
-  teal: "#3f8f8a",
-  tealDeep: "#2f7d78",
-  tealDark: "#1f5c58",
-  tealTint: "#e8f5f3",
-  track: "#e6f1f0",
-  trackFlat: "#eef4f3",
-  segmentBg: "#dceae8",
-  divider: "#f0f6f5",
+  teal: "var(--brand)",
+  tealDeep: "var(--brand)",
+  tealDark: "var(--brand-dk)",
+  tealTint: "var(--brand-wash)",
+  track: "var(--rule)",
+  trackFlat: "var(--paper-2)",
+  segmentBg: "var(--rule)",
+  divider: "var(--paper-2)",
 
   /* ---- state ---- */
-  amber: "#c99a2e",
-  amberInk: "#a5762a",
-  amberBg: "#fdf5e6",
-  amberBorder: "#f0e0c0",
-  red: "#c0574a",
-  redSoft: "#e05a4a",
-  blue: "#3f7ea3",
-  blueBg: "#eef6fb",
-  blueBorder: "#cfe2ee",
+  amber: "var(--accent)",
+  amberInk: "var(--warn)",
+  amberBg: "var(--warn-wash)",
+  amberBorder: "var(--accent-edge)",
+  red: "var(--bad)",
+  redSoft: "var(--bad)",
+  blue: "var(--brand-2)",
+  blueBg: "var(--brand-wash)",
+  blueBorder: "var(--brand-edge)",
 
   /* ---- geometry, straight from the design ---- */
   headerRadius: 26,
@@ -179,7 +179,7 @@ export function MobileCard({
 
 /**
  * The pill segmented control — MTD/YTD on the dashboard, Follow-ups/Audit/Deal
- * on the lead detail. `background:#dceae8` with the active pill filled.
+ * on the lead detail. `background:var(--rule)` with the active pill filled.
  */
 export function Segmented<T extends string>({
   options,

@@ -177,7 +177,7 @@ export function FolderLaneModal({
 
   return createPortal(
     <div className="fixed inset-0 z-[120] flex items-center justify-center px-4 py-8">
-      <div className="animate-modal-fade fixed inset-0 bg-[#1e3a38]/45" onClick={onClose} aria-hidden />
+      <div className="animate-modal-fade fixed inset-0 bg-[var(--ink)]/45" onClick={onClose} aria-hidden />
 
       <form
         onSubmit={save}
@@ -186,7 +186,7 @@ export function FolderLaneModal({
         aria-label="Who gets these leads"
         className="animate-modal-pop relative z-10 grid max-h-full w-full max-w-[560px] grid-rows-[auto_1fr_auto] overflow-hidden rounded-2xl bg-white shadow-[0_26px_70px_rgba(18,54,52,0.32)]"
       >
-        <div className="bg-[#4f9c99] px-6 py-4 text-white">
+        <div className="bg-[var(--brand-2)] px-6 py-4 text-white">
           <div className="flex items-center gap-2.5">
             <Users size={18} />
             <div className="text-[17px] font-medium">Who gets these leads</div>
@@ -198,32 +198,32 @@ export function FolderLaneModal({
           {error && (
             <div
               role="alert"
-              className="mb-4 rounded-md border border-[#f0c4bd] bg-[#fdeeeb] px-4 py-3 text-[13px] text-[#a33a29]"
+              className="mb-4 rounded-md border border-[var(--bad-edge)] bg-[var(--bad-wash)] px-4 py-3 text-[13px] text-[var(--bad)]"
             >
               {error}
             </div>
           )}
 
-          <p className="text-[13px] leading-relaxed text-[#5b6d6b]">
+          <p className="text-[13px] leading-relaxed text-[var(--ink-2)]">
             Tick the people this campaign&rsquo;s leads should go to. They are offered in turn, in
             priority order, with the usual {ACCEPT_WINDOW_MINUTES}-minute window to accept — and if
             the last one lets it pass, it stays with them rather than leaving the group.
           </p>
-          <p className="mt-2 text-[12.5px] leading-relaxed text-[#7e918f]">
-            <strong className="font-medium text-[#5b6d6b]">Tick nobody</strong> and the folder goes
+          <p className="mt-2 text-[12.5px] leading-relaxed text-[var(--ink-3)]">
+            <strong className="font-medium text-[var(--ink-2)]">Tick nobody</strong> and the folder goes
             back to the whole rotation, which is how every folder starts. Handing a lead out by hand
             still works exactly as it does today — this only decides where new leads land on their
             own.
           </p>
 
-          <div className="mt-4 flex items-center gap-2 rounded-full border border-[#dceae8] bg-[#f7fbfa] px-3.5 py-2">
-            <Search size={14} className="shrink-0 text-[#9aacaa]" />
+          <div className="mt-4 flex items-center gap-2 rounded-full border border-[var(--rule)] bg-[var(--brand-wash)] px-3.5 py-2">
+            <Search size={14} className="shrink-0 text-[var(--ink-3)]" />
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Search by name"
               aria-label="Search people"
-              className="w-full bg-transparent text-[13.5px] text-[#2b3a39] outline-none placeholder:text-[#9aacaa]"
+              className="w-full bg-transparent text-[13.5px] text-[var(--ink)] outline-none placeholder:text-[var(--ink-3)]"
               // 16px or iOS Safari zooms the page on focus.
               style={{ fontSize: isMobile ? 16 : 13.5 }}
             />
@@ -235,7 +235,7 @@ export function FolderLaneModal({
               if (rows.length === 0) return null;
               return (
                 <div key={group}>
-                  <div className="mb-1.5 text-[11px] tracking-[0.9px] text-[#9aacaa] uppercase">
+                  <div className="mb-1.5 text-[11px] tracking-[0.9px] text-[var(--ink-3)] uppercase">
                     {group}
                   </div>
                   <div className="space-y-1.5">
@@ -253,13 +253,13 @@ export function FolderLaneModal({
             })}
 
             {shown.length === 0 && (
-              <p className="py-6 text-center text-[13px] text-[#9aacaa]">Nobody by that name.</p>
+              <p className="py-6 text-center text-[13px] text-[var(--ink-3)]">Nobody by that name.</p>
             )}
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#e6f1f0] bg-[#f7fbfa] px-6 py-4">
-          <span className="text-[12.5px] text-[#7e918f]">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--rule)] bg-[var(--brand-wash)] px-6 py-4">
+          <span className="text-[12.5px] text-[var(--ink-3)]">
             {selected.length === 0
               ? "Everyone in the rotation"
               : `${selected.length} chosen${selected.length >= MAX_LANE_UIDS ? " (the most allowed)" : ""}`}
@@ -270,7 +270,7 @@ export function FolderLaneModal({
                 type="button"
                 onClick={() => setSelected([])}
                 disabled={busy}
-                className="rounded-full px-3 py-2.5 text-[13px] text-[#5b6d6b] transition-colors hover:bg-[#eef6f5] disabled:opacity-50"
+                className="rounded-full px-3 py-2.5 text-[13px] text-[var(--ink-2)] transition-colors hover:bg-[var(--brand-wash)] disabled:opacity-50"
               >
                 Clear
               </button>
@@ -279,14 +279,14 @@ export function FolderLaneModal({
               type="button"
               onClick={onClose}
               disabled={busy}
-              className="rounded-full border border-[#cfe2e0] bg-white px-6 py-2.5 text-[13.5px] text-[#5b6d6b] transition-colors hover:bg-[#f3faf9] disabled:opacity-50"
+              className="rounded-full border border-[var(--rule-2)] bg-white px-6 py-2.5 text-[13.5px] text-[var(--ink-2)] transition-colors hover:bg-[var(--brand-wash)] disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={busy}
-              className="rounded-full bg-[#3f8f8a] px-7 py-2.5 text-[13.5px] text-white transition-colors hover:bg-[#2f7d78] disabled:opacity-50"
+              className="rounded-full bg-[var(--brand)] px-7 py-2.5 text-[13.5px] text-white transition-colors hover:bg-[var(--brand)] disabled:opacity-50"
             >
               {busy ? "Saving…" : "Save"}
             </button>
@@ -323,26 +323,26 @@ function PersonRow({
       onClick={onToggle}
       className={`flex w-full items-center gap-3 rounded-xl border px-3.5 py-2.5 text-left transition-colors disabled:opacity-55 ${
         checked
-          ? "border-[#8cc3bf] bg-[#e8f5f3]"
-          : "border-[#e6f1f0] bg-white hover:border-[#bfe0dc] hover:bg-[#f7fbfa]"
+          ? "border-[var(--brand-edge)] bg-[var(--brand-wash)]"
+          : "border-[var(--rule)] bg-white hover:border-[var(--brand-edge)] hover:bg-[var(--brand-wash)]"
       }`}
     >
       <span
         aria-hidden
         className={`flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-md border-2 ${
-          checked ? "border-[#3f8f8a] bg-[#3f8f8a] text-white" : "border-[#cfe2e0] bg-white"
+          checked ? "border-[var(--brand)] bg-[var(--brand)] text-white" : "border-[var(--rule-2)] bg-white"
         }`}
       >
         {checked && <Check size={13} strokeWidth={3} />}
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-[13.5px] text-[#2b3a39]">{person.name}</span>
-        <span className="block truncate text-[12px] text-[#9aacaa]">
+        <span className="block truncate text-[13.5px] text-[var(--ink)]">{person.name}</span>
+        <span className="block truncate text-[12px] text-[var(--ink-3)]">
           {person.disabled ? `${person.detail} · paused` : person.detail}
         </span>
       </span>
       {typeof person.priority === "number" && person.priority < 99 && (
-        <span className="shrink-0 rounded-full bg-[#eef6f5] px-2 py-0.5 text-[11px] text-[#5b8b87]">
+        <span className="shrink-0 rounded-full bg-[var(--brand-wash)] px-2 py-0.5 text-[11px] text-[var(--ink-3)]">
           Priority {person.priority}
         </span>
       )}

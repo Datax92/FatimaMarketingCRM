@@ -72,16 +72,16 @@ import { useAuth } from "@/context/AuthContext";
 import type { DealRecord } from "@/hooks/useFinancials";
 
 const T = {
-  ink: "#1f3b39",
-  muted: "#5b6d6b",
-  faint: "#9aacaa",
-  line: "#dceae8",
-  hair: "#f0f6f5",
+  ink: "var(--ink)",
+  muted: "var(--ink-2)",
+  faint: "var(--ink-3)",
+  line: "var(--rule)",
+  hair: "var(--paper-2)",
   surface: "#ffffff",
-  teal: "#2f7d78",
-  tealSoft: "#e2f0ee",
-  amber: "#a4682a",
-  amberSoft: "#fdf1e3",
+  teal: "var(--brand)",
+  tealSoft: "var(--brand-wash)",
+  amber: "var(--warn)",
+  amberSoft: "var(--warn-wash)",
 };
 
 export function ClosedDealRecord({
@@ -201,9 +201,9 @@ export function ClosedDealRecord({
           role="status"
           style={{
             borderRadius: 10,
-            border: "1px solid #bfe0dc",
-            background: "#eef8f7",
-            color: "#2f7d78",
+            border: "1px solid var(--brand-edge)",
+            background: "var(--brand-wash)",
+            color: "var(--brand)",
             padding: "10px 12px",
             fontSize: 12.5,
             marginBottom: 12,

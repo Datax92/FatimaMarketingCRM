@@ -100,15 +100,15 @@ export function ClientFoldersView({ basePath }: { basePath: string }) {
   if (authLoading || loading) return <FullPageSpinner />;
 
   return (
-    <div className="-m-6 min-h-full bg-[#e9f1f0] px-6 py-6 text-[#2b3a39] md:-m-8 md:px-8 md:py-7">
+    <div className="-m-6 min-h-full bg-[var(--paper)] px-6 py-6 text-[var(--ink)] md:-m-8 md:px-8 md:py-7">
       <header className="mb-5 flex flex-wrap items-end justify-between gap-4">
         <div className="flex items-center gap-3.5">
-          <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#4f9c99] text-white">
+          <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--brand-2)] text-white">
             <FolderHeart size={22} />
           </span>
           <div>
-            <h1 className="text-[24px] text-[#2b3a39]">Clients</h1>
-            <p className="mt-0.5 text-[13px] text-[#7e918f]">
+            <h1 className="text-[24px] text-[var(--ink)]">Clients</h1>
+            <p className="mt-0.5 text-[13px] text-[var(--ink-3)]">
               {folders.length} folder{folders.length === 1 ? "" : "s"} ·{" "}
               {totals.leads.toLocaleString()} lead{totals.leads === 1 ? "" : "s"} ·{" "}
               {totals.imported} imported from the Data Bank
@@ -119,7 +119,7 @@ export function ClientFoldersView({ basePath }: { basePath: string }) {
         <div className="flex flex-wrap gap-2.5">
           <button
             onClick={() => setImporting(true)}
-            className="inline-flex items-center gap-2 rounded-full border border-[#cfe2e0] bg-white px-5 py-2.5 text-[13.5px] text-[#2f7d78] transition-colors hover:border-[#8cc3bf]"
+            className="inline-flex items-center gap-2 rounded-full border border-[var(--rule-2)] bg-white px-5 py-2.5 text-[13.5px] text-[var(--brand)] transition-colors hover:border-[var(--brand-edge)]"
           >
             <Database size={16} strokeWidth={2.2} />
             <span>Import from Data Bank</span>
@@ -148,10 +148,10 @@ export function ClientFoldersView({ basePath }: { basePath: string }) {
       )}
 
       {folders.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-[#cfe2e0] bg-white/70 px-6 py-16 text-center">
-          <FolderHeart className="mx-auto mb-3 text-[#a9cfcc]" size={30} />
-          <p className="text-[14.5px] text-[#2b3a39]">No client folders yet.</p>
-          <p className="mx-auto mt-1.5 max-w-[460px] text-[13px] text-[#7e918f]">
+        <div className="rounded-2xl border border-dashed border-[var(--rule-2)] bg-white/70 px-6 py-16 text-center">
+          <FolderHeart className="mx-auto mb-3 text-[var(--brand-edge)]" size={30} />
+          <p className="text-[14.5px] text-[var(--ink)]">No client folders yet.</p>
+          <p className="mx-auto mt-1.5 max-w-[460px] text-[13px] text-[var(--ink-3)]">
             A folder groups leads you are working — import a whole Data Bank folder, or a selection
             out of one. The leads keep their id, source and history; a folder is a view of the
             pipeline, never a copy of it.
@@ -237,57 +237,57 @@ function FolderCard({
   onDelete: () => void;
 }) {
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-[#dceae8] bg-white transition-colors hover:border-[#8cc3bf]">
+    <div className="group relative overflow-hidden rounded-2xl border border-[var(--rule)] bg-white transition-colors hover:border-[var(--brand-edge)]">
       <Link href={href} className="block px-5 pt-5 pb-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex items-center gap-2">
               {folder.dataBankFolderId && (
-                <span className="rounded-md bg-[#e8f5f3] px-2 py-0.5 text-[11px] tracking-[0.6px] text-[#2f7d78]">
+                <span className="rounded-md bg-[var(--brand-wash)] px-2 py-0.5 text-[11px] tracking-[0.6px] text-[var(--brand)]">
                   DATA BANK
                 </span>
               )}
-              <span className="truncate text-[16px] text-[#2b3a39]">{folder.name}</span>
+              <span className="truncate text-[16px] text-[var(--ink)]">{folder.name}</span>
             </div>
             {folder.description && (
-              <p className="mt-1 truncate text-[12.5px] text-[#9aacaa]">{folder.description}</p>
+              <p className="mt-1 truncate text-[12.5px] text-[var(--ink-3)]">{folder.description}</p>
             )}
           </div>
-          <ChevronRight size={18} className="mt-1 shrink-0 text-[#a9cfcc]" />
+          <ChevronRight size={18} className="mt-1 shrink-0 text-[var(--brand-edge)]" />
         </div>
 
         <div className="mt-4 flex items-end gap-6">
           <div>
-            <div className="text-[24px] tabular-nums text-[#2b3a39]">
+            <div className="text-[24px] tabular-nums text-[var(--ink)]">
               {count.toLocaleString()}
             </div>
-            <div className="text-[11px] tracking-[0.9px] text-[#9aacaa] uppercase">Leads</div>
+            <div className="text-[11px] tracking-[0.9px] text-[var(--ink-3)] uppercase">Leads</div>
           </div>
           {folder.dataBankFolderName && (
             <div className="min-w-0">
-              <div className="truncate text-[15px] text-[#2f7d78]">{folder.dataBankFolderName}</div>
-              <div className="text-[11px] tracking-[0.9px] text-[#9aacaa] uppercase">Source</div>
+              <div className="truncate text-[15px] text-[var(--brand)]">{folder.dataBankFolderName}</div>
+              <div className="text-[11px] tracking-[0.9px] text-[var(--ink-3)] uppercase">Source</div>
             </div>
           )}
         </div>
 
-        <p className="mt-3.5 text-[11.5px] text-[#9aacaa]">
+        <p className="mt-3.5 text-[11.5px] text-[var(--ink-3)]">
           Opening a lead here opens the lead itself — the same record, the same detail pane.
         </p>
       </Link>
 
       {/* Kept out of the <Link> so they are separate targets, not nested ones. */}
-      <div className="flex items-center gap-1 border-t border-[#f0f6f5] px-3 py-2">
+      <div className="flex items-center gap-1 border-t border-[var(--paper-2)] px-3 py-2">
         <button
           onClick={onEdit}
-          className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[12.5px] text-[#5b6d6b] transition-colors hover:bg-[#f2f8f7]"
+          className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[12.5px] text-[var(--ink-2)] transition-colors hover:bg-[var(--brand-wash)]"
         >
           <Pencil size={13} />
           <span>Rename</span>
         </button>
         <button
           onClick={onDelete}
-          className="ml-auto inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[12.5px] text-[#c0574a] transition-colors hover:bg-[#fdeeec]"
+          className="ml-auto inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[12.5px] text-[var(--bad)] transition-colors hover:bg-[var(--bad-wash)]"
         >
           <Trash2 size={13} />
           <span>Delete</span>
@@ -326,49 +326,49 @@ function FolderForm({
 
   return (
     <Overlay onClose={onClose}>
-      <h2 className="text-[18px] text-[#2b3a39]">
+      <h2 className="text-[18px] text-[var(--ink)]">
         {folder ? "Rename folder" : "New client folder"}
       </h2>
-      <p className="mt-1 text-[13px] text-[#7e918f]">
+      <p className="mt-1 text-[13px] text-[var(--ink-3)]">
         A folder groups leads you are already working. Nothing is copied into it.
       </p>
 
       <label className="mt-4 block">
-        <span className="text-[11px] tracking-[0.8px] text-[#9aacaa] uppercase">Name</span>
+        <span className="text-[11px] tracking-[0.8px] text-[var(--ink-3)] uppercase">Name</span>
         <input
           value={name}
           onChange={(event) => setName(event.target.value)}
           disabled={busy}
           placeholder="Facile Town 2"
-          className="mt-1 w-full rounded-lg border border-[#dceae8] bg-white px-3 py-2.5 text-[16px] text-[#2b3a39] outline-none focus:border-[#4f9c99]"
+          className="mt-1 w-full rounded-lg border border-[var(--rule)] bg-white px-3 py-2.5 text-[16px] text-[var(--ink)] outline-none focus:border-[var(--brand-2)]"
         />
       </label>
 
       <label className="mt-3 block">
-        <span className="text-[11px] tracking-[0.8px] text-[#9aacaa] uppercase">Description</span>
+        <span className="text-[11px] tracking-[0.8px] text-[var(--ink-3)] uppercase">Description</span>
         <textarea
           value={description}
           onChange={(event) => setDescription(event.target.value)}
           rows={2}
           disabled={busy}
           placeholder="What this folder is for."
-          className="mt-1 w-full resize-y rounded-lg border border-[#dceae8] bg-white px-3 py-2.5 text-[16px] text-[#2b3a39] outline-none focus:border-[#4f9c99]"
+          className="mt-1 w-full resize-y rounded-lg border border-[var(--rule)] bg-white px-3 py-2.5 text-[16px] text-[var(--ink)] outline-none focus:border-[var(--brand-2)]"
         />
       </label>
 
-      {error && <p className="mt-3 text-[12.5px] text-[#c0574a]">{error}</p>}
+      {error && <p className="mt-3 text-[12.5px] text-[var(--bad)]">{error}</p>}
 
       <div className="mt-5 flex justify-end gap-2.5">
         <button
           onClick={onClose}
-          className="rounded-full border border-[#dceae8] bg-white px-5 py-2.5 text-[13.5px] text-[#5b6d6b]"
+          className="rounded-full border border-[var(--rule)] bg-white px-5 py-2.5 text-[13.5px] text-[var(--ink-2)]"
         >
           Cancel
         </button>
         <button
           onClick={() => void submit()}
           disabled={busy}
-          className="rounded-full bg-[#2f7d78] px-6 py-2.5 text-[13.5px] text-white disabled:opacity-50"
+          className="rounded-full bg-[var(--brand)] px-6 py-2.5 text-[13.5px] text-white disabled:opacity-50"
         >
           {busy ? "Saving…" : folder ? "Save" : "Create folder"}
         </button>
@@ -391,13 +391,13 @@ function ConfirmDelete({
   return (
     <Overlay onClose={onCancel}>
       <div className="flex items-start gap-3">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#fdeeec] text-[#c0574a]">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--bad-wash)] text-[var(--bad)]">
           <AlertTriangle size={18} />
         </span>
         <div>
-          <h2 className="text-[17px] text-[#2b3a39]">Delete {folder.name}?</h2>
+          <h2 className="text-[17px] text-[var(--ink)]">Delete {folder.name}?</h2>
           {/* The distinction people actually need before pressing this. */}
-          <p className="mt-1.5 text-[13px] text-[#5b6d6b]">
+          <p className="mt-1.5 text-[13px] text-[var(--ink-2)]">
             This removes the folder and its {folder.leadCount} membership
             {folder.leadCount === 1 ? "" : "s"}. <strong>The leads themselves stay</strong> — a
             folder is an organisation of the pipeline, never a part of it.
@@ -408,14 +408,14 @@ function ConfirmDelete({
       <div className="mt-5 flex justify-end gap-2.5">
         <button
           onClick={onCancel}
-          className="rounded-full border border-[#dceae8] bg-white px-5 py-2.5 text-[13.5px] text-[#5b6d6b]"
+          className="rounded-full border border-[var(--rule)] bg-white px-5 py-2.5 text-[13.5px] text-[var(--ink-2)]"
         >
           Keep it
         </button>
         <button
           onClick={onConfirm}
           disabled={busy}
-          className="rounded-full bg-[#c0574a] px-6 py-2.5 text-[13.5px] text-white disabled:opacity-50"
+          className="rounded-full bg-[var(--bad)] px-6 py-2.5 text-[13.5px] text-white disabled:opacity-50"
         >
           {busy ? "Deleting…" : "Delete folder"}
         </button>
@@ -442,7 +442,7 @@ function Overlay({ children, onClose }: { children: React.ReactNode; onClose: ()
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
-      className="fixed inset-0 z-[70] flex items-center justify-center bg-[#0f2a28]/45 px-4 py-8"
+      className="fixed inset-0 z-[70] flex items-center justify-center bg-[var(--brand-dk)]/45 px-4 py-8"
     >
       <div className="w-full max-w-[460px] rounded-2xl bg-white p-6 shadow-xl">{children}</div>
     </div>,

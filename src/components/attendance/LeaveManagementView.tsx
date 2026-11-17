@@ -98,9 +98,9 @@ export function LeaveManagementView() {
             padding: "10px 14px",
             fontSize: 13,
             fontWeight: 600,
-            border: `1px solid ${banner.ok ? "#bfe3d2" : "#f0c4bd"}`,
-            background: banner.ok ? "#e4f3ec" : "#fdeeeb",
-            color: banner.ok ? "#1f7a52" : "#a33a29",
+            border: `1px solid ${banner.ok ? "var(--good-edge)" : "var(--bad-edge)"}`,
+            background: banner.ok ? "var(--good-wash)" : "var(--bad-wash)",
+            color: banner.ok ? "var(--good)" : "var(--bad)",
           }}
         >
           {banner.text}
@@ -134,7 +134,7 @@ export function LeaveManagementView() {
         }
       >
         {error && (
-          <p role="alert" style={{ fontSize: 13, color: "#a33a29", marginBottom: 10 }}>
+          <p role="alert" style={{ fontSize: 13, color: "var(--bad)", marginBottom: 10 }}>
             {error}
           </p>
         )}
@@ -150,8 +150,8 @@ export function LeaveManagementView() {
                 key={request.id}
                 style={{
                   borderRadius: 14,
-                  border: `1px solid ${request.status === "PENDING" ? "#ecdcae" : A.line}`,
-                  background: request.status === "PENDING" ? "#fffdf6" : A.surface,
+                  border: `1px solid ${request.status === "PENDING" ? "var(--accent-edge)" : A.line}`,
+                  background: request.status === "PENDING" ? "var(--warn-wash)" : A.surface,
                   padding: "13px 15px",
                 }}
               >
@@ -235,7 +235,7 @@ export function LeaveManagementView() {
                         gap: 6,
                         borderRadius: 999,
                         border: "none",
-                        background: "#2f9e68",
+                        background: "var(--good)",
                         color: "#fff",
                         padding: "8px 16px",
                         fontSize: 12.5,
@@ -254,9 +254,9 @@ export function LeaveManagementView() {
                         alignItems: "center",
                         gap: 6,
                         borderRadius: 999,
-                        border: `1px solid #f0c4bd`,
+                        border: `1px solid var(--bad-edge)`,
                         background: "#fff",
-                        color: "#a33a29",
+                        color: "var(--bad)",
                         padding: "8px 16px",
                         fontSize: 12.5,
                         fontWeight: 700,
@@ -365,7 +365,7 @@ function BalanceAdjuster({ onDone }: { onDone: (message: string) => void }) {
       </div>
 
       {error && (
-        <p role="alert" style={{ marginTop: 8, fontSize: 12.5, color: "#a33a29", fontWeight: 600 }}>
+        <p role="alert" style={{ marginTop: 8, fontSize: 12.5, color: "var(--bad)", fontWeight: 600 }}>
           {error}
         </p>
       )}

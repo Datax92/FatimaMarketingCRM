@@ -15,19 +15,19 @@ import type { Metadata } from "next";
  */
 
 export const metadata: Metadata = {
-  title: "Privacy Policy · Mahziyar Group CRM",
-  description: "How Mahziyar Group handles the details you share through our Facebook, Instagram and WhatsApp ads.",
+  title: "Privacy Policy · Fatima Marketing CRM",
+  description: "How Fatima Marketing handles the details you share through our Facebook, Instagram and WhatsApp ads.",
 };
 
 const UPDATED = "23 September 2026";
 
-const h2: React.CSSProperties = { fontSize: 18, fontWeight: 700, color: "#2f7d78", margin: "28px 0 8px" };
+const h2: React.CSSProperties = { fontSize: 18, fontWeight: 700, color: "var(--brand)", margin: "28px 0 8px" };
 const p: React.CSSProperties = { margin: "0 0 12px" };
 const li: React.CSSProperties = { margin: "0 0 6px" };
 
 export default function PrivacyPolicyPage() {
   return (
-    <main style={{ minHeight: "100dvh", background: "#e9f1f0", padding: "32px 16px", fontFamily: "system-ui, -apple-system, Segoe UI, sans-serif" }}>
+    <main style={{ minHeight: "100dvh", background: "var(--paper)", padding: "32px 16px", fontFamily: "system-ui, -apple-system, Segoe UI, sans-serif" }}>
       <article
         style={{
           maxWidth: 760,
@@ -35,16 +35,16 @@ export default function PrivacyPolicyPage() {
           background: "#fff",
           borderRadius: 18,
           padding: "32px clamp(18px, 5vw, 44px)",
-          color: "#2b3a39",
+          color: "var(--ink)",
           fontSize: 15,
           lineHeight: 1.65,
         }}
       >
-        <h1 style={{ fontSize: 28, fontWeight: 800, color: "#2b3a39", margin: 0 }}>Privacy Policy</h1>
-        <p style={{ ...p, color: "#7e918f", fontSize: 13 }}>Mahziyar Group · last updated {UPDATED}</p>
+        <h1 style={{ fontSize: 28, fontWeight: 800, color: "var(--ink)", margin: 0 }}>Privacy Policy</h1>
+        <p style={{ ...p, color: "var(--ink-3)", fontSize: 13 }}>Fatima Marketing · last updated {UPDATED}</p>
 
         <p style={p}>
-          This policy explains how Mahziyar Group (&ldquo;we&rdquo;) handles the information you share with us when you
+          This policy explains how Fatima Marketing (&ldquo;we&rdquo;) handles the information you share with us when you
           respond to one of our advertisements on Facebook, Instagram or WhatsApp. Our customer-management system
           (&ldquo;the CRM&rdquo;) is used only by our own staff to reply to you about the property you asked about.
         </p>
@@ -73,7 +73,7 @@ export default function PrivacyPolicyPage() {
         <p style={p}>
           Only to contact you about the property or service you enquired about, to arrange meetings or site visits,
           and to keep a record of our conversations with you. We do not sell your information, and we do not share it
-          with anyone outside Mahziyar Group except the service providers that run the CRM for us, listed below.
+          with anyone outside Fatima Marketing except the service providers that run the CRM for us, listed below.
         </p>
 
         <h2 style={h2}>Where it is kept</h2>
@@ -92,8 +92,7 @@ export default function PrivacyPolicyPage() {
 
         <h2 id="deletion" style={h2}>Deleting your information</h2>
         <p style={p}>
-          You can ask us at any time to delete the information we hold about you. Send a WhatsApp message to{" "}
-          <strong>+92 311 1555426</strong> or a message to the <strong>Mahziyar Marketing</strong> Facebook Page saying
+          You can ask us at any time to delete the information we hold about you. Send a WhatsApp message to our business number or a message to the <strong>Fatima Marketing</strong> Facebook Page saying
           &ldquo;Delete my data&rdquo;, from the phone number or account you contacted us with. We will remove your
           details from the CRM within 30 days and confirm when it is done.
         </p>

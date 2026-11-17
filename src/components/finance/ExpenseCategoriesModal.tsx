@@ -187,7 +187,7 @@ export function ExpenseCategoriesModal({
                           setRenaming(null);
                           void run("RENAME", name, to);
                         }}
-                        style={{ ...iconButton, color: "#1f7a52" }}
+                        style={{ ...iconButton, color: "var(--good)" }}
                         aria-label="Save name"
                       >
                         <Check size={14} />
@@ -218,7 +218,7 @@ export function ExpenseCategoriesModal({
                         type="button"
                         disabled={busy}
                         onClick={() => void run("REMOVE", name, undefined, `"${name}" removed.`)}
-                        style={{ ...iconButton, color: "#a33a29" }}
+                        style={{ ...iconButton, color: "var(--bad)" }}
                         aria-label={`Remove ${name}`}
                       >
                         <Trash2 size={13} />

@@ -98,9 +98,9 @@ export function PaymentsPanel({ title, subtitle, payments, isMobile, getIdToken,
 
   const button = (tone: "bad" | "quiet") => ({
     borderRadius: 10,
-    border: tone === "bad" ? "1px solid #f0c4bd" : `1px solid ${X.line}`,
-    background: tone === "bad" ? "#fdeeec" : "#fff",
-    color: tone === "bad" ? "#a8483c" : X.muted,
+    border: tone === "bad" ? "1px solid var(--bad-edge)" : `1px solid ${X.line}`,
+    background: tone === "bad" ? "var(--bad-wash)" : "#fff",
+    color: tone === "bad" ? "var(--bad)" : X.muted,
     padding: "8px 13px",
     fontSize: 12.5,
     fontWeight: 700,
@@ -123,7 +123,7 @@ export function PaymentsPanel({ title, subtitle, payments, isMobile, getIdToken,
           <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", width: "100%" }}>
             <button type="button" onClick={() => setConfirming(null)} style={button("quiet")}>Back</button>
             <button type="button" disabled={busy} onClick={() => void confirm()}
-              style={{ ...button("bad"), background: "#a8483c", color: "#fff", border: "none", opacity: busy ? 0.5 : 1, padding: "10px 18px" }}>
+              style={{ ...button("bad"), background: "var(--bad)", color: "#fff", border: "none", opacity: busy ? 0.5 : 1, padding: "10px 18px" }}>
               {busy ? "Reversing…" : `Reverse ${formatMoney(total)}`}
             </button>
           </div>
@@ -146,7 +146,7 @@ export function PaymentsPanel({ title, subtitle, payments, isMobile, getIdToken,
           <span>Reason (optional)</span>
           <input value={note} onChange={(event) => setNote(event.target.value)} placeholder="Paid from the temporary UBL account; paying from income instead" style={field} />
         </label>
-        {error && <p role="alert" style={{ color: "#a33a29", fontSize: 12.5, fontWeight: 600 }}>{error}</p>}
+        {error && <p role="alert" style={{ color: "var(--bad)", fontSize: 12.5, fontWeight: 600 }}>{error}</p>}
       </OverlayPanel>
     );
   }

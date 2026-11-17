@@ -55,17 +55,17 @@ import { OverlayPanel, OverlayCard } from "@/components/ui/OverlayPanel";
 import type { EmployeeMetrics } from "@/lib/metrics";
 
 const T = {
-  ink: "#1f3b39",
-  muted: "#5b6d6b",
-  faint: "#9aacaa",
-  line: "#dceae8",
-  soft: "#f2f8f7",
+  ink: "var(--ink)",
+  muted: "var(--ink-2)",
+  faint: "var(--ink-3)",
+  line: "var(--rule)",
+  soft: "var(--brand-wash)",
   surface: "#ffffff",
-  ground: "#f3faf9",
-  teal: "#2f7d78",
-  tealSoft: "#e2f0ee",
-  red: "#a33a29",
-  redSoft: "#fdeeeb",
+  ground: "var(--brand-wash)",
+  teal: "var(--brand)",
+  tealSoft: "var(--brand-wash)",
+  red: "var(--bad)",
+  redSoft: "var(--bad-wash)",
 };
 
 const FIELD: React.CSSProperties = {
@@ -286,7 +286,7 @@ export function ManagerFormModal({
             alignItems: "flex-start",
             gap: 8,
             borderRadius: 10,
-            border: "1px solid #f0c4bd",
+            border: "1px solid var(--bad-edge)",
             background: T.redSoft,
             color: T.red,
             padding: "10px 12px",

@@ -152,9 +152,9 @@ export function LateAbsenceView({ canFinalize = false }: { canFinalize?: boolean
             padding: "10px 14px",
             fontSize: 13,
             fontWeight: 600,
-            border: `1px solid ${banner.ok ? "#bfe3d2" : "#f0c4bd"}`,
-            background: banner.ok ? "#e4f3ec" : "#fdeeeb",
-            color: banner.ok ? "#1f7a52" : "#a33a29",
+            border: `1px solid ${banner.ok ? "var(--good-edge)" : "var(--bad-edge)"}`,
+            background: banner.ok ? "var(--good-wash)" : "var(--bad-wash)",
+            color: banner.ok ? "var(--good)" : "var(--bad)",
           }}
         >
           {banner.text}
@@ -179,7 +179,7 @@ export function LateAbsenceView({ canFinalize = false }: { canFinalize?: boolean
         <Figure
           label={closed ? "Deduction (closed)" : "Proposed deduction"}
           value={`Rs ${deductionTotal.toLocaleString("en-PK")}`}
-          note={closed ? "fixed for this month" : "not yet posted to payroll"}
+          note={closed ? "fixed for this month" : "not yet finalised"}
         />
       </div>
 
@@ -222,7 +222,7 @@ export function LateAbsenceView({ canFinalize = false }: { canFinalize?: boolean
         }
       >
         {team.error && (
-          <p role="alert" style={{ fontSize: 13, color: "#a33a29", marginBottom: 10 }}>
+          <p role="alert" style={{ fontSize: 13, color: "var(--bad)", marginBottom: 10 }}>
             {team.error}
           </p>
         )}
@@ -244,13 +244,13 @@ export function LateAbsenceView({ canFinalize = false }: { canFinalize?: boolean
                     justifyContent: "space-between",
                     gap: 10,
                     borderRadius: 12,
-                    border: `1px solid ${entry.outcome.deducted ? "#e0cdb4" : A.line}`,
-                    background: entry.outcome.deducted ? "#f3ece2" : A.surface,
+                    border: `1px solid ${entry.outcome.deducted ? "var(--accent-edge)" : A.line}`,
+                    background: entry.outcome.deducted ? "var(--accent-edge)" : A.surface,
                     padding: "10px 13px",
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
-                    <Clock size={16} color="#8a5a33" />
+                    <Clock size={16} color="var(--warn)" />
                     <div style={{ minWidth: 0 }}>
                       <p style={{ fontSize: 13.5, fontWeight: 700, color: A.ink }}>
                         {entry.name}
@@ -266,7 +266,7 @@ export function LateAbsenceView({ canFinalize = false }: { canFinalize?: boolean
                     style={{
                       fontSize: 14,
                       fontWeight: 800,
-                      color: entry.outcome.deducted ? "#a33a29" : A.faint,
+                      color: entry.outcome.deducted ? "var(--bad)" : A.faint,
                       fontVariantNumeric: "tabular-nums",
                       whiteSpace: "nowrap",
                     }}
@@ -298,7 +298,7 @@ export function LateAbsenceView({ canFinalize = false }: { canFinalize?: boolean
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
-                  <AlertTriangle size={16} color="#c0503c" />
+                  <AlertTriangle size={16} color="var(--bad)" />
                   <div style={{ minWidth: 0 }}>
                     <p style={{ fontSize: 13.5, fontWeight: 700, color: A.ink }}>
                       {entry.name}
@@ -381,7 +381,7 @@ export function LateAbsenceView({ canFinalize = false }: { canFinalize?: boolean
                     style={{
                       fontSize: 15,
                       fontWeight: 800,
-                      color: "#a33a29",
+                      color: "var(--bad)",
                       fontVariantNumeric: "tabular-nums",
                     }}
                   >

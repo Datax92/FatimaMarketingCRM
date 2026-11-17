@@ -53,7 +53,7 @@ export function NetworkNameField({
           letterSpacing: phone ? "0.9px" : "0.1px",
           textTransform: phone ? "uppercase" : "none",
           whiteSpace: "nowrap",
-          color: onDark ? undefined : "#8fa2a0",
+          color: onDark ? undefined : "var(--ink-3)",
           opacity: onDark ? 0.92 : 1,
         }}
       >
@@ -64,7 +64,7 @@ export function NetworkNameField({
         type="text"
         value={value}
         onChange={(event) => writeStoredNetworkName(event.target.value)}
-        placeholder="e.g. Leadway-Office"
+        placeholder="e.g. Fatima-Office"
         autoComplete="off"
         autoCapitalize="none"
         spellCheck={false}
@@ -79,9 +79,9 @@ export function NetworkNameField({
           fontWeight: 600,
           fontFamily: "inherit",
           outline: "none",
-          border: onDark ? "1px solid rgba(255,255,255,0.45)" : "1px solid #dceae8",
-          background: onDark ? "rgba(255,255,255,0.92)" : "#f7fbfa",
-          color: "#1f3b39",
+          border: onDark ? "1px solid rgba(255,255,255,0.45)" : "1px solid var(--rule)",
+          background: onDark ? "rgba(255,255,255,0.92)" : "var(--brand-wash)",
+          color: "var(--ink)",
         }}
       />
     </label>
@@ -119,7 +119,7 @@ export function PunchRulesHint({
         fontSize: 11.5,
         fontWeight: 500,
         lineHeight: 1.45,
-        color: onDark ? undefined : "#8fa2a0",
+        color: onDark ? undefined : "var(--ink-3)",
         opacity: onDark ? 0.82 : 1,
       }}
     >

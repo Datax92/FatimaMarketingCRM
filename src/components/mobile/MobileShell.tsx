@@ -77,6 +77,7 @@ export function useMobileCentre(action: CentreAction): void {
 function hasOwnChrome(pathname: string): boolean {
   return (
     pathname === "/home" ||
+    pathname === "/dashboard" ||
     pathname === "/admin/leads" ||
     pathname === "/subadmin/leads" ||
     pathname === "/employee/leads" ||

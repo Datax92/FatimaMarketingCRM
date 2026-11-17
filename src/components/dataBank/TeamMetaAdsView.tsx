@@ -68,18 +68,18 @@ export function TeamMetaAdsView() {
 
   return (
     <div
-      className="-m-6 min-h-full bg-[#e9f1f0] px-6 py-6 text-[#2b3a39] md:-m-8 md:px-8 md:py-7"
+      className="-m-6 min-h-full bg-[var(--paper)] px-6 py-6 text-[var(--ink)] md:-m-8 md:px-8 md:py-7"
       // The phone shell pads 16px, not 24: the class bleed would scroll the page sideways.
       style={isMobile ? { margin: -16, padding: "16px 14px 28px" } : undefined}
     >
       <header className="mb-5 flex flex-wrap items-end justify-between gap-4">
         <div className="flex items-center gap-3.5">
-          <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#4f9c99] text-white">
+          <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--brand-2)] text-white">
             <Megaphone size={22} />
           </span>
           <div>
-            <h1 className="text-[24px] text-[#2b3a39]">Meta Ads</h1>
-            <p className="mt-0.5 text-[13px] text-[#7e918f]">
+            <h1 className="text-[24px] text-[var(--ink)]">Meta Ads</h1>
+            <p className="mt-0.5 text-[13px] text-[var(--ink-3)]">
               {groups.length} campaign{groups.length === 1 ? "" : "s"} · {totals.waiting.toLocaleString()} waiting on
               your team · {totals.taken.toLocaleString()} accepted
             </p>
@@ -92,7 +92,7 @@ export function TeamMetaAdsView() {
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search campaign"
             aria-label="Search campaigns"
-            className="rounded-full border border-[#dceae8] bg-white px-4 py-2 text-[#2b3a39] outline-none placeholder:text-[#9aacaa] focus:border-[#4f9c99]"
+            className="rounded-full border border-[var(--rule)] bg-white px-4 py-2 text-[var(--ink)] outline-none placeholder:text-[var(--ink-3)] focus:border-[var(--brand-2)]"
             // 16 on the phone, or iOS Safari zooms on focus.
             style={{ fontSize: isMobile ? 16 : 13.5, width: isMobile ? "100%" : undefined }}
           />
@@ -103,16 +103,16 @@ export function TeamMetaAdsView() {
       {truncated && <div className="mb-4"><LeadWindowNotice /></div>}
 
       {groups.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-[#cfe2e0] bg-white/70 px-6 py-16 text-center">
-          <Radio className="mx-auto mb-3 text-[#a9cfcc]" size={30} />
-          <p className="text-[14.5px] text-[#2b3a39]">No Facebook leads on your team yet.</p>
-          <p className="mx-auto mt-1.5 max-w-[520px] text-[13px] leading-relaxed text-[#7e918f]">
+        <div className="rounded-2xl border border-dashed border-[var(--rule-2)] bg-white/70 px-6 py-16 text-center">
+          <Radio className="mx-auto mb-3 text-[var(--brand-edge)]" size={30} />
+          <p className="text-[14.5px] text-[var(--ink)]">No Facebook leads on your team yet.</p>
+          <p className="mx-auto mt-1.5 max-w-[520px] text-[13px] leading-relaxed text-[var(--ink-3)]">
             When a lead from a Facebook or WhatsApp ad goes to anybody on your team — or to you — it
             collects here under its campaign.
           </p>
         </div>
       ) : visible.length === 0 ? (
-        <p className="px-3 py-10 text-center text-[13px] text-[#8fa2a0]">
+        <p className="px-3 py-10 text-center text-[13px] text-[var(--ink-3)]">
           No campaign matches &ldquo;{search.trim()}&rdquo;.
         </p>
       ) : (

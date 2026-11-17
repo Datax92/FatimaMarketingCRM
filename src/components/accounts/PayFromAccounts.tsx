@@ -302,7 +302,7 @@ export function PayFromAccounts({
       <div
         style={{
           padding: "13px 15px", borderRadius: 14,
-          border: `1px solid ${over ? "#f0c4bd" : check.fullyFunded ? "#bfe0dc" : A.border}`,
+          border: `1px solid ${over ? "var(--bad-edge)" : check.fullyFunded ? "var(--brand-edge)" : A.border}`,
           background: over ? A.negativeBg : check.fullyFunded ? A.tealTint : A.tint,
         }}
         aria-live="polite"
@@ -352,8 +352,8 @@ export function PayFromAccounts({
           role="alert"
           style={{
             display: "flex", alignItems: "flex-start", gap: 8,
-            borderRadius: 10, border: "1px solid #f0c4bd", background: E.redBg,
-            padding: "10px 12px", fontSize: 12.5, fontWeight: 600, color: "#a33a29",
+            borderRadius: 10, border: "1px solid var(--bad-edge)", background: E.redBg,
+            padding: "10px 12px", fontSize: 12.5, fontWeight: 600, color: "var(--bad)",
           }}
         >
           <AlertTriangle size={14} style={{ flexShrink: 0, marginTop: 1 }} />

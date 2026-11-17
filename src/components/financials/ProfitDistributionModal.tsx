@@ -68,18 +68,18 @@ import type { DealRecord } from "@/hooks/useFinancials";
 import type { EmployeeData } from "@/hooks/useEmployees";
 
 const T = {
-  ink: "#1f3b39",
-  muted: "#5b6d6b",
-  faint: "#9aacaa",
-  line: "#dceae8",
+  ink: "var(--ink)",
+  muted: "var(--ink-2)",
+  faint: "var(--ink-3)",
+  line: "var(--rule)",
   surface: "#ffffff",
-  ground: "#f3faf9",
-  teal: "#2f7d78",
-  tealSoft: "#e2f0ee",
-  amber: "#a4682a",
-  red: "#a33a29",
-  redSoft: "#fdeeeb",
-  redLine: "#f0c4bd",
+  ground: "var(--brand-wash)",
+  teal: "var(--brand)",
+  tealSoft: "var(--brand-wash)",
+  amber: "var(--warn)",
+  red: "var(--bad)",
+  redSoft: "var(--bad-wash)",
+  redLine: "var(--bad-edge)",
 };
 
 export interface ProfitDistributionModalProps {
@@ -479,7 +479,7 @@ export function ProfitDistributionModal({
             }}
           >
             {result.distributedAmount > result.payoutSource ? (
-              <div style={{ width: "100%", background: "#c0563c" }} />
+              <div style={{ width: "100%", background: "var(--bad)" }} />
             ) : (
               <>
                 <div

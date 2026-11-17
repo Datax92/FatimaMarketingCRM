@@ -19,9 +19,9 @@ import { initialsOf } from "@/lib/leadDisplay";
  * content scanner never saw emits no rule at all.
  */
 export const ROW_TONES = {
-  selected: { background: "#c6e0dc", border: "#3f8f8a" },
-  unopened: { background: "#e2f0ee", border: "#c9dedb" },
-  opened: { background: "#fbfdfd", border: "#e6f1ef" },
+  selected: { background: "var(--rule-2)", border: "var(--brand)" },
+  unopened: { background: "var(--brand-wash)", border: "var(--rule-2)" },
+  opened: { background: "var(--card)", border: "var(--rule)" },
 } as const;
 
 export interface RowChip {
@@ -64,10 +64,10 @@ export function AssignedLeadRow({
         background: shade.background,
         borderColor: shade.border,
       }}
-      className="animate-lead-row grid w-full min-w-0 flex-1 grid-cols-[44px_1fr_auto] items-center gap-3 rounded-lg border px-3.5 py-3 text-left transition-colors hover:border-[#8cc3bf]"
+      className="animate-lead-row grid w-full min-w-0 flex-1 grid-cols-[44px_1fr_auto] items-center gap-3 rounded-lg border px-3.5 py-3 text-left transition-colors hover:border-[var(--brand-edge)]"
     >
       <span
-        className="flex h-11 w-11 items-center justify-center rounded-full border-2 bg-white text-[13.5px] font-medium text-[#4a5c5a]"
+        className="flex h-11 w-11 items-center justify-center rounded-full border-2 bg-white text-[13.5px] font-medium text-[var(--ink-2)]"
         style={{ borderColor: ringColor }}
         aria-hidden
       >
@@ -78,17 +78,17 @@ export function AssignedLeadRow({
           {/* Shading alone would carry read state on colour only — the dot and
               the text beside it give it a second and a third form. */}
           {!seen && !active && (
-            <span className="h-[7px] w-[7px] shrink-0 rounded-full" style={{ background: "#3f8f8a" }} aria-hidden />
+            <span className="h-[7px] w-[7px] shrink-0 rounded-full" style={{ background: "var(--brand)" }} aria-hidden />
           )}
-          <span className="truncate text-sm font-medium text-[#2b3a39]">{name}</span>
+          <span className="truncate text-sm font-medium text-[var(--ink)]">{name}</span>
           {!seen && !active && <span className="sr-only">(not opened yet)</span>}
         </span>
-        <span className="mt-0.5 block truncate text-[11.5px] tabular-nums text-[#7e918f]">
+        <span className="mt-0.5 block truncate text-[11.5px] tabular-nums text-[var(--ink-3)]">
           {phone || "No number"}
         </span>
       </span>
       <span className="flex max-w-[132px] flex-col items-end gap-1.5">
-        <span className="text-right text-[11px] leading-tight text-[#9aacaa]">{kindLabel}</span>
+        <span className="text-right text-[11px] leading-tight text-[var(--ink-3)]">{kindLabel}</span>
         <span
           className="max-w-full truncate rounded-full px-2.5 py-1 text-[11px]"
           style={{ background: chip.background, color: chip.color }}

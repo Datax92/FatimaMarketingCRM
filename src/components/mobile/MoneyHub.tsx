@@ -237,7 +237,7 @@ export function MoneyHub() {
                   height: 42,
                   borderRadius: 13,
                   flexShrink: 0,
-                  background: destination.urgent ? "#f7ead0" : M.tealTint,
+                  background: destination.urgent ? "var(--accent-edge)" : M.tealTint,
                   color: destination.urgent ? M.amberInk : M.tealDeep,
                 }}
               >

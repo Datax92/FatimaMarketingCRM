@@ -1188,7 +1188,7 @@ export async function countAccountContents(token: string, accountId: string) {
 }
 
 /* -------------------------------------------------------------------------- */
-/* Paying a period's total, Investment with X, Mahziyar Group, Receivables     */
+/* Paying a period's total                                                    */
 /* -------------------------------------------------------------------------- */
 
 import {

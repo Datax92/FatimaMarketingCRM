@@ -34,15 +34,15 @@ import type { AssignedItem } from "@/lib/dataBankAssigned";
 import { BULK_QUANTITIES } from "./BulkPromoteBar";
 
 const T = {
-  ink: "#1f3b39",
-  muted: "#5b6d6b",
-  faint: "#9aacaa",
-  line: "#dceae8",
+  ink: "var(--ink)",
+  muted: "var(--ink-2)",
+  faint: "var(--ink-3)",
+  line: "var(--rule)",
   surface: "#ffffff",
-  ground: "#f3faf9",
-  teal: "#2f7d78",
-  tealSoft: "#e2f0ee",
-  red: "#a33a29",
+  ground: "var(--brand-wash)",
+  teal: "var(--brand)",
+  tealSoft: "var(--brand-wash)",
+  red: "var(--bad)",
 };
 
 /**

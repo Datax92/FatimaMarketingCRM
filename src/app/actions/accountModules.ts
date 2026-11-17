@@ -2,7 +2,7 @@
 
 /**
  * The modules that sit on the ledger: personal expenses, StateLife, and
- * Mahziyar marketing income.
+ * marketing income.
  *
  * **None of them moves money.** Each records an obligation or an earning and
  * leaves the movement to `payFromAccounts` in `actions/ledger`, so there is one

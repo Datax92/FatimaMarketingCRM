@@ -1,41 +1,47 @@
 @import "tailwindcss";
+@import "./fm-shell.css";
 
 :root {
   /* Teal CRM theme — values taken directly from the approved design. */
-  --color-background: #e9f1f0;
+  --color-background: var(--paper);
   --color-surface: #FFFFFF;
-  --color-primary: #4f9c99;
-  --color-primary-light: #6fb0ac;
-  --color-primary-dark: #3f8f8a;
-  --color-primary-deep: #2f7d78;
-  --color-success: #3f8f8a;
-  --color-info: #0EA5E9;
-  --color-critical: #e05a4a;
-  --color-text-primary: #2b3a39;
-  --color-text-secondary: #5b6d6b;
+  --color-primary: var(--brand-2);
+  --color-primary-light: var(--ink-3);
+  --color-primary-dark: var(--brand);
+  --color-primary-deep: var(--brand);
+  --color-success: var(--brand);
+  --color-info: var(--brand-2);
+  --color-critical: var(--bad);
+  --color-text-primary: var(--ink);
+  --color-text-secondary: var(--ink-2);
 
   /* Teal surfaces & lines — the exact greys the design panels are built from. */
-  --teal-rail: #f5faf9;
-  --teal-panel: #fbfdfd;
-  --teal-row: #eff7f6;
-  --teal-row-active: #e4f0ef;
-  --teal-input: #eef5f4;
-  --teal-line: #dceae8;
-  --teal-line-strong: #cfe2e0;
-  --teal-muted: #7e918f;
-  --teal-faint: #9aacaa;
+  --teal-rail: var(--paper);
+  --teal-panel: var(--card);
+  --teal-row: var(--brand-wash);
+  --teal-row-active: var(--rule);
+  --teal-input: var(--paper-2);
+  --teal-line: var(--rule);
+  --teal-line-strong: var(--rule-2);
+  --teal-muted: var(--ink-3);
+  --teal-faint: var(--ink-3);
 
   /* Semantic mappings */
   --color-base-dark: var(--color-text-primary);
   --color-base-light: var(--color-background);
 
   /* Typography */
-  --font-heading: var(--font-jakarta), system-ui, sans-serif;
-  --font-sans: var(--font-jakarta), system-ui, sans-serif;
+  /* One face everywhere, as in the Property design system. The older per-screen font
+     variables still appear in inline styles, so they all resolve to Inter. */
+  --font-jakarta: var(--font-inter);
+  --font-dashboard: var(--font-inter);
+  --font-directory: var(--font-inter);
+  --font-heading: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 
   /* Tabular numbers for data emphasis */
-  --font-tabular: var(--font-jakarta), system-ui, sans-serif;
+  --font-tabular: var(--font-sans);
 
   /* Spacing */
   --space-1: 4px;
@@ -166,33 +172,51 @@
  * one palette; `slate-*` still carries neutral text, so contrast is unchanged.
  *
  * The ramp is anchored on the real design values:
- *   500 #4f9c99 panel headers · 600 #3f8f8a buttons · 700 #2f7d78 text & links
+ *   500 var(--brand-2) panel headers · 600 var(--brand) buttons · 700 var(--brand) text & links
  */
 @theme {
-  --color-emerald-50: #f3faf9;
-  --color-emerald-100: #e8f5f3;
-  --color-emerald-200: #cfe6e4;
-  --color-emerald-300: #a9cfcc;
-  --color-emerald-400: #6fb0ac;
-  --color-emerald-500: #4f9c99;
-  --color-emerald-600: #3f8f8a;
-  --color-emerald-700: #2f7d78;
-  --color-emerald-800: #26635f;
-  --color-emerald-900: #1f5450;
-  --color-emerald-950: #123433;
+  --color-emerald-50: var(--brand-wash);
+  --color-emerald-100: var(--brand-wash);
+  --color-emerald-200: var(--brand-edge);
+  --color-emerald-300: var(--brand-edge);
+  --color-emerald-400: var(--ink-3);
+  --color-emerald-500: var(--brand-2);
+  --color-emerald-600: var(--brand);
+  --color-emerald-700: var(--brand);
+  --color-emerald-800: var(--brand);
+  --color-emerald-900: var(--brand-dk);
+  --color-emerald-950: var(--brand-dk);
+
+  /* Neutral greys follow the Property design system (Tailwind's gray ramp). */
+  --color-slate-50: #F9FAFB;
+  --color-slate-100: #F3F4F6;
+  --color-slate-200: #E5E7EB;
+  --color-slate-300: #D1D5DB;
+  --color-slate-400: #9CA3AF;
+  --color-slate-500: #6B7280;
+  --color-slate-600: #4B5563;
+  --color-slate-700: #374151;
+  --color-slate-800: #1F2937;
+  --color-slate-900: #111827;
+  --color-teal-50: var(--brand-wash);
+  --color-teal-100: var(--brand-wash);
+  --color-teal-200: var(--brand-edge);
+  --color-teal-500: var(--brand-2);
+  --color-teal-600: var(--brand);
+  --color-teal-700: var(--brand);
 
   /* Named teal tokens for the leads workspace. */
-  --color-teal-rail: #f5faf9;
-  --color-teal-panel: #fbfdfd;
-  --color-teal-row: #eff7f6;
-  --color-teal-rowactive: #e4f0ef;
-  --color-teal-input: #eef5f4;
-  --color-teal-line: #dceae8;
-  --color-teal-linestrong: #cfe2e0;
-  --color-teal-ink: #2b3a39;
-  --color-teal-muted: #7e918f;
-  --color-teal-faint: #9aacaa;
-  --color-teal-flag: #e05a4a;
+  --color-teal-rail: var(--paper);
+  --color-teal-panel: var(--card);
+  --color-teal-row: var(--brand-wash);
+  --color-teal-rowactive: var(--rule);
+  --color-teal-input: var(--paper-2);
+  --color-teal-line: var(--rule);
+  --color-teal-linestrong: var(--rule-2);
+  --color-teal-ink: var(--ink);
+  --color-teal-muted: var(--ink-3);
+  --color-teal-faint: var(--ink-3);
+  --color-teal-flag: var(--bad);
 }
 
 /*
@@ -213,8 +237,8 @@
     background-color: var(--color-background);
     color: var(--color-text-primary);
     font-family: var(--font-sans);
-    font-size: var(--text-base);
-    line-height: 1.6;
+    font-size: 14px;
+    line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -466,7 +490,7 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: var(--brand-edge);
   border-radius: 4px;
 }
 
@@ -575,7 +599,7 @@
 /* Teal scrollbar for the two scrolling regions. */
 .teal-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #a9cfcc transparent;
+  scrollbar-color: var(--brand-edge) transparent;
 }
 
 .teal-scrollbar::-webkit-scrollbar {
@@ -584,7 +608,7 @@
 }
 
 .teal-scrollbar::-webkit-scrollbar-thumb {
-  background: #a9cfcc;
+  background: var(--brand-edge);
   border-radius: 3px;
 }
 
@@ -621,7 +645,7 @@
 
 .card-coral-gradient,
 .card-pink-gradient {
-  background: linear-gradient(to right, #ffbf96, #fe7096);
+  background: linear-gradient(to right, var(--accent-edge), #fe7096);
   color: white;
   position: relative;
   overflow: hidden;
@@ -629,7 +653,7 @@
 }
 
 .card-blue-gradient {
-  background: linear-gradient(to right, #90caf9, #047edf 99%);
+  background: linear-gradient(to right, var(--brand-edge), var(--brand-2) 99%);
   color: white;
   position: relative;
   overflow: hidden;
@@ -637,7 +661,7 @@
 }
 
 .card-teal-gradient {
-  background: linear-gradient(to right, #84d9d2, #07cdae);
+  background: linear-gradient(to right, var(--brand-2), var(--brand-2));
   color: white;
   position: relative;
   overflow: hidden;
@@ -764,15 +788,15 @@
  */
 @layer utilities {
   .cmt-row:hover {
-    background: #fbfdfd;
+    background: var(--card);
   }
   .cmt-act:hover {
-    background: #f2f8f7;
-    color: #2f7d78;
+    background: var(--brand-wash);
+    color: var(--brand);
   }
   .cmt-del:hover {
-    background: #fdeeec;
-    color: #b4524a;
+    background: var(--bad-wash);
+    color: var(--bad);
   }
 }
 
@@ -786,9 +810,9 @@
  */
 @layer utilities {
   .oe-row:hover {
-    background: #fbfdfd;
+    background: var(--card);
   }
   .oe-pill:hover:not(:disabled) {
-    background: var(--oe-hover, #f4f8f7);
+    background: var(--oe-hover, var(--paper-2));
   }
 }

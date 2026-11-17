@@ -27,17 +27,17 @@ import type { AccountKind } from "@/lib/ledger";
 export const A = {
   ...E,
   /** Money in, approved, positive. */
-  positive: "#1f7a52",
-  positiveBg: "#eaf6f0",
+  positive: "var(--good)",
+  positiveBg: "var(--brand-wash)",
   /** Money out, rejected, negative. */
-  negative: "#b4443a",
-  negativeBg: "#fdeeec",
+  negative: "var(--bad)",
+  negativeBg: "var(--bad-wash)",
   /** Waiting on somebody. */
-  pending: "#9a7420",
-  pendingBg: "#fdf7e7",
+  pending: "var(--warn)",
+  pendingBg: "var(--warn-wash)",
   /** Transfers and anything purely informational. */
-  neutral: "#4d6b86",
-  neutralBg: "#eef3f8",
+  neutral: "var(--brand-2)",
+  neutralBg: "var(--brand-wash)",
   /** The glass panel: a hair of translucency over the page ground. */
   glass: "rgba(255,255,255,0.72)",
   glassBorder: "rgba(226,236,234,0.9)",

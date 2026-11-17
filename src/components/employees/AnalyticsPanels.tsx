@@ -216,7 +216,7 @@ export function AnalyticsPanels({
                   gap: variant === "web" ? 7 : 6,
                   fontSize: variant === "web" ? 12 : 11,
                   fontWeight: 600,
-                  color: "#7e918f",
+                  color: "var(--ink-3)",
                 }}
               >
                 <span
@@ -262,7 +262,7 @@ export function AnalyticsPanels({
           </div>
 
           <div>
-            <div style={{ position: "relative", height: g.chartHeight, borderBottom: "1px solid #e6efee" }}>
+            <div style={{ position: "relative", height: g.chartHeight, borderBottom: "1px solid var(--rule)" }}>
               <div style={{ position: "absolute", left: 0, right: 0, top: 0, borderTop: `1px dashed ${E.page}` }} />
               <div style={{ position: "absolute", left: 0, right: 0, top: "50%", borderTop: `1px dashed ${E.page}` }} />
               <div
@@ -304,7 +304,7 @@ export function AnalyticsPanels({
                                   Math.round((bar.value / analytics.max) * g.chartHeight)
                                 )
                               : 4,
-                          background: bar.value > 0 ? bar.color : "#e9f1f0",
+                          background: bar.value > 0 ? bar.color : "var(--paper)",
                           transition: "height 480ms cubic-bezier(0.22,0.61,0.36,1)",
                         }}
                       />

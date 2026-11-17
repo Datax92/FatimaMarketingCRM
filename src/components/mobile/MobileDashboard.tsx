@@ -228,9 +228,9 @@ export function MobileDashboard() {
             style={{
               marginBottom: 14,
               borderRadius: M.rowRadius,
-              border: "1px solid #f0c4bd",
-              background: "#fdeeeb",
-              color: "#a33a29",
+              border: "1px solid var(--bad-edge)",
+              background: "var(--bad-wash)",
+              color: "var(--bad)",
               padding: "12px 14px",
               fontSize: 12.5,
               fontWeight: 600,
@@ -299,9 +299,9 @@ export function MobileDashboard() {
                 style={{
                   marginTop: 11,
                   borderRadius: M.fieldRadius,
-                  border: `1px solid ${punchNote.ok ? "#bfe0dc" : "#f0c4bd"}`,
-                  background: punchNote.ok ? "#eef8f7" : "#fdeeeb",
-                  color: punchNote.ok ? M.tealDeep : "#a33a29",
+                  border: `1px solid ${punchNote.ok ? "var(--brand-edge)" : "var(--bad-edge)"}`,
+                  background: punchNote.ok ? "var(--brand-wash)" : "var(--bad-wash)",
+                  color: punchNote.ok ? M.tealDeep : "var(--bad)",
                   padding: "9px 12px",
                   fontSize: 12,
                   fontWeight: 600,
@@ -531,7 +531,7 @@ export function MobileDashboard() {
               style={{
                 padding: "4px 12px",
                 borderRadius: 999,
-                background: "#eef5f4",
+                background: "var(--paper-2)",
                 border: `1px solid ${M.cardBorder}`,
                 fontSize: 11,
                 fontWeight: 600,
@@ -572,8 +572,8 @@ export function MobileDashboard() {
                       percent={pct}
                       fill={
                         hit
-                          ? "linear-gradient(90deg,#3f8f8a,#63b3ad)"
-                          : "linear-gradient(90deg,#d8735f,#c0574a)"
+                          ? "linear-gradient(90deg,var(--brand),var(--brand-2))"
+                          : "linear-gradient(90deg,var(--bad),var(--bad))"
                       }
                     />
                   </div>
@@ -625,7 +625,7 @@ export function MobileDashboard() {
                     fontSize: 13.5,
                     fontWeight: 700,
                     color: "#fff",
-                    background: has ? M.teal : "#bcd6d3",
+                    background: has ? M.teal : "var(--rule-2)",
                   }}
                   aria-hidden
                 >
@@ -640,7 +640,7 @@ export function MobileDashboard() {
                       percent={portfolioMax > 0 ? (amount / portfolioMax) * 100 : 0}
                       height={6}
                       minWidth={has ? 5 : 0}
-                      fill={has ? "linear-gradient(90deg,#3f8f8a,#63b3ad)" : "transparent"}
+                      fill={has ? "linear-gradient(90deg,var(--brand),var(--brand-2))" : "transparent"}
                     />
                   </div>
                 </div>

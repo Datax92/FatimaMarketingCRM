@@ -29,15 +29,15 @@ export function avatarRingColor(status: string): string {
   switch (status) {
     case "NEW":
     case "UNASSIGNED_NO_CAPACITY":
-      return "#e05a4a";
+      return "var(--bad)";
     case "ASSIGNED":
-      return "#e0b44f";
+      return "var(--accent)";
     case "CLOSED_WON":
-      return "#4f9c99";
+      return "var(--brand-2)";
     case "CLOSED_LOST":
     case "NOT_INTERESTED":
-      return "#c3d0ce";
+      return "var(--rule-2)";
     default:
-      return "#7fb8d6";
+      return "var(--brand-2)";
   }
 }

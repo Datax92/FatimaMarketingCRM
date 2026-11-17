@@ -211,13 +211,13 @@ const COLUMNS: Column[] = [
 const BANDS: Array<{ key: Band; label: string; tint: string }> = [
   { key: "WORK", label: "Activity in range", tint: "transparent" },
   { key: "OUTCOME", label: "Outcome in range", tint: "transparent" },
-  { key: "PIPELINE", label: "Pipeline today", tint: "#f4f9f8" },
+  { key: "PIPELINE", label: "Pipeline today", tint: "var(--paper)" },
 ];
 
 const BAND_TINT: Record<Band, string> = {
   WORK: "transparent",
   OUTCOME: "transparent",
-  PIPELINE: "#f4f9f8",
+  PIPELINE: "var(--paper)",
 };
 
 const GROUP_LABELS: Record<ReportOption["group"], string> = {
@@ -237,11 +237,11 @@ const GROUP_ORDER: ReportOption["group"][] = ["OVERALL", "EMPLOYEES", "MANAGERS"
  */
 const REPORT_CSS = `
 .rep-row { transition: background-color 140ms ease; }
-.rep-row:hover { background: #f4faf9; }
-.rep-row:focus-visible { outline: 2px solid #4f9c99; outline-offset: -2px; }
+.rep-row:hover { background: var(--brand-wash); }
+.rep-row:focus-visible { outline: 2px solid var(--brand-2); outline-offset: -2px; }
 .rep-head th { position: sticky; top: 0; z-index: 1; }
 .rep-chip { transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease; }
-.rep-chip:hover { border-color: #b6d9d5; color: #2f7d78; }
+.rep-chip:hover { border-color: var(--brand-edge); color: var(--brand); }
 @keyframes rep-in { from { opacity: 0; transform: translate3d(0, 6px, 0); } to { opacity: 1; transform: none; } }
 .rep-in { animation: rep-in 260ms cubic-bezier(0.22,0.61,0.36,1) both; }
 @media (prefers-reduced-motion: reduce) {
@@ -1353,8 +1353,8 @@ const field: React.CSSProperties = {
 function Notice({ tone, children }: { tone: "error" | "warn"; children: React.ReactNode }) {
   const palette =
     tone === "error"
-      ? { bg: E.redBg, border: "#f0c4bd", ink: E.redInk }
-      : { bg: E.amberBg, border: "#ecdcae", ink: E.amberInk };
+      ? { bg: E.redBg, border: "var(--bad-edge)", ink: E.redInk }
+      : { bg: E.amberBg, border: "var(--accent-edge)", ink: E.amberInk };
 
   return (
     <p

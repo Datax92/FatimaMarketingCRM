@@ -41,16 +41,16 @@ import { EditDealModal } from "@/components/financials/EditDealModal";
 import { PieChart, Clock, CheckCircle2, ArrowRight, Wallet } from "lucide-react";
 
 const T = {
-  ink: "#1f3b39",
-  muted: "#5b6d6b",
-  faint: "#9aacaa",
-  line: "#dceae8",
-  hair: "#f0f6f5",
+  ink: "var(--ink)",
+  muted: "var(--ink-2)",
+  faint: "var(--ink-3)",
+  line: "var(--rule)",
+  hair: "var(--paper-2)",
   surface: "#ffffff",
-  teal: "#2f7d78",
-  tealSoft: "#e2f0ee",
-  amber: "#a4682a",
-  amberSoft: "#fdf1e3",
+  teal: "var(--brand)",
+  tealSoft: "var(--brand-wash)",
+  amber: "var(--warn)",
+  amberSoft: "var(--warn-wash)",
 };
 
 const ALL_TIME = resolveRange("ALL");
@@ -767,7 +767,7 @@ function PhoneDealCard({
           width: 42,
           height: 42,
           borderRadius: 13,
-          background: "#f7ead0",
+          background: "var(--accent-edge)",
           color: M.amberInk,
           fontSize: 14,
           fontWeight: 800,

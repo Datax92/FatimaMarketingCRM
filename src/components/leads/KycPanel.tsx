@@ -117,14 +117,14 @@ export function KycPanel({ lead, getIdToken, onResult, compact = false, readOnly
         <div className="flex items-center gap-2.5">
           <span
             className="flex h-9 w-9 items-center justify-center rounded-xl"
-            style={{ background: "#e2f0ee", color: "#2f7d78" }}
+            style={{ background: "var(--brand-wash)", color: "var(--brand)" }}
             aria-hidden
           >
             <IdCard size={17} />
           </span>
           <div>
-            <h3 className="text-[15px] font-semibold text-[#1f3b39]">Know Your Client</h3>
-            <p className="text-[12px] text-[#7e918f]">
+            <h3 className="text-[15px] font-semibold text-[var(--ink)]">Know Your Client</h3>
+            <p className="text-[12px] text-[var(--ink-3)]">
               {filled} of {total} fields recorded
               {lead.kycUpdatedAt ? ` · updated ${formatBusinessDateTime(lead.kycUpdatedAt)}` : ""}
             </p>
@@ -132,14 +132,14 @@ export function KycPanel({ lead, getIdToken, onResult, compact = false, readOnly
         </div>
 
         {dirty && !readOnly && (
-          <span className="inline-flex items-center gap-1.5 text-[12px] text-[#a4682a]">
+          <span className="inline-flex items-center gap-1.5 text-[12px] text-[var(--warn)]">
             <AlertCircle size={13} /> Unsaved changes
           </span>
         )}
       </div>
 
       {errors.length > 0 && (
-        <ul className="mb-4 space-y-1 rounded-lg border border-[#f0c4bd] bg-[#fdeeeb] p-3.5 text-xs text-[#a33a29]">
+        <ul className="mb-4 space-y-1 rounded-lg border border-[var(--bad-edge)] bg-[var(--bad-wash)] p-3.5 text-xs text-[var(--bad)]">
           {errors.map((error) => (
             <li key={error}>{error}</li>
           ))}
@@ -147,15 +147,15 @@ export function KycPanel({ lead, getIdToken, onResult, compact = false, readOnly
       )}
 
       {saved && (
-        <p className="mb-4 inline-flex items-center gap-2 rounded-lg border border-[#cfe2e0] bg-[#eaf6f4] px-3.5 py-2.5 text-xs text-[#2f7d78]">
+        <p className="mb-4 inline-flex items-center gap-2 rounded-lg border border-[var(--rule-2)] bg-[var(--brand-wash)] px-3.5 py-2.5 text-xs text-[var(--brand)]">
           <CheckCircle2 size={14} /> {saved}
         </p>
       )}
 
       <div className="space-y-4">
         {KYC_SECTIONS.map((section) => (
-          <section key={section.title} className="overflow-hidden rounded-xl border border-[#e0eeec] bg-white">
-            <h4 className="border-b border-[#f0f6f5] px-5 py-3 text-[12px] font-semibold tracking-[0.6px] text-[#5b6d6b] uppercase">
+          <section key={section.title} className="overflow-hidden rounded-xl border border-[var(--rule)] bg-white">
+            <h4 className="border-b border-[var(--paper-2)] px-5 py-3 text-[12px] font-semibold tracking-[0.6px] text-[var(--ink-2)] uppercase">
               {section.title}
             </h4>
 
@@ -169,7 +169,7 @@ export function KycPanel({ lead, getIdToken, onResult, compact = false, readOnly
                   <div key={key} className={field.kind === "longtext" && !compact ? "sm:col-span-2" : undefined}>
                     <label
                       htmlFor={id}
-                      className="mb-1.5 flex items-center gap-1.5 text-[12px] font-medium text-[#5b6d6b]"
+                      className="mb-1.5 flex items-center gap-1.5 text-[12px] font-medium text-[var(--ink-2)]"
                     >
                       {field.label}
                       {/* These four rewrite the lead row on save. Saying so on
@@ -178,7 +178,7 @@ export function KycPanel({ lead, getIdToken, onResult, compact = false, readOnly
                         <span
                           title="Saving also updates this on the lead"
                           className="inline-flex items-center gap-1 rounded-full px-1.5 py-px text-[10px]"
-                          style={{ background: "#e2f0ee", color: "#2f7d78" }}
+                          style={{ background: "var(--brand-wash)", color: "var(--brand)" }}
                         >
                           <RefreshCw size={9} /> lead
                         </span>
@@ -193,7 +193,7 @@ export function KycPanel({ lead, getIdToken, onResult, compact = false, readOnly
                         disabled={readOnly || busy}
                         placeholder={field.placeholder}
                         onChange={(event) => set(key, event.target.value)}
-                        className="w-full resize-y rounded-lg border border-[#d6e7e5] bg-white px-3 py-2 text-[13.5px] text-[#1f3b39] outline-none placeholder:text-[#9aacaa] focus:border-[#4f9c99] disabled:bg-[#f6faf9]"
+                        className="w-full resize-y rounded-lg border border-[var(--rule)] bg-white px-3 py-2 text-[13.5px] text-[var(--ink)] outline-none placeholder:text-[var(--ink-3)] focus:border-[var(--brand-2)] disabled:bg-[var(--paper)]"
                       />
                     ) : (
                       <input
@@ -206,11 +206,11 @@ export function KycPanel({ lead, getIdToken, onResult, compact = false, readOnly
                         disabled={readOnly || busy}
                         placeholder={field.placeholder}
                         onChange={(event) => set(key, event.target.value)}
-                        className="w-full rounded-lg border border-[#d6e7e5] bg-white px-3 py-2 text-[13.5px] text-[#1f3b39] outline-none placeholder:text-[#9aacaa] focus:border-[#4f9c99] disabled:bg-[#f6faf9]"
+                        className="w-full rounded-lg border border-[var(--rule)] bg-white px-3 py-2 text-[13.5px] text-[var(--ink)] outline-none placeholder:text-[var(--ink-3)] focus:border-[var(--brand-2)] disabled:bg-[var(--paper)]"
                       />
                     )}
 
-                    {field.hint && <p className="mt-1 text-[11px] text-[#9aacaa]">{field.hint}</p>}
+                    {field.hint && <p className="mt-1 text-[11px] text-[var(--ink-3)]">{field.hint}</p>}
                   </div>
                 );
               })}
@@ -225,12 +225,12 @@ export function KycPanel({ lead, getIdToken, onResult, compact = false, readOnly
             type="submit"
             disabled={busy}
             className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-[13.5px] font-medium text-white transition-opacity disabled:opacity-60"
-            style={{ background: "#2f7d78" }}
+            style={{ background: "var(--brand)" }}
           >
             <Save size={15} />
             {busy ? "Saving…" : "Save client record"}
           </button>
-          <span className="text-[12px] text-[#7e918f]">
+          <span className="text-[12px] text-[var(--ink-3)]">
             The CNIC and address carry into Deal Entry automatically.
           </span>
         </div>

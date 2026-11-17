@@ -115,18 +115,18 @@ export function MetaLeadsView() {
 
   return (
     <div
-      className="-m-6 min-h-full bg-[#e9f1f0] px-6 py-6 text-[#2b3a39] md:-m-8 md:px-8 md:py-7"
+      className="-m-6 min-h-full bg-[var(--paper)] px-6 py-6 text-[var(--ink)] md:-m-8 md:px-8 md:py-7"
       // The phone shell pads 16px, not 24: the class bleed would scroll the page sideways.
       style={isMobile ? { margin: -16, padding: "16px 14px 28px" } : undefined}
     >
       <header className="mb-5 flex flex-wrap items-end justify-between gap-4">
         <div className="flex items-center gap-3.5">
-          <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#4f9c99] text-white">
+          <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--brand-2)] text-white">
             <Megaphone size={22} />
           </span>
           <div>
-            <h1 className="text-[24px] text-[#2b3a39]">Meta Leads</h1>
-            <p className="mt-0.5 text-[13px] text-[#7e918f]">
+            <h1 className="text-[24px] text-[var(--ink)]">Meta Leads</h1>
+            <p className="mt-0.5 text-[13px] text-[var(--ink-3)]">
               {groups.length} campaign{groups.length === 1 ? "" : "s"} · {totals.waiting.toLocaleString()} waiting
               for you · {totals.taken.toLocaleString()} yours
             </p>
@@ -139,7 +139,7 @@ export function MetaLeadsView() {
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search campaign"
             aria-label="Search campaigns"
-            className="rounded-full border border-[#dceae8] bg-white px-4 py-2 text-[#2b3a39] outline-none placeholder:text-[#9aacaa] focus:border-[#4f9c99]"
+            className="rounded-full border border-[var(--rule)] bg-white px-4 py-2 text-[var(--ink)] outline-none placeholder:text-[var(--ink-3)] focus:border-[var(--brand-2)]"
             // 16 on the phone, or iOS Safari zooms on focus.
             style={{ fontSize: isMobile ? 16 : 13.5, width: isMobile ? "100%" : undefined }}
           />
@@ -155,7 +155,7 @@ export function MetaLeadsView() {
 
       {offers.length > 0 && (
         <div className="mb-5 space-y-2.5">
-          <p className="flex items-center gap-1.5 text-[11px] tracking-[1px] text-[#2f7d78] uppercase">
+          <p className="flex items-center gap-1.5 text-[11px] tracking-[1px] text-[var(--brand)] uppercase">
             <Sparkles size={13} />
             Waiting for your answer
           </p>
@@ -173,17 +173,17 @@ export function MetaLeadsView() {
       )}
 
       {groups.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-[#cfe2e0] bg-white/70 px-6 py-16 text-center">
-          <Radio className="mx-auto mb-3 text-[#a9cfcc]" size={30} />
-          <p className="text-[14.5px] text-[#2b3a39]">No Facebook leads yet.</p>
-          <p className="mx-auto mt-1.5 max-w-[520px] text-[13px] leading-relaxed text-[#7e918f]">
+        <div className="rounded-2xl border border-dashed border-[var(--rule-2)] bg-white/70 px-6 py-16 text-center">
+          <Radio className="mx-auto mb-3 text-[var(--brand-edge)]" size={30} />
+          <p className="text-[14.5px] text-[var(--ink)]">No Facebook leads yet.</p>
+          <p className="mx-auto mt-1.5 max-w-[520px] text-[13px] leading-relaxed text-[var(--ink-3)]">
             When a lead from a Facebook or WhatsApp ad is offered to you, it appears above with{" "}
             {ACCEPT_WINDOW_MINUTES} minutes to accept, and the ones you take collect here under their
             campaign.
           </p>
         </div>
       ) : visible.length === 0 ? (
-        <p className="px-3 py-10 text-center text-[13px] text-[#8fa2a0]">
+        <p className="px-3 py-10 text-center text-[13px] text-[var(--ink-3)]">
           No campaign matches &ldquo;{search.trim()}&rdquo;.
         </p>
       ) : (
@@ -226,21 +226,21 @@ function OfferCard({
   onAnswer: (kind: "ACCEPT" | "PASS") => void;
 }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-[#bfe0dc] bg-white">
-      <div style={{ height: 3, background: "#4f9c99" }} />
+    <div className="overflow-hidden rounded-2xl border border-[var(--brand-edge)] bg-white">
+      <div style={{ height: 3, background: "var(--brand-2)" }} />
       <div style={{ padding: isMobile ? "14px 15px" : "16px 18px" }}>
         <div className="flex flex-wrap items-center gap-2.5">
-          <span className="text-[16px] text-[#2b3a39]">{lead.name || "New lead"}</span>
+          <span className="text-[16px] text-[var(--ink)]">{lead.name || "New lead"}</span>
           <Countdown deadline={lead.acceptDeadlineAt} />
         </div>
 
-        <div className="mt-1.5 flex items-center gap-1.5 text-[13px] text-[#5b6d6b]">
-          <Phone size={13} className="shrink-0 text-[#2f7d78]" />
+        <div className="mt-1.5 flex items-center gap-1.5 text-[13px] text-[var(--ink-2)]">
+          <Phone size={13} className="shrink-0 text-[var(--brand)]" />
           <span className="tabular-nums">{lead.phone || "No number"}</span>
         </div>
-        <p className="mt-1 text-[11.5px] text-[#9aacaa]">{describeLeadSource(lead)}</p>
+        <p className="mt-1 text-[11.5px] text-[var(--ink-3)]">{describeLeadSource(lead)}</p>
         {lead.notes && (
-          <p className="mt-2 rounded-lg bg-[#f2f8f7] px-2.5 py-2 text-[12px] leading-relaxed text-[#5b6d6b]">
+          <p className="mt-2 rounded-lg bg-[var(--brand-wash)] px-2.5 py-2 text-[12px] leading-relaxed text-[var(--ink-2)]">
             {lead.notes}
           </p>
         )}
@@ -250,7 +250,7 @@ function OfferCard({
             type="button"
             onClick={() => onAnswer("ACCEPT")}
             disabled={disabled}
-            className="flex flex-[2] items-center justify-center gap-1.5 rounded-xl bg-[#4f9c99] px-3.5 py-3 text-[14px] text-white transition-colors hover:bg-[#3f8f8a]"
+            className="flex flex-[2] items-center justify-center gap-1.5 rounded-xl bg-[var(--brand-2)] px-3.5 py-3 text-[14px] text-white transition-colors hover:bg-[var(--brand)]"
             style={{ opacity: disabled && !busy ? 0.5 : 1, cursor: disabled ? "default" : "pointer" }}
           >
             <Check size={16} />
@@ -261,7 +261,7 @@ function OfferCard({
             onClick={() => onAnswer("PASS")}
             disabled={disabled}
             title={`Passing costs ${LEAD_SCORE_WEIGHTS.pass} points on your lane score`}
-            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-[#dceae8] bg-[#f7fbfa] px-2.5 py-3 text-[13.5px] text-[#5b6d6b] transition-colors hover:border-[#8cc3bf]"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-[var(--rule)] bg-[var(--brand-wash)] px-2.5 py-3 text-[13.5px] text-[var(--ink-2)] transition-colors hover:border-[var(--brand-edge)]"
             style={{ opacity: disabled && !busy ? 0.5 : 1, cursor: disabled ? "default" : "pointer" }}
           >
             <ArrowRightLeft size={15} />
@@ -269,7 +269,7 @@ function OfferCard({
           </button>
         </div>
         {/* Said before the button, not discovered after it. */}
-        <p className="mt-2 text-[10.5px] leading-normal text-[#9aacaa]">
+        <p className="mt-2 text-[10.5px] leading-normal text-[var(--ink-3)]">
           Passing hands it to the next person in the lane and costs {LEAD_SCORE_WEIGHTS.pass} points on
           your priority score.
         </p>
@@ -304,8 +304,8 @@ function Countdown({ deadline }: { deadline: Lead["acceptDeadlineAt"] }) {
     <span
       className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11.5px] tabular-nums"
       style={{
-        background: lapsed ? "#eef5f4" : urgent ? "#fbe9e6" : "#e8f5f3",
-        color: lapsed ? "#9aacaa" : urgent ? "#a8473b" : "#2f7d78",
+        background: lapsed ? "var(--paper-2)" : urgent ? "var(--bad-wash)" : "var(--brand-wash)",
+        color: lapsed ? "var(--ink-3)" : urgent ? "var(--bad)" : "var(--brand)",
       }}
     >
       <Clock size={11} />

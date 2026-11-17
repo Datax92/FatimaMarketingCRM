@@ -274,9 +274,9 @@ export function MyAttendanceView({
             padding: "10px 14px",
             fontSize: 13,
             fontWeight: 600,
-            border: `1px solid ${banner.ok ? "#bfe3d2" : "#f0c4bd"}`,
-            background: banner.ok ? "#e4f3ec" : "#fdeeeb",
-            color: banner.ok ? "#1f7a52" : "#a33a29",
+            border: `1px solid ${banner.ok ? "var(--good-edge)" : "var(--bad-edge)"}`,
+            background: banner.ok ? "var(--good-wash)" : "var(--bad-wash)",
+            color: banner.ok ? "var(--good)" : "var(--bad)",
           }}
         >
           {banner.text}
@@ -290,9 +290,9 @@ export function MyAttendanceView({
             borderRadius: 12,
             padding: "10px 14px",
             fontSize: 13,
-            border: "1px solid #f0c4bd",
-            background: "#fdeeeb",
-            color: "#a33a29",
+            border: "1px solid var(--bad-edge)",
+            background: "var(--bad-wash)",
+            color: "var(--bad)",
           }}
         >
           {attendance.error}
@@ -415,7 +415,7 @@ export function MyAttendanceView({
                   style={{
                     fontSize: 20,
                     fontWeight: 800,
-                    color: balance.remaining > 0 ? A.teal : "#a33a29",
+                    color: balance.remaining > 0 ? A.teal : "var(--bad)",
                     fontVariantNumeric: "tabular-nums",
                   }}
                 >
@@ -530,13 +530,13 @@ export function MyAttendanceView({
                   alignItems: "center",
                   justifyContent: "space-between",
                   borderRadius: 12,
-                  border: `1px solid ${deduction.deducted ? "#e0cdb4" : A.line}`,
-                  background: deduction.deducted ? "#f3ece2" : A.surface,
+                  border: `1px solid ${deduction.deducted ? "var(--accent-edge)" : A.line}`,
+                  background: deduction.deducted ? "var(--accent-edge)" : A.surface,
                   padding: "9px 13px",
                 }}
               >
                 <div style={{ minWidth: 0, display: "flex", alignItems: "center", gap: 9 }}>
-                  <Clock size={15} color={deduction.deducted ? "#7a5230" : A.faint} />
+                  <Clock size={15} color={deduction.deducted ? "var(--warn)" : A.faint} />
                   <div>
                     <p style={{ fontSize: 12.5, fontWeight: 700, color: A.ink }}>
                       Late #{deduction.occurrence}
@@ -551,7 +551,7 @@ export function MyAttendanceView({
                   style={{
                     fontSize: 15,
                     fontWeight: 800,
-                    color: deduction.deducted ? "#a33a29" : A.faint,
+                    color: deduction.deducted ? "var(--bad)" : A.faint,
                     fontVariantNumeric: "tabular-nums",
                   }}
                 >
@@ -631,12 +631,12 @@ function PunchButton({
 export function LeaveStatusChip({ status }: { status: keyof typeof LEAVE_STATUS_LABELS }) {
   const tone =
     status === "APPROVED"
-      ? { bg: "#e4f3ec", border: "#bfe3d2", text: "#1f7a52" }
+      ? { bg: "var(--good-wash)", border: "var(--good-edge)", text: "var(--good)" }
       : status === "REJECTED"
-        ? { bg: "#fdeeeb", border: "#f0c4bd", text: "#a33a29" }
+        ? { bg: "var(--bad-wash)", border: "var(--bad-edge)", text: "var(--bad)" }
         : status === "CANCELLED"
-          ? { bg: "#f2f6f6", border: "#e2eae9", text: "#8fa2a0" }
-          : { bg: "#fdf5e0", border: "#ecdcae", text: "#8a6a17" };
+          ? { bg: "var(--paper-2)", border: "var(--rule)", text: "var(--ink-3)" }
+          : { bg: "var(--warn-wash)", border: "var(--accent-edge)", text: "var(--warn)" };
 
   return (
     <span

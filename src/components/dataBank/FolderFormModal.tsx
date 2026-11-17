@@ -36,8 +36,8 @@ interface Row {
 }
 
 const INPUT =
-  "w-full rounded-md border border-[#dceae8] bg-[#f7fbfa] px-3 py-2.5 text-[13.5px] text-[#2b3a39] outline-none transition-colors placeholder:text-[#9aacaa] focus:border-[#4f9c99] focus:bg-white focus:ring-2 focus:ring-[#4f9c99]/15";
-const LABEL = "flex flex-col gap-1.5 text-xs text-[#5b6d6b]";
+  "w-full rounded-md border border-[var(--rule)] bg-[var(--brand-wash)] px-3 py-2.5 text-[13.5px] text-[var(--ink)] outline-none transition-colors placeholder:text-[var(--ink-3)] focus:border-[var(--brand-2)] focus:bg-white focus:ring-2 focus:ring-[var(--brand-2)]/15";
+const LABEL = "flex flex-col gap-1.5 text-xs text-[var(--ink-2)]";
 
 export function FolderFormModal({
   folder,
@@ -205,7 +205,7 @@ export function FolderFormModal({
 
   return createPortal(
     <div className="fixed inset-0 z-[120] flex items-center justify-center px-4 py-8">
-      <div className="animate-modal-fade fixed inset-0 bg-[#1e3a38]/45" onClick={onClose} aria-hidden />
+      <div className="animate-modal-fade fixed inset-0 bg-[var(--ink)]/45" onClick={onClose} aria-hidden />
 
       <form
         onSubmit={submit}
@@ -214,7 +214,7 @@ export function FolderFormModal({
         aria-label={editing ? "Edit folder" : "New folder"}
         className="animate-modal-pop relative z-10 grid max-h-full w-full max-w-[640px] grid-rows-[auto_1fr_auto] overflow-hidden rounded-2xl bg-white shadow-[0_26px_70px_rgba(18,54,52,0.32)]"
       >
-        <div className="bg-[#4f9c99] px-6 py-4 text-white">
+        <div className="bg-[var(--brand-2)] px-6 py-4 text-white">
           <div className="text-[17px] font-medium">{editing ? "Edit Folder" : "New Folder"}</div>
           <p className="mt-0.5 text-[12.5px] text-white/85">
             A source, and the columns its sheets carry.
@@ -223,7 +223,7 @@ export function FolderFormModal({
 
         <div className="teal-scrollbar min-h-0 space-y-4 overflow-y-auto px-6 py-5">
           {error && (
-            <div role="alert" className="rounded-md border border-[#f0c4bd] bg-[#fdeeeb] px-4 py-3 text-[13px] text-[#a33a29]">
+            <div role="alert" className="rounded-md border border-[var(--bad-edge)] bg-[var(--bad-wash)] px-4 py-3 text-[13px] text-[var(--bad)]">
               {error}
             </div>
           )}
@@ -238,7 +238,7 @@ export function FolderFormModal({
                 className={INPUT}
               />
               {clash && (
-                <span className="text-[12px] leading-[1.45] text-[#9a6b1f]">
+                <span className="text-[12px] leading-[1.45] text-[var(--warn)]">
                   A folder called <strong className="font-medium">{clash.name}</strong> already
                   exists. You can still use this name — the two will sit next to each other in the
                   list, so give them something to tell them apart if they are different sources.
@@ -285,20 +285,20 @@ export function FolderFormModal({
                 </option>
               ))}
             </select>
-            <span className="text-[11.5px] text-[#9aacaa]">
+            <span className="text-[11.5px] text-[var(--ink-3)]">
               A sub admin can work and promote the rows in the folders assigned to them, and sees no
               others.
             </span>
           </label>
           )}
 
-          <div className="h-px bg-[#e6f1f0]" />
+          <div className="h-px bg-[var(--rule)]" />
 
           <div>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <div className="text-[14.5px] text-[#2b3a39]">Fields</div>
-                <p className="mt-0.5 text-[12.5px] text-[#7e918f]">
+                <div className="text-[14.5px] text-[var(--ink)]">Fields</div>
+                <p className="mt-0.5 text-[12.5px] text-[var(--ink-3)]">
                   Name these exactly as your sheet names them. Mark which one is the name and which
                   is the phone number.
                 </p>
@@ -307,17 +307,17 @@ export function FolderFormModal({
                 type="button"
                 onClick={addRow}
                 disabled={rows.length >= MAX_FIELDS_PER_FOLDER}
-                className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[#e8f5f3] px-4 py-2 text-[12.5px] text-[#2f7d78] transition-colors hover:bg-[#daeeeb] disabled:opacity-50"
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[var(--brand-wash)] px-4 py-2 text-[12.5px] text-[var(--brand)] transition-colors hover:bg-[var(--brand-edge)] disabled:opacity-50"
               >
                 + Add Field
               </button>
             </div>
 
             <div className="mt-3 grid grid-cols-[1fr_minmax(150px,190px)_auto_auto_auto] items-center gap-x-3 gap-y-2">
-              <span className="text-[11px] tracking-[0.9px] text-[#9aacaa] uppercase">Column name</span>
-              <span className="text-[11px] tracking-[0.9px] text-[#9aacaa] uppercase">Fills in</span>
-              <span className="text-center text-[11px] tracking-[0.9px] text-[#9aacaa] uppercase">Name</span>
-              <span className="text-center text-[11px] tracking-[0.9px] text-[#9aacaa] uppercase">Phone</span>
+              <span className="text-[11px] tracking-[0.9px] text-[var(--ink-3)] uppercase">Column name</span>
+              <span className="text-[11px] tracking-[0.9px] text-[var(--ink-3)] uppercase">Fills in</span>
+              <span className="text-center text-[11px] tracking-[0.9px] text-[var(--ink-3)] uppercase">Name</span>
+              <span className="text-center text-[11px] tracking-[0.9px] text-[var(--ink-3)] uppercase">Phone</span>
               <span />
 
               {rows.map((row, index) => (
@@ -341,8 +341,8 @@ export function FolderFormModal({
               ))}
             </div>
 
-            <p className="mt-3 text-[12px] text-[#9aacaa]">
-              <strong className="text-[#5b6d6b]">Fills in</strong> carries a column through when the
+            <p className="mt-3 text-[12px] text-[var(--ink-3)]">
+              <strong className="text-[var(--ink-2)]">Fills in</strong> carries a column through when the
               row is promoted into a lead: point the sheet&rsquo;s price column at Total Price and it
               is already there on Deal Entry, and a CNIC column lands on the KYC tab. It applies to
               rows promoted <em>after</em> you save this — a lead already created keeps whatever it
@@ -350,7 +350,7 @@ export function FolderFormModal({
             </p>
 
             {editing && (
-              <p className="mt-2 text-[12px] text-[#9aacaa]">
+              <p className="mt-2 text-[12px] text-[var(--ink-3)]">
                 Renaming a field keeps its data. Removing one hides its values rather than deleting
                 them — adding the field back brings them straight back.
               </p>
@@ -358,19 +358,19 @@ export function FolderFormModal({
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-3 border-t border-[#e6f1f0] bg-[#f7fbfa] px-6 py-4">
+        <div className="flex items-center justify-end gap-3 border-t border-[var(--rule)] bg-[var(--brand-wash)] px-6 py-4">
           <button
             type="button"
             onClick={onClose}
             disabled={busy}
-            className="rounded-full border border-[#cfe2e0] bg-white px-6 py-2.5 text-[13.5px] text-[#5b6d6b] transition-colors hover:bg-[#f3faf9] disabled:opacity-50"
+            className="rounded-full border border-[var(--rule-2)] bg-white px-6 py-2.5 text-[13.5px] text-[var(--ink-2)] transition-colors hover:bg-[var(--brand-wash)] disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={busy}
-            className="rounded-full bg-[#3f8f8a] px-7 py-2.5 text-[13.5px] text-white transition-colors hover:bg-[#2f7d78] disabled:opacity-50"
+            className="rounded-full bg-[var(--brand)] px-7 py-2.5 text-[13.5px] text-white transition-colors hover:bg-[var(--brand)] disabled:opacity-50"
           >
             {busy ? "Saving…" : editing ? "Save Changes" : "Create Folder"}
           </button>
@@ -439,7 +439,7 @@ function FieldRow({
         onClick={onRemove}
         disabled={!canRemove}
         aria-label={`Remove field ${index + 1}`}
-        className="flex h-8 w-8 items-center justify-center rounded-md text-[#c0574a] transition-colors hover:bg-[#fdeeec] disabled:opacity-30"
+        className="flex h-8 w-8 items-center justify-center rounded-md text-[var(--bad)] transition-colors hover:bg-[var(--bad-wash)] disabled:opacity-30"
       >
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
           <path d="M6 6l12 12M18 6 6 18" />
@@ -467,7 +467,7 @@ function RoleDot({
       aria-label={label}
       onClick={onSelect}
       className={`mx-auto flex h-[22px] w-[22px] items-center justify-center rounded-full border-2 transition-colors ${
-        checked ? "border-[#3f8f8a] bg-[#3f8f8a]" : "border-[#cfe2e0] bg-white hover:border-[#8cc3bf]"
+        checked ? "border-[var(--brand)] bg-[var(--brand)]" : "border-[var(--rule-2)] bg-white hover:border-[var(--brand-edge)]"
       }`}
     >
       {checked && <span className="h-2 w-2 rounded-full bg-white" aria-hidden />}

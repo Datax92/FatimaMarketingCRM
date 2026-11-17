@@ -29,8 +29,8 @@ import {
 type Variant = "web" | "mobile";
 
 /** One tone for all three activity cuts — see `CutChip`. */
-const ACTIVITY_INK = "#4d7590";
-const ACTIVITY_TINT = "#eaf1f6";
+const ACTIVITY_INK = "var(--brand-2)";
+const ACTIVITY_TINT = "var(--brand-wash)";
 
 /**
  * Period + lead cut.
@@ -320,7 +320,7 @@ export function DossierFilterBar({
               gap: web ? 4 : 6,
               padding: web ? 3 : 0,
               borderRadius: web ? 10 : 0,
-              background: web ? "#f0f6f5" : "transparent",
+              background: web ? "var(--paper-2)" : "transparent",
               overflowX: "auto",
               minWidth: 0,
             }}
@@ -448,8 +448,8 @@ function ActivitySummary({
         marginBottom: web ? 12 : 10,
         padding: web ? "10px 13px" : "10px 12px",
         borderRadius: 12,
-        border: `1px solid ${activity.error ? "#f0c4bd" : "#dbe7ee"}`,
-        background: activity.error ? "#fdeeeb" : ACTIVITY_TINT,
+        border: `1px solid ${activity.error ? "var(--bad-edge)" : "var(--brand-edge)"}`,
+        background: activity.error ? "var(--bad-wash)" : ACTIVITY_TINT,
       }}
       aria-live="polite"
     >
@@ -460,7 +460,7 @@ function ActivitySummary({
             fontWeight: 800,
             letterSpacing: 0.4,
             textTransform: "uppercase",
-            color: activity.error ? "#a33a29" : ACTIVITY_INK,
+            color: activity.error ? "var(--bad)" : ACTIVITY_INK,
           }}
         >
           Activity · {heading}
@@ -471,7 +471,7 @@ function ActivitySummary({
       </div>
 
       {activity.error ? (
-        <p style={{ marginTop: 6, fontSize: web ? 12 : 11.5, fontWeight: 600, color: "#a33a29" }}>
+        <p style={{ marginTop: 6, fontSize: web ? 12 : 11.5, fontWeight: 600, color: "var(--bad)" }}>
           {activity.error}
         </p>
       ) : nothing ? (
@@ -492,7 +492,7 @@ function ActivitySummary({
                 padding: web ? "3px 10px" : "3px 9px",
                 borderRadius: 999,
                 background: "#fff",
-                border: `1px solid ${figure.sub ? "#e4eef4" : "#d3e2ea"}`,
+                border: `1px solid ${figure.sub ? "var(--brand-wash)" : "var(--brand-edge)"}`,
                 fontSize: web ? 12 : 11.5,
                 color: ACTIVITY_INK,
                 opacity: activity.loading ? 0.5 : 1,
@@ -514,7 +514,7 @@ function ActivitySummary({
       )}
 
       {activity.warning && !activity.error && (
-        <p style={{ marginTop: 6, fontSize: web ? 11.5 : 11, fontWeight: 600, color: "#8a6d3b" }}>
+        <p style={{ marginTop: 6, fontSize: web ? 11.5 : 11, fontWeight: 600, color: "var(--warn)" }}>
           {activity.warning}
         </p>
       )}
@@ -561,13 +561,13 @@ function CutChip({
         flexShrink: 0,
         padding: web ? "8px 15px" : "9px 15px",
         borderRadius: web ? 8 : 999,
-        border: web ? "none" : `1px solid ${active ? accent : "#dceae8"}`,
+        border: web ? "none" : `1px solid ${active ? accent : "var(--rule)"}`,
         fontSize: web ? 12.5 : 12,
         fontWeight: 700,
         cursor: "pointer",
         fontFamily: "inherit",
         whiteSpace: "nowrap",
-        color: active ? (web ? accent : cut === "ALL" ? "#fff" : accent) : "#7e918f",
+        color: active ? (web ? accent : cut === "ALL" ? "#fff" : accent) : "var(--ink-3)",
         background: active ? (web ? fill : cut === "ALL" ? E.teal : fill) : web ? "transparent" : "#fff",
         boxShadow: web && active ? "0 1px 3px rgba(31,92,88,0.12)" : "none",
         WebkitTapHighlightColor: "transparent",

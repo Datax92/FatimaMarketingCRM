@@ -227,7 +227,7 @@ export function AttendanceReportsView() {
         }
       >
         {team.error && (
-          <p role="alert" style={{ fontSize: 13, color: "#a33a29", marginBottom: 10 }}>
+          <p role="alert" style={{ fontSize: 13, color: "var(--bad)", marginBottom: 10 }}>
             {team.error}
           </p>
         )}
@@ -284,10 +284,10 @@ export function AttendanceReportsView() {
                         </p>
                       </td>
                       <td style={numericCell}>{row.present}</td>
-                      <td style={{ ...numericCell, color: row.late > 0 ? "#7a5230" : A.ink }}>
+                      <td style={{ ...numericCell, color: row.late > 0 ? "var(--warn)" : A.ink }}>
                         {row.late}
                       </td>
-                      <td style={{ ...numericCell, color: row.absent > 0 ? "#a33a29" : A.ink }}>
+                      <td style={{ ...numericCell, color: row.absent > 0 ? "var(--bad)" : A.ink }}>
                         {row.absent}
                       </td>
                       <td style={numericCell}>{row.leave}</td>
@@ -295,7 +295,7 @@ export function AttendanceReportsView() {
                       <td
                         style={{
                           ...numericCell,
-                          color: row.deduction > 0 ? "#a33a29" : A.faint,
+                          color: row.deduction > 0 ? "var(--bad)" : A.faint,
                         }}
                       >
                         {row.deduction > 0 ? `Rs ${row.deduction.toLocaleString("en-PK")}` : "—"}

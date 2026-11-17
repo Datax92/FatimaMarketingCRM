@@ -84,9 +84,9 @@ const CAPABILITIES = {
  * Inline, not Tailwind arbitrary values — see the note in `StageChrome`.
  */
 const ROW_TONES = {
-  selected: { background: "#c6e0dc", border: "#3f8f8a" },
-  unopened: { background: "#e2f0ee", border: "#c9dedb" },
-  opened: { background: "#fbfdfd", border: "#e6f1ef" },
+  selected: { background: "var(--rule-2)", border: "var(--brand)" },
+  unopened: { background: "var(--brand-wash)", border: "var(--rule-2)" },
+  opened: { background: "var(--card)", border: "var(--rule)" },
 } as const;
 
 /**
@@ -316,12 +316,12 @@ export function LeadsWorkspace({
   return (
     // Full-bleed: cancels the <main> padding so the panes meet the chrome the
     // way they do in the design.
-    <div className="leads-shell -m-6 grid grid-cols-1 overflow-hidden bg-[#e9f1f0] text-[#2b3a39] md:-m-8 lg:grid-cols-[372px_1fr]">
+    <div className="leads-shell -m-6 grid grid-cols-1 overflow-hidden bg-[var(--paper)] text-[var(--ink)] md:-m-8 lg:grid-cols-[372px_1fr]">
       {/* ================================================================= */}
       {/* Left — lead list                                                  */}
       {/* ================================================================= */}
       <section
-        className={`min-w-0 flex-col border-r border-[#dceae8] bg-[#fbfdfd] ${
+        className={`min-w-0 flex-col border-r border-[var(--rule)] bg-[var(--card)] ${
           showDetailOnMobile ? "hidden min-h-0 lg:flex" : "flex min-h-0"
         }`}
         aria-label={scope?.title ?? "All leads"}
@@ -335,7 +335,7 @@ export function LeadsWorkspace({
           gives every heading its own `color`, and a colour set on the element
           beats the one inherited from this teal parent.
         */}
-        <div className="flex min-h-[78px] shrink-0 items-center justify-between gap-3 bg-[#4f9c99] px-5 py-3.5 text-white">
+        <div className="flex min-h-[78px] shrink-0 items-center justify-between gap-3 bg-[var(--brand-2)] px-5 py-3.5 text-white">
           {/* The folder's name when scoped, clamped to two lines rather than
               truncated: "ALL LEADS" always fits, but a folder name is the one
               thing on this bar that has to be readable. */}
@@ -380,7 +380,7 @@ export function LeadsWorkspace({
           {!scope && workspaceRole === "employee" && (
             <button
               onClick={() => setPersonalOpen(true)}
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-white py-1.5 pr-3.5 pl-3 text-[12.5px] text-[#2f7d78] transition-colors hover:bg-[#eafaf8] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-white py-1.5 pr-3.5 pl-3 text-[12.5px] text-[var(--brand)] transition-colors hover:bg-[var(--brand-wash)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
               <UserPlus size={13} />
               <span>Personal lead</span>
@@ -399,15 +399,15 @@ export function LeadsWorkspace({
 
         {/* Search — 16px / 18px / 10px, per the design */}
         <div className="flex shrink-0 items-center gap-2.5 px-[18px] pt-4 pb-2.5">
-          <div className="flex flex-1 items-center gap-2 rounded-md border border-[#dceae8] bg-[#eef5f4] px-3 py-2 focus-within:border-[#4f9c99] focus-within:ring-2 focus-within:ring-[#4f9c99]/15">
-            <Search size={16} className="shrink-0 text-[#7e918f]" />
+          <div className="flex flex-1 items-center gap-2 rounded-md border border-[var(--rule)] bg-[var(--paper-2)] px-3 py-2 focus-within:border-[var(--brand-2)] focus-within:ring-2 focus-within:ring-[var(--brand-2)]/15">
+            <Search size={16} className="shrink-0 text-[var(--ink-3)]" />
             <input
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search Data"
               aria-label="Search leads by name, phone, email, city or ID"
-              className="min-w-0 flex-1 bg-transparent text-[13.5px] text-[#2b3a39] outline-none placeholder:text-[#7e918f]"
+              className="min-w-0 flex-1 bg-transparent text-[13.5px] text-[var(--ink)] outline-none placeholder:text-[var(--ink-3)]"
             />
           </div>
           {/* The source picker — every origin on this list, with counts. */}
@@ -418,8 +418,8 @@ export function LeadsWorkspace({
             title="Filter by source"
             className={`flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-md border transition-colors ${
               source || sourcesOpen
-                ? "border-[#4f9c99] bg-[#4f9c99] text-white"
-                : "border-[#dceae8] bg-[#eef5f4] text-[#5b6d6b] hover:border-[#8cc3bf]"
+                ? "border-[var(--brand-2)] bg-[var(--brand-2)] text-white"
+                : "border-[var(--rule)] bg-[var(--paper-2)] text-[var(--ink-2)] hover:border-[var(--brand-edge)]"
             }`}
           >
             <SlidersHorizontal size={17} />
@@ -429,7 +429,7 @@ export function LeadsWorkspace({
         {sourcesOpen && (
           <div className="shrink-0 px-[18px] pb-2.5">
             <ul
-              className="teal-scrollbar max-h-[260px] overflow-y-auto rounded-md border border-[#dceae8] bg-white py-1"
+              className="teal-scrollbar max-h-[260px] overflow-y-auto rounded-md border border-[var(--rule)] bg-white py-1"
               aria-label="Filter by source"
             >
               {[{ key: null as string | null, count: inScope.length }, ...sources].map((option) => {
@@ -439,14 +439,14 @@ export function LeadsWorkspace({
                     <button
                       onClick={() => selectSource(option.key)}
                       className={`flex w-full items-center gap-2.5 px-3 py-2 text-left text-[13px] transition-colors ${
-                        active ? "bg-[#e8f5f3] text-[#1f5c58]" : "text-[#2b3a39] hover:bg-[#f3faf9]"
+                        active ? "bg-[var(--brand-wash)] text-[var(--brand-dk)]" : "text-[var(--ink)] hover:bg-[var(--brand-wash)]"
                       }`}
                     >
                       <span className="flex w-4 shrink-0 justify-center">
-                        {active && <Check size={14} className="text-[#2f7d78]" />}
+                        {active && <Check size={14} className="text-[var(--brand)]" />}
                       </span>
                       <span className="min-w-0 flex-1 truncate">{option.key ?? "All sources"}</span>
-                      <span className="rounded-full bg-[#eef5f4] px-2 py-px text-[11.5px] tabular-nums text-[#2f7d78]">
+                      <span className="rounded-full bg-[var(--paper-2)] px-2 py-px text-[11.5px] tabular-nums text-[var(--brand)]">
                         {option.count.toLocaleString()}
                       </span>
                     </button>
@@ -463,7 +463,7 @@ export function LeadsWorkspace({
           <div className="flex shrink-0 px-[18px] pb-1">
             <button
               onClick={() => selectSource(null)}
-              className="inline-flex max-w-full items-center gap-1.5 rounded-full bg-[#e8f5f3] py-1 pr-2 pl-3 text-[12px] text-[#1f5c58] transition-colors hover:bg-[#d7ede9]"
+              className="inline-flex max-w-full items-center gap-1.5 rounded-full bg-[var(--brand-wash)] py-1 pr-2 pl-3 text-[12px] text-[var(--brand-dk)] transition-colors hover:bg-[var(--brand-edge)]"
               aria-label={`Clear source filter ${source}`}
             >
               <span className="truncate">{source}</span>
@@ -509,8 +509,8 @@ export function LeadsWorkspace({
                 }
                 className={`relative inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-2 text-[12.5px] transition-colors ${
                   active
-                    ? "border-[#4f9c99] bg-[#4f9c99] text-white"
-                    : "border-[#cfe2e0] bg-white text-[#5b6d6b] hover:border-[#8cc3bf]"
+                    ? "border-[var(--brand-2)] bg-[var(--brand-2)] text-white"
+                    : "border-[var(--rule-2)] bg-white text-[var(--ink-2)] hover:border-[var(--brand-edge)]"
                 }`}
               >
                 {tone && isStageFilter(key) && <StageIcon stage={key} size={12} />}
@@ -519,7 +519,7 @@ export function LeadsWorkspace({
                     an employee. The admin row has no such chip since New was
                     removed, so `urgentChip` is null there. */}
                 {key === urgentChip && count > 0 && (
-                  <span className="absolute -top-2 -right-2 flex h-[22px] min-w-[22px] items-center justify-center rounded-full bg-[#e05a4a] px-1.5 text-[11px] text-white">
+                  <span className="absolute -top-2 -right-2 flex h-[22px] min-w-[22px] items-center justify-center rounded-full bg-[var(--bad)] px-1.5 text-[11px] text-white">
                     {count}
                   </span>
                 )}
@@ -543,7 +543,7 @@ export function LeadsWorkspace({
         {/* Rows */}
         <div className="teal-scrollbar flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto px-3.5 pb-5">
           {visible.length === 0 ? (
-            <p className="px-3 py-10 text-center text-[13px] text-[#8fa2a0]">
+            <p className="px-3 py-10 text-center text-[13px] text-[var(--ink-3)]">
               {query.trim()
                 ? `No leads match “${query.trim()}”.`
                 : "No leads in this filter yet."}
@@ -569,10 +569,10 @@ export function LeadsWorkspace({
                     background: tone.background,
                     borderColor: tone.border,
                   }}
-                  className="animate-lead-row grid w-full grid-cols-[44px_1fr_auto] items-center gap-3 rounded-lg border px-3.5 py-3 text-left transition-colors hover:border-[#8cc3bf]"
+                  className="animate-lead-row grid w-full grid-cols-[44px_1fr_auto] items-center gap-3 rounded-lg border px-3.5 py-3 text-left transition-colors hover:border-[var(--brand-edge)]"
                 >
                   <span
-                    className="flex h-11 w-11 items-center justify-center rounded-full border-2 bg-white text-[13.5px] font-medium text-[#4a5c5a]"
+                    className="flex h-11 w-11 items-center justify-center rounded-full border-2 bg-white text-[13.5px] font-medium text-[var(--ink-2)]"
                     style={{ borderColor: avatarRingColor(lead.status) }}
                     aria-hidden
                   >
@@ -587,11 +587,11 @@ export function LeadsWorkspace({
                       {!seen && !active && (
                         <span
                           className="h-[7px] w-[7px] shrink-0 rounded-full"
-                          style={{ background: "#3f8f8a" }}
+                          style={{ background: "var(--brand)" }}
                           aria-hidden
                         />
                       )}
-                      <span className="truncate text-sm font-medium text-[#2b3a39]">{lead.name}</span>
+                      <span className="truncate text-sm font-medium text-[var(--ink)]">{lead.name}</span>
                       {!seen && !active && <span className="sr-only">(not opened yet)</span>}
                     </span>
                     {/*
@@ -600,7 +600,7 @@ export function LeadsWorkspace({
                       must never be the only signal — and on a merged list the
                       stage is the whole point of the filter chips.
                     */}
-                    <span className="mt-0.5 block truncate text-[11.5px] text-[#7e918f]">
+                    <span className="mt-0.5 block truncate text-[11.5px] text-[var(--ink-3)]">
                       {/* Full id, visually ellipsised — a hard slice would render a
                           plausible-but-wrong id that someone could quote. */}
                       {LEAD_STATUS_LABELS[lead.status] ?? lead.status} · {lead.id}
@@ -609,26 +609,26 @@ export function LeadsWorkspace({
                         (§7). Both are questions asked while scanning the list,
                         not after opening a lead. */}
                     <span
-                      className="mt-0.5 block truncate text-[11px] text-[#9aacaa]"
+                      className="mt-0.5 block truncate text-[11px] text-[var(--ink-3)]"
                       title={`${describeLeadSource(lead)} · ${employeeName(lead.assignedUserId, lead) ?? "Unassigned"}`}
                     >
                       {describeLeadSource(lead)}
                       {" · "}
-                      <span className={lead.assignedUserId ? "text-[#5b6d6b]" : "text-[#c08a2e]"}>
+                      <span className={lead.assignedUserId ? "text-[var(--ink-2)]" : "text-[var(--warn)]"}>
                         {employeeName(lead.assignedUserId, lead) ?? "Unassigned"}
                       </span>
                     </span>
                   </span>
 
                   <span className="flex flex-col items-end gap-1.5">
-                    <span className="text-right text-[11.5px] leading-tight text-[#5b6d6b]">
+                    <span className="text-right text-[11.5px] leading-tight text-[var(--ink-2)]">
                       {formatBusinessDateTime(lead.createdAt)}
                     </span>
                     <span className="flex items-center gap-1.5">
                       {stage.value && <StagePill stage={stage.value} manual={stage.manual} />}
                       <span
                         title={`${lead.followUpCount ?? 0} follow-ups logged`}
-                        className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#4f9c99] px-1 text-[11px] text-white"
+                        className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--brand-2)] px-1 text-[11px] text-white"
                       >
                         {lead.followUpCount ?? 0}
                       </span>

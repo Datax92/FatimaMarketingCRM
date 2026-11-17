@@ -51,7 +51,7 @@ const FIELD_LABEL: React.CSSProperties = {
 
 const FIELD: React.CSSProperties = {
   border: `1px solid ${M.cardBorder}`,
-  background: "#f7fbfa",
+  background: "var(--brand-wash)",
   borderRadius: M.fieldRadius,
   padding: "13px 14px",
   fontSize: 14,
@@ -206,9 +206,9 @@ export function MobileAddLead({
           role="alert"
           style={{
             borderRadius: M.fieldRadius,
-            border: "1px solid #f0c4bd",
-            background: "#fdeeeb",
-            color: "#a33a29",
+            border: "1px solid var(--bad-edge)",
+            background: "var(--bad-wash)",
+            color: "var(--bad)",
             padding: "11px 13px",
             fontSize: 12.5,
             fontWeight: 600,
@@ -486,7 +486,7 @@ export function MobileAddLead({
             key={row.key}
             style={{
               border: `1px solid ${M.cardBorder}`,
-              background: "#f7fbfa",
+              background: "var(--brand-wash)",
               borderRadius: M.fieldRadius,
               padding: "12px 13px",
               display: "flex",

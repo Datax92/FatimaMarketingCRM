@@ -75,7 +75,7 @@ export function MyProfileView({ scope }: { scope: "employee" | "subadmin" }) {
 
   if (!me) {
     return (
-      <div style={{ padding: 24, fontSize: 14, color: "#5b6d6b" }}>
+      <div style={{ padding: 24, fontSize: 14, color: "var(--ink-2)" }}>
         Your profile could not be loaded. Try again in a moment.
       </div>
     );
