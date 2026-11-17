@@ -1,5 +1,7 @@
 "use client";
 
+import { createPortal } from "react-dom";
+
 /**
  * The account chip every phone header carries, and the sheet behind it.
  *
@@ -61,6 +63,8 @@ const I = {
   folder: "M4 7c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3ZM4 7v10c0 1.7 3.6 3 8 3s8-1.3 8-3V7M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3",
   megaphone: "M4 11v3l12 5V6L4 11ZM16 9a3 3 0 0 1 0 6M6 14v5h3v-4",
   sliders: "M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0M14 4v4M8 10v4M16 16v4",
+  chat: "M4 20l1.4-4.2A8 8 0 1 1 8.2 18.6L4 20ZM9 10.5h.01M12 10.5h.01M15 10.5h.01",
+  palette: "M12 3a9 9 0 1 0 0 18c1 0 1.5-.8 1.5-1.6 0-1-.8-1.4-.8-2.4 0-1 .8-1.5 1.8-1.5H17a4 4 0 0 0 4-4C21 6.6 17 3 12 3ZM7.5 11h.01M9.5 7.5h.01M14.5 7.5h.01",
   wallet: "M3 8h14a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H3zM3 8V6a2 2 0 0 1 2-2h10M16 13h2",
 } as const;
 
@@ -98,7 +102,8 @@ const ADMIN_SECTIONS: Section[] = [
       { label: "Priority Settings", path: "/admin/employees/priority", d: I.sliders },
     ],
   },
-  { title: "Clients", d: I.clients, items: [{ label: "Folders", path: "/admin/clients", d: I.clients }] },
+  { title: "Clients", d: I.clients, items: [{ label: "Client Folders", path: "/admin/clients", d: I.clients }] },
+  { title: "WhatsApp", d: I.chat, items: [{ label: "WhatsApp Monitor", path: "/admin/whatsapp", d: I.chat }] },
   {
     title: "Financials",
     d: I.money,
@@ -130,7 +135,14 @@ const ADMIN_SECTIONS: Section[] = [
       { label: "Settings", path: "/admin/attendance/settings", d: I.settings },
     ],
   },
-  { title: "Settings", d: I.settings, items: [{ label: "Settings", path: "/admin/settings", d: I.settings }] },
+  {
+    title: "Settings",
+    d: I.settings,
+    items: [
+      { label: "Settings", path: "/admin/settings", d: I.settings },
+      { label: "Appearance", path: "/appearance", d: I.palette },
+    ],
+  },
 ];
 
 /** A manager's menu depends on their kind: HR runs payroll, expenses and attendance settings. */
@@ -162,7 +174,7 @@ function subAdminSections(isHr: boolean): Section[] {
         { label: "Reports", path: "/subadmin/reports", d: I.report },
       ],
     },
-    { title: "Clients", d: I.clients, items: [{ label: "Folders", path: "/subadmin/clients", d: I.clients }] },
+    { title: "Clients", d: I.clients, items: [{ label: "Client Folders", path: "/subadmin/clients", d: I.clients }] },
     {
       title: "Attendance",
       d: I.attendance,
@@ -184,6 +196,7 @@ function subAdminSections(isHr: boolean): Section[] {
         ...(isHr ? [{ label: "Office Expenses", path: "/subadmin/financials/expenses", d: I.receipt }] : []),
       ],
     },
+    { title: "Appearance", d: I.palette, items: [{ label: "Appearance", path: "/appearance", d: I.palette }] },
   ];
 }
 
@@ -217,6 +230,7 @@ const EMPLOYEE_SECTIONS: Section[] = [
       { label: "My Leave", path: "/employee/attendance/leave", d: I.calendar },
     ],
   },
+  { title: "Appearance", d: I.palette, items: [{ label: "Appearance", path: "/appearance", d: I.palette }] },
 ];
 
 function sectionsFor(role: string | undefined, isHr: boolean): Section[] {
@@ -316,14 +330,16 @@ function AccountSheet({ onClose }: { onClose: () => void }) {
     }
   };
 
-  return (
+  // Portalled and fixed to the screen: the button sits inside headers that clip,
+  // and a sheet positioned against them was squeezed into the header itself.
+  return createPortal(
     <div
       className="mob-fade"
       onClick={onClose}
       style={{
-        position: "absolute",
+        position: "fixed",
         inset: 0,
-        zIndex: 60,
+        zIndex: 200,
         background: "rgba(24,52,50,0.42)",
         display: "flex",
         alignItems: "flex-end",
@@ -583,7 +599,8 @@ function AccountSheet({ onClose }: { onClose: () => void }) {
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
