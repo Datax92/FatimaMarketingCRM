@@ -1,0 +1,1529 @@
+"use client";
+
+import type { StateLifeSlab, StateLifeRates } from '@/lib/stateLife';
+import {
+  saveCapitalSpending as _saveCapitalSpending,
+  deleteCapitalSpending as _deleteCapitalSpending,
+  countCapitalSpendingPayments as _countCapitalSpendingPayments,
+  type CapitalSpendingInput,
+} from '@/app/actions/capitalInvestment';
+import { IS_DEMO, demo, getDemoSession } from '@/lib/demo/store';
+import type { LeadStatus } from '@/lib/leadStatus';
+import type { ActionResult } from '@/lib/actionResult';
+import { forgetSaved, savedOrLoad } from '@/lib/quietSaved';
+import { karachiMonthKey } from '@/lib/dates';
+import { enqueue, patchQueuedFollowUp, registerReplayers, shouldQueue } from '@/lib/outbox';
+
+import { assignLead as _assignLead, reassignLeadManual as _reassignLeadManual, acceptLead as _acceptLead,
+  passLead as _passLead, setLeadStatus as _setLeadStatus, setLeadPipelineStage as _setLeadPipelineStage, createLead as _createLead, reviewColdLead as _reviewColdLead, assignLeadsBulk as _assignLeadsBulk } from '@/app/actions/leads';
+import type { PipelineStage } from '@/lib/pipelineStage';
+import { saveKyc as _saveKyc } from '@/app/actions/kyc';
+import type { KycValues } from '@/lib/kyc';
+import {
+  finalizeProfitDistribution as _finalizeProfitDistribution,
+  reopenProfitDistribution as _reopenProfitDistribution,
+  type ShareInput,
+  type FinalizeResult,
+} from '@/app/actions/profitDistribution';
+import { addFollowUp as _addFollowUp, updateFollowUp as _updateFollowUp } from '@/app/actions/followUps';
+import {
+  closeDeal as _closeDeal,
+  updateClosedDeal as _updateClosedDeal,
+  type DealEntryInput,
+} from '@/app/actions/closedDeals';
+import { addExpense as _addExpense } from '@/app/actions/expenses';
+import { addReceivable as _addReceivable } from '@/app/actions/receivables';
+import { addCommitteeRecord as _addCommitteeRecord, addInvestmentRecord as _addInvestmentRecord, addCapitalInvestmentRecord as _addCapitalInvestmentRecord, addPersonalExpense as _addPersonalExpense } from '@/app/actions/accounts';
+import { createEmployee as _createEmployee, updateEmployee as _updateEmployee, setEmployeePriority as _setEmployeePriority, setEmployeeAutoPriority as _setEmployeeAutoPriority, updateLaneSettings as _updateLaneSettings, setEmployeeTargets as _setEmployeeTargets, recalculateEmployeePriorities as _recalculateEmployeePriorities, disableEmployee as _disableEmployee, enableEmployee as _enableEmployee, setEmployeeSubAdmin as _setEmployeeSubAdmin, setSubAdminTeam as _setSubAdminTeam, type PriorityChange } from '@/app/actions/employees';
+import type { KpiTargets } from '@/lib/kpi';
+import { createCampaign as _createCampaign, type CreateCampaignInput } from '@/app/actions/campaigns';
+import {
+  createDataBankFolder as _createDataBankFolder,
+  updateDataBankFolder as _updateDataBankFolder,
+  setFolderLane as _setFolderLane,
+  deleteDataBankFolder as _deleteDataBankFolder,
+  countFolderRecords as _countFolderRecords,
+  saveColumnMap as _saveColumnMap,
+  addDataBankRecord as _addDataBankRecord,
+  updateDataBankRecord as _updateDataBankRecord,
+  deleteDataBankRecord as _deleteDataBankRecord,
+  importDataBankRows as _importDataBankRows,
+  promoteDataBankRecord as _promoteDataBankRecord,
+  promoteDataBankRecords as _promoteDataBankRecords,
+  assignRecordsToManager as _assignRecordsToManager,
+  listPersonalLeadFolders as _listPersonalLeadFolders,
+  addPersonalLead as _addPersonalLead,
+  type PersonalLeadFolder,
+  type FolderInput,
+  type ImportChunkResult,
+  type HandoffResult,
+} from '@/app/actions/dataBank';
+import type { ColumnMap, DataBankStatus } from '@/lib/dataBank';
+import {
+  recordAttendancePing as _recordAttendancePing,
+  punchAttendance as _punchAttendance,
+  getPunchRequirements as _getPunchRequirements,
+  setAttendanceOverride as _setAttendanceOverride,
+  getAttendanceConfig as _getAttendanceConfig,
+  setAttendanceConfig as _setAttendanceConfig,
+  type AttendanceConfig,
+  type AttendancePingResult,
+  type AttendancePunchResult,
+  type PunchContext,
+  type PunchKind,
+} from '@/app/actions/attendance';
+import type { AttendanceStatus } from '@/lib/attendance';
+import type { ExpenseStatus } from '@/lib/officeExpenses';
+import {
+  listSalaryProfiles as _listSalaryProfiles,
+  saveSalaryProfile as _saveSalaryProfile,
+  getPayroll as _getPayroll,
+  savePayrollMonth as _savePayrollMonth,
+  payPayrollLine as _payPayrollLine,
+  getPayslips as _getPayslips,
+  type PayrollPeriod,
+  type Payslip,
+  type SalaryProfileRecord,
+} from '@/app/actions/payroll';
+import {
+  getExpenseCategories as _getExpenseCategories,
+  manageExpenseCategory as _manageExpenseCategory,
+  createOfficeExpense as _createOfficeExpense,
+  updateOfficeExpense as _updateOfficeExpense,
+  setOfficeExpenseStatus as _setOfficeExpenseStatus,
+  deleteOfficeExpense as _deleteOfficeExpense,
+  type OfficeExpenseInput,
+} from '@/app/actions/officeExpenses';
+import type { LeaveType } from '@/lib/attendancePolicy';
+import {
+  adjustAttendance as _adjustAttendance,
+  finalizeAttendanceDeductions as _finalizeAttendanceDeductions,
+  getAttendancePeriod as _getAttendancePeriod,
+  getAttendanceSummary as _getAttendanceSummary,
+  getTeamAttendance as _getTeamAttendance,
+  reopenAttendancePeriod as _reopenAttendancePeriod,
+  type AttendanceAdjustment,
+  type AttendancePeriod,
+  type AttendanceSummary,
+  type TeamAttendanceResult,
+} from '@/app/actions/attendance';
+import {
+  requestLeave as _requestLeave,
+  decideLeave as _decideLeave,
+  cancelLeave as _cancelLeave,
+  getLeaveSummary as _getLeaveSummary,
+  adjustLeaveBalance as _adjustLeaveBalance,
+  type LeaveSummary,
+} from '@/app/actions/leave';
+import { markNotificationRead as _markNotificationRead, markAllNotificationsRead as _markAllNotificationsRead } from '@/app/actions/notifications';
+import { buildTeamReport as _buildTeamReport, type TeamReport } from '@/app/actions/reports';
+import {
+  buildActivityBreakdown as _buildActivityBreakdown,
+  type ActivityBreakdown,
+} from '@/app/actions/activity';
+import {
+  createClientFolder as _createClientFolder,
+  updateClientFolder as _updateClientFolder,
+  deleteClientFolder as _deleteClientFolder,
+  addLeadsToClientFolder as _addLeadsToClientFolder,
+  removeLeadFromClientFolder as _removeLeadFromClientFolder,
+} from '@/app/actions/clients';
+import { getMonitoringConfig as _getMonitoringConfig, setNoContactDays as _setNoContactDays, type MonitoringConfig } from '@/app/actions/config';
+import { DEFAULT_NO_CONTACT_DAYS } from '@/lib/constants/monitoring';
+import {
+  createAccount as _createAccount,
+  updateAccount as _updateAccount,
+  recalculateBalances as _recalculateBalances,
+  payFromAccounts as _payFromAccounts,
+  createTransfer as _createTransfer,
+  payBackSpending as _payBackSpending,
+  addManualTransaction as _addManualTransaction,
+  reverseTransaction as _reverseTransaction,
+  updateTransaction as _updateTransaction,
+  deleteTransaction as _deleteTransaction,
+  deleteAccount as _deleteAccount,
+  listDeletedForAccount as _listDeletedForAccount,
+  reversePayments as _reversePayments,
+  countAccountContents as _countAccountContents,
+  type AccountInput,
+  type PayInput,
+  type PayBackInput,
+} from '@/app/actions/ledger';
+import {
+  setSpendingLoan as _setSpendingLoan,
+  recordLoanReturn as _recordLoanReturn,
+  type LoanReturnInput,
+} from '@/app/actions/spendingLoan';
+import {
+  savePersonalExpense as _savePersonalExpense,
+  deletePersonalExpense as _deletePersonalExpense,
+  getPersonalExpenseCategories as _getPersonalExpenseCategories,
+  managePersonalExpenseCategory as _managePersonalExpenseCategory,
+  countPersonalExpensePayments as _countPersonalExpensePayments,
+  saveStateLifePolicy as _saveStateLifePolicy,
+  receiveStateLifeSlab as _receiveStateLifeSlab,
+  getStateLifeRates as _getStateLifeRates,
+  setStateLifeRates as _setStateLifeRates,
+  unreceiveStateLifeSlab as _unreceiveStateLifeSlab,
+  deleteStateLifePolicy as _deleteStateLifePolicy,
+  saveMarketingIncome as _saveMarketingIncome,
+  deleteMarketingIncome as _deleteMarketingIncome,
+  countMarketingIncomeReceipts as _countMarketingIncomeReceipts,
+  type PersonalExpenseInput,
+  type StateLifeInputRow,
+  type MarketingIncomeInput,
+} from '@/app/actions/accountModules';
+
+import {
+  saveCarSale as _saveCarSale,
+  deleteCarSale as _deleteCarSale,
+  countCarSaleProfit as _countCarSaleProfit,
+  type CarSaleInput,
+} from '@/app/actions/carSale';
+
+/** Who the demo store should attribute mutations to. */
+const actor = () => getDemoSession() ?? { uid: 'demo-admin', email: 'admin@crm.com' };
+
+export async function assignLead(token: string, leadId: string, userId: string): Promise<ActionResult> {
+  if (IS_DEMO) return demo.assignLead(leadId, userId, actor().uid);
+  return _assignLead(token, leadId, userId);
+}
+
+export async function reassignLeadManual(token: string, leadId: string, userId: string): Promise<ActionResult> {
+  if (IS_DEMO) return demo.reassignLead(leadId, userId, actor().uid);
+  return _reassignLeadManual(token, leadId, userId);
+}
+
+export async function acceptLead(token: string, leadId: string): Promise<ActionResult> {
+  if (IS_DEMO) return demo.acceptLead(leadId, actor().uid);
+  const result = await _acceptLead(token, leadId);
+  if (!shouldQueue(result)) return result;
+  enqueue('acceptLead', [leadId]);
+  return { ok: true, data: undefined };
+}
+
+/** "Pass on" — hand the lead to the next person in the lane. See `passLead`. */
+export async function passLead(token: string, leadId: string) {
+  if (IS_DEMO) return demo.passLead(leadId, actor().uid);
+  const result = await _passLead(token, leadId);
+  if (!shouldQueue(result)) return result;
+  enqueue('passLead', [leadId]);
+  return { ok: true as const, data: { passedTo: null, wrapped: false } };
+}
+
+export async function setLeadStatus(token: string, leadId: string, status: LeadStatus): Promise<ActionResult> {
+  if (IS_DEMO) return demo.setLeadStatus(leadId, status, actor().uid);
+  const result = await _setLeadStatus(token, leadId, status);
+  if (!shouldQueue(result)) return result;
+  enqueue('setLeadStatus', [leadId, status]);
+  return { ok: true, data: undefined };
+}
+
+export async function setLeadPipelineStage(
+  token: string,
+  leadId: string,
+  stage: PipelineStage | null
+): Promise<ActionResult> {
+  if (IS_DEMO) return demo.setLeadPipelineStage(leadId, stage, actor().uid);
+  return _setLeadPipelineStage(token, leadId, stage);
+}
+
+/** Know Your Client — see `lib/kyc` for why this also rewrites the lead row. */
+export async function saveKyc(
+  token: string,
+  leadId: string,
+  values: KycValues
+): Promise<ActionResult<{ values: KycValues }>> {
+  if (IS_DEMO) return demo.saveKyc(leadId, values, actor().uid);
+  return _saveKyc(token, leadId, values);
+}
+
+export async function finalizeProfitDistribution(
+  token: string,
+  dealId: string,
+  shares: ShareInput[]
+): Promise<ActionResult<FinalizeResult>> {
+  if (IS_DEMO) return demo.finalizeProfitDistribution(dealId, shares, actor().uid);
+  return _finalizeProfitDistribution(token, dealId, shares);
+}
+
+/** The admin corrects a closed deal. A finalised split reopens when the money changes. */
+export async function updateClosedDeal(
+  token: string,
+  dealId: string,
+  input: DealEntryInput
+): Promise<ActionResult<{ dealId: string; profit: number; reopened: boolean }>> {
+  if (IS_DEMO) return demo.updateClosedDeal(dealId, input);
+  return _updateClosedDeal(token, dealId, input);
+}
+
+export async function reopenProfitDistribution(token: string, dealId: string): Promise<ActionResult> {
+  if (IS_DEMO) return demo.reopenProfitDistribution(dealId);
+  return _reopenProfitDistribution(token, dealId);
+}
+
+export async function createLead(
+  token: string,
+  input: {
+    name: string;
+    phone?: string;
+    email?: string;
+    city?: string;
+    status: LeadStatus;
+    assignedUserId?: string | null;
+    campaignId?: string | null;
+    campaignName?: string | null;
+    createdAt?: string;
+    followUps?: Array<{ message: string; callMade: boolean; occurredAt: string }>;
+    deal?: {
+      serviceDescription: string;
+      totalPrice: number;
+      downPayment: number;
+      adjustment?: number;
+      paymentMethod: string;
+      dealCategory?: string;
+      dealDate: string;
+      notes?: string;
+    };
+  }
+): Promise<ActionResult<{ leadId: string }>> {
+  if (IS_DEMO) return demo.createLead(input, actor().uid);
+  return _createLead(token, input);
+}
+
+export async function addFollowUp(
+  token: string,
+  leadId: string,
+  input: {
+    message: string;
+    callMade: boolean;
+    callCount?: number;
+    durationSeconds?: number;
+    meetingHeld?: boolean;
+    meetingAligned?: boolean;
+    siteVisit?: boolean;
+    whatsappNote?: string;
+    occurredAt?: string;
+  }
+): Promise<ActionResult<{ followUpId: string; connect: boolean; kind: 'REMARK' | 'FOLLOW_UP' }>> {
+  if (IS_DEMO) return demo.addFollowUp(leadId, input, actor().uid, actor().email);
+  const result = await _addFollowUp(token, leadId, input);
+  if (!shouldQueue(result)) return result;
+  // Kept with its real time, so sending it after noon does not re-date it.
+  const item = enqueue('addFollowUp', [leadId, { ...input, occurredAt: input.occurredAt ?? new Date().toISOString() }]);
+  return {
+    ok: true,
+    data: { followUpId: `pending-${item.id}`, connect: (input.durationSeconds ?? 0) >= 70, kind: 'FOLLOW_UP' },
+  };
+}
+
+/** Edits the newest entry on a lead. Older ones are locked — see §2. */
+export async function updateFollowUp(
+  token: string,
+  leadId: string,
+  followUpId: string,
+  input: {
+    message?: string;
+    callMade?: boolean;
+    callCount?: number;
+    durationSeconds?: number;
+    meetingHeld?: boolean;
+    meetingAligned?: boolean;
+    siteVisit?: boolean;
+    whatsappNote?: string;
+  }
+): Promise<ActionResult<{ connect: boolean }>> {
+  if (IS_DEMO) return demo.updateFollowUp(leadId, followUpId, input, actor().uid, actor().email);
+  // An entry still waiting in the outbox is edited where it waits.
+  if (followUpId.startsWith('pending-') && patchQueuedFollowUp(followUpId, input)) {
+    return { ok: true, data: { connect: (input.durationSeconds ?? 0) >= 70 } };
+  }
+  const result = await _updateFollowUp(token, leadId, followUpId, input);
+  if (!shouldQueue(result)) return result;
+  enqueue('updateFollowUp', [leadId, followUpId, input]);
+  return { ok: true, data: { connect: (input.durationSeconds ?? 0) >= 70 } };
+}
+
+/** The Cold review (§3): an admin or the lead's manager rules on it. */
+export async function reviewColdLead(
+  token: string,
+  leadId: string,
+  verified: boolean
+): Promise<ActionResult> {
+  if (IS_DEMO) return demo.reviewColdLead(leadId, verified, actor().uid);
+  return _reviewColdLead(token, leadId, verified);
+}
+
+/** Hands many existing leads to one employee, without copying any of them. */
+export async function assignLeadsBulk(
+  token: string,
+  leadIds: string[],
+  userId: string
+): Promise<ActionResult<{ assigned: number; skipped: number }>> {
+  if (IS_DEMO) return demo.assignLeadsBulk(leadIds, userId, actor().uid);
+  return _assignLeadsBulk(token, leadIds, userId);
+}
+
+export async function closeDeal(
+  token: string,
+  leadId: string,
+  input: {
+    customer: { name: string; phone: string; email?: string; cnic?: string; address?: string; city?: string };
+    serviceDescription: string;
+    /** Which of the four. Absent means Installments — see `lib/dealAmounts`. */
+    dealType?: string;
+    totalPrice?: number;
+    downPayment?: number;
+    confirmationAmount?: number;
+    adjustment?: number;
+    discount?: number;
+    downPaymentKind?: string;
+    receivedAmount?: number;
+    payableAmount?: number;
+    commission?: number;
+    paymentMethod?: string;
+    dealCategory?: string;
+    dealDate?: string;
+    notes?: string;
+  }
+): Promise<ActionResult<{ dealId: string; profit: number }>> {
+  if (IS_DEMO) return demo.closeDeal(leadId, input, actor().uid);
+  return _closeDeal(token, leadId, input);
+}
+
+export async function addExpense(
+  token: string,
+  input: { title: string; category: string; amount: number; description?: string; date?: string }
+): Promise<ActionResult<{ expenseId: string }>> {
+  if (IS_DEMO) return demo.addExpense(input, actor().uid);
+  return _addExpense(token, input);
+}
+
+export async function addReceivable(
+  token: string,
+  input: { title: string; size: string; amount: number; date?: string }
+): Promise<ActionResult<{ receivableId: string }>> {
+  if (IS_DEMO) return demo.addReceivable(input, actor().uid);
+  return _addReceivable(token, input);
+}
+
+export async function addCommitteeRecord(
+  token: string,
+  input: { title: string; amount: number; description?: string; date?: string }
+): Promise<ActionResult<{ recordId: string }>> {
+  if (IS_DEMO) return demo.addCommitteeRecord(input, actor().uid);
+  return _addCommitteeRecord(token, input);
+}
+
+export async function addInvestmentRecord(
+  token: string,
+  input: { title: string; amount: number; description?: string; date?: string }
+): Promise<ActionResult<{ recordId: string }>> {
+  if (IS_DEMO) return demo.addInvestmentRecord(input, actor().uid);
+  return _addInvestmentRecord(token, input);
+}
+
+export async function addCapitalInvestmentRecord(
+  token: string,
+  input: { title: string; amount: number; description?: string; date?: string }
+): Promise<ActionResult<{ recordId: string }>> {
+  if (IS_DEMO) return demo.addCapitalInvestmentRecord(input, actor().uid);
+  return _addCapitalInvestmentRecord(token, input);
+}
+
+export async function addPersonalExpense(
+  token: string,
+  input: { title: string; amount: number; description?: string; date?: string }
+): Promise<ActionResult<{ recordId: string }>> {
+  if (IS_DEMO) return demo.addPersonalExpense(input, actor().uid);
+  return _addPersonalExpense(token, input);
+}
+
+export async function createEmployee(
+  token: string,
+  input: { name: string; email: string; password: string; priority: number; jobTitle?: string; status?: 'ACTIVE' | 'DISABLED'; targets?: Partial<KpiTargets>; phone?: string | null; notes?: string | null; joinedAt?: string | null; autoAssign?: boolean; accessRole?: 'employee' | 'subadmin'; subAdminUid?: string | null; managerKind?: 'SALES' | 'HR'; monthlySalary?: number }
+): Promise<ActionResult<{ uid: string }>> {
+  if (IS_DEMO) return demo.createEmployee(input);
+  return _createEmployee(token, input);
+}
+
+export async function updateEmployee(
+  token: string,
+  uid: string,
+  input: { name?: string; email?: string; password?: string; priority?: number; jobTitle?: string; targets?: Partial<KpiTargets>; phone?: string | null; notes?: string | null; joinedAt?: string | null; autoAssign?: boolean; accessRole?: 'employee' | 'subadmin'; subAdminUid?: string | null; managerKind?: 'SALES' | 'HR'; monthlySalary?: number }
+): Promise<ActionResult> {
+  if (IS_DEMO) return demo.updateEmployee(uid, input);
+  return _updateEmployee(token, uid, input);
+}
+
+/** Moves one employee onto a sub admin's team, or back under the admin. */
+export async function setEmployeeSubAdmin(
+  token: string,
+  employeeUid: string,
+  subAdminUid: string | null
+): Promise<ActionResult<{ moved: string | null }>> {
+  if (IS_DEMO) return demo.setEmployeeSubAdmin(employeeUid, subAdminUid);
+  return _setEmployeeSubAdmin(token, employeeUid, subAdminUid);
+}
+
+/** Sets a sub admin's whole team at once, from the directory's tick list. */
+export async function setSubAdminTeam(
+  token: string,
+  subAdminUid: string,
+  employeeUids: string[]
+): Promise<ActionResult<{ added: number; removed: number }>> {
+  if (IS_DEMO) return demo.setSubAdminTeam(subAdminUid, employeeUids);
+  return _setSubAdminTeam(token, subAdminUid, employeeUids);
+}
+
+export async function setEmployeePriority(token: string, uid: string, priority: number): Promise<ActionResult> {
+  if (IS_DEMO) return demo.setEmployeePriority(uid, priority);
+  return _setEmployeePriority(token, uid, priority);
+}
+
+export async function updateLaneSettings(
+  token: string,
+  uid: string,
+  patch: { inRotation?: boolean; leadsPerTurn?: number; locked?: boolean }
+): Promise<ActionResult> {
+  if (IS_DEMO) return demo.updateLaneSettings(uid, patch);
+  return _updateLaneSettings(token, uid, patch);
+}
+
+export async function setEmployeeAutoPriority(token: string, uid: string, auto: boolean): Promise<ActionResult> {
+  if (IS_DEMO) return demo.setEmployeeAutoPriority(uid, auto);
+  return _setEmployeeAutoPriority(token, uid, auto);
+}
+
+export async function setEmployeeTargets(
+  token: string,
+  uid: string,
+  targets: Partial<KpiTargets>
+): Promise<ActionResult<{ targets: KpiTargets }>> {
+  if (IS_DEMO) return demo.setEmployeeTargets(uid, targets);
+  return _setEmployeeTargets(token, uid, targets);
+}
+
+export async function recalculateEmployeePriorities(
+  token: string
+): Promise<ActionResult<{ changes: PriorityChange[]; evaluated: number }>> {
+  if (IS_DEMO) return demo.recalculateEmployeePriorities();
+  return _recalculateEmployeePriorities(token);
+}
+
+export async function disableEmployee(token: string, uid: string): Promise<ActionResult<{ openLeads: number }>> {
+  if (IS_DEMO) return demo.setEmployeeStatus(uid, 'DISABLED');
+  const result = await _disableEmployee(token, uid);
+  // Their pay now stops at today, so a saved month is no longer the answer.
+  if (result.ok) forgetSaved('getPayroll', 'listSalaryProfiles');
+  return result;
+}
+
+export async function enableEmployee(token: string, uid: string): Promise<ActionResult> {
+  if (IS_DEMO) return demo.setEmployeeStatus(uid, 'ACTIVE') as ActionResult;
+  const result = await _enableEmployee(token, uid);
+  if (result.ok) forgetSaved('getPayroll', 'listSalaryProfiles');
+  return result;
+}
+
+export async function recordAttendancePing(token: string): Promise<ActionResult<AttendancePingResult>> {
+  if (IS_DEMO) return demo.recordAttendancePing(actor().uid) as ActionResult<AttendancePingResult>;
+  return _recordAttendancePing(token);
+}
+
+/**
+ * The employee's own Check In / Check Out.
+ *
+ * `context` carries what the *device* claims: the Wi-Fi network name, which no
+ * browser will tell us and the employee therefore types once, and the position,
+ * which the browser will give up but only with permission. Both are claims, and
+ * both are judged on the server. It never carries the address: that is read off
+ * the request server-side, where the browser cannot reach it.
+ */
+export async function punchAttendance(
+  token: string,
+  kind: PunchKind,
+  context: PunchContext = {}
+): Promise<ActionResult<AttendancePunchResult>> {
+  if (IS_DEMO) return demo.punchAttendance(actor().uid, kind) as ActionResult<AttendancePunchResult>;
+  const result = await _punchAttendance(token, kind, context);
+  if (result.ok) forgetSaved('getTeamAttendance', 'getAttendanceSummary', 'getPayroll');
+  return result;
+}
+
+/**
+ * Whether this employee must name their Wi-Fi network to check in.
+ *
+ * Asked rather than assumed: `config/attendance` is admin-only, so the punch
+ * control cannot read the policy, and showing the field to everybody would put
+ * a question on the screen of every office that does not use it.
+ */
+export async function getPunchRequirements(
+  token: string
+): Promise<ActionResult<{ wifiRequired: boolean; locationRequired: boolean; exempt: boolean }>> {
+  if (IS_DEMO) {
+    return { ok: true, data: { wifiRequired: false, locationRequired: false, exempt: false } };
+  }
+  return _getPunchRequirements(token);
+}
+
+export async function setAttendanceOverride(
+  token: string,
+  uid: string,
+  dayKey: string,
+  status: AttendanceStatus | null,
+  note?: string
+): Promise<ActionResult> {
+  if (IS_DEMO) return demo.setAttendanceOverride(uid, dayKey, status, note);
+  const result = await _setAttendanceOverride(token, uid, dayKey, status, note);
+  if (result.ok) forgetSaved('getTeamAttendance', 'getAttendanceSummary', 'getPayroll');
+  return result;
+}
+
+export async function getAttendanceConfig(
+  token: string
+): Promise<ActionResult<AttendanceConfig & { yourIp: string }>> {
+  if (IS_DEMO) return demo.getAttendanceConfig();
+  return _getAttendanceConfig(token);
+}
+
+/**
+ * Saves the attendance policy — start time, grace, absence cutoff, late
+ * allowance, deduction rule, leave allowance and the IP settings (§2, §4–§6).
+ * A partial patch is merged onto what is stored, so one screen can save one
+ * section without resending the rest.
+ */
+export async function setAttendanceConfig(
+  token: string,
+  input: Partial<AttendanceConfig>
+): Promise<ActionResult<AttendanceConfig>> {
+  if (IS_DEMO) return demo.setAttendanceConfig(input);
+  return _setAttendanceConfig(token, input);
+}
+
+export async function markNotificationRead(token: string, id: string): Promise<ActionResult> {
+  if (IS_DEMO) return demo.markNotificationRead(id);
+  return _markNotificationRead(token, id);
+}
+
+export async function markAllNotificationsRead(token: string): Promise<ActionResult<{ cleared: number }>> {
+  if (IS_DEMO) return demo.markAllNotificationsRead();
+  return _markAllNotificationsRead(token);
+}
+
+export async function getMonitoringConfig(token: string): Promise<ActionResult<MonitoringConfig>> {
+  if (IS_DEMO) return { ok: true, data: { noContactDays: DEFAULT_NO_CONTACT_DAYS } };
+  return _getMonitoringConfig(token);
+}
+
+export async function setNoContactDays(token: string, days: number): Promise<ActionResult> {
+  if (IS_DEMO) return { ok: false, error: 'Settings are read-only in demo mode.' };
+  return _setNoContactDays(token, days);
+}
+
+export async function createCampaign(
+  token: string,
+  input: CreateCampaignInput
+): Promise<ActionResult<{ campaignId: string }>> {
+  if (IS_DEMO) return demo.createCampaign(input, actor().uid);
+  return _createCampaign(token, input);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Data Bank                                                                   */
+/* -------------------------------------------------------------------------- */
+
+export async function createDataBankFolder(
+  token: string,
+  input: FolderInput
+): Promise<ActionResult<{ folderId: string }>> {
+  if (IS_DEMO) return demo.createDataBankFolder(input);
+  return _createDataBankFolder(token, input);
+}
+
+export async function updateDataBankFolder(
+  token: string,
+  folderId: string,
+  input: FolderInput
+): Promise<ActionResult> {
+  if (IS_DEMO) return demo.updateDataBankFolder(folderId, input);
+  return _updateDataBankFolder(token, folderId, input);
+}
+
+/**
+ * Who this folder's leads are given to. An empty list means the whole rotation.
+ * See `setFolderLane`.
+ */
+export async function setFolderLane(
+  token: string,
+  folderId: string,
+  uids: string[]
+): Promise<ActionResult<{ names: string[] }>> {
+  if (IS_DEMO) return demo.setFolderLane(folderId, uids);
+  return _setFolderLane(token, folderId, uids);
+}
+
+export async function deleteDataBankFolder(
+  token: string,
+  folderId: string
+): Promise<ActionResult<{ deleted: number; remaining: number; done: boolean }>> {
+  if (IS_DEMO) {
+    const res = await demo.deleteDataBankFolder(folderId);
+    // Demo mode deletes from module memory, where there is no quota to spend —
+    // so it is always finished, and says so in the same shape.
+    return res.ok ? { ...res, data: { ...res.data, remaining: 0, done: true } } : res;
+  }
+  return _deleteDataBankFolder(token, folderId);
+}
+
+export async function countFolderRecords(token: string, folderId: string) {
+  return _countFolderRecords(token, folderId);
+}
+
+export async function saveColumnMap(
+  token: string,
+  folderId: string,
+  columnMap: ColumnMap
+): Promise<ActionResult> {
+  if (IS_DEMO) return demo.saveColumnMap(folderId, columnMap);
+  return _saveColumnMap(token, folderId, columnMap);
+}
+
+export async function addDataBankRecord(
+  token: string,
+  folderId: string,
+  values: Record<string, string>
+): Promise<ActionResult<{ recordId: string }>> {
+  if (IS_DEMO) return demo.addDataBankRecord(folderId, values);
+  return _addDataBankRecord(token, folderId, values);
+}
+
+export async function updateDataBankRecord(
+  token: string,
+  recordId: string,
+  input: { values?: Record<string, string>; status?: DataBankStatus; notes?: string | null }
+): Promise<ActionResult> {
+  if (IS_DEMO) return demo.updateDataBankRecord(recordId, input);
+  return _updateDataBankRecord(token, recordId, input);
+}
+
+export async function deleteDataBankRecord(token: string, recordId: string): Promise<ActionResult> {
+  if (IS_DEMO) return demo.deleteDataBankRecord(recordId);
+  return _deleteDataBankRecord(token, recordId);
+}
+
+export async function importDataBankRows(
+  token: string,
+  folderId: string,
+  rows: Array<{ values: Record<string, string> }>
+): Promise<ActionResult<ImportChunkResult>> {
+  if (IS_DEMO) return demo.importDataBankRows(folderId, rows);
+  return _importDataBankRows(token, folderId, rows);
+}
+
+export async function promoteDataBankRecord(
+  token: string,
+  recordId: string,
+  assignedUserId: string
+): Promise<ActionResult<{ leadId: string }>> {
+  if (IS_DEMO) return demo.promoteDataBankRecord(recordId, assignedUserId, actor().uid);
+  return _promoteDataBankRecord(token, recordId, assignedUserId);
+}
+
+/** The same promotion, for a selection rather than one row (§9). */
+export async function promoteDataBankRecords(
+  token: string,
+  recordIds: string[],
+  assignedUserId: string
+): Promise<ActionResult<{ promoted: number; skipped: number; duplicates?: number; leadIds: string[] }>> {
+  if (IS_DEMO) return demo.promoteDataBankRecords(recordIds, assignedUserId, actor().uid);
+  return _promoteDataBankRecords(token, recordIds, assignedUserId);
+}
+
+/**
+ * Hands cold records to a manager's own Data Bank rather than promoting them.
+ *
+ * A manager is given rows to *distribute*, not a lead to work, so this is a
+ * different operation from promotion and deliberately has its own name — the
+ * Data Bank surfaces pick between the two from the chosen recipient's group.
+ */
+export async function assignRecordsToManager(
+  token: string,
+  recordIds: string[],
+  managerUid: string
+): Promise<ActionResult<HandoffResult>> {
+  if (IS_DEMO) return demo.assignRecordsToManager(recordIds, managerUid, actor().uid);
+  return _assignRecordsToManager(token, recordIds, managerUid);
+}
+
+export type { HandoffResult } from '@/app/actions/dataBank';
+export type { PersonalLeadFolder } from '@/app/actions/dataBank';
+
+/** The admin's Data Bank folders an employee may file a personal lead under — names only. */
+export async function listPersonalLeadFolders(token: string): Promise<ActionResult<PersonalLeadFolder[]>> {
+  if (IS_DEMO) return demo.listPersonalLeadFolders();
+  return _listPersonalLeadFolders(token);
+}
+
+/** An employee's own lead, assigned to them and filed under a Data Bank folder. */
+export async function addPersonalLead(
+  token: string,
+  input: { folderId: string; name: string; phone: string }
+): Promise<ActionResult<{ leadId: string; folderName: string }>> {
+  if (IS_DEMO) return demo.addPersonalLead(input);
+  return _addPersonalLead(token, input);
+}
+
+/** Re-exported so existing client imports from '@/lib/clientActions' keep working. */
+export { EXPENSE_CATEGORIES, PAYMENT_METHODS, RECEIVABLE_SIZES } from '@/lib/constants';
+
+/**
+ * The Team report for a date range (§4–§6).
+ *
+ * Scoped on the server from the verified token — an employee cannot ask for
+ * somebody else's row by passing a different uid, because there is no uid to
+ * pass.
+ */
+export async function buildTeamReport(
+  token: string,
+  from: string,
+  to: string,
+  subject?: string | null
+): Promise<ActionResult<TeamReport>> {
+  if (IS_DEMO) return demo.buildTeamReport(from, to, actor().uid, subject);
+  return _buildTeamReport(token, from, to, subject);
+}
+
+export type { TeamReport, ReportRow, ReportOption } from '@/app/actions/reports';
+
+/**
+ * The four activity figures for a date range, per lead — what the employee
+ * dossier cuts on. The scope is re-decided on the server from the caller's own
+ * token, so a hand-edited uid list buys nothing.
+ */
+export async function buildActivityBreakdown(
+  token: string,
+  uids: string[],
+  from: string,
+  to: string
+): Promise<ActionResult<ActivityBreakdown>> {
+  if (IS_DEMO) return demo.buildActivityBreakdown(uids, from, to);
+  return savedOrLoad('buildActivityBreakdown', [uids, from, to], () => _buildActivityBreakdown(token, uids, from, to));
+}
+
+export type { ActivityBreakdown } from '@/app/actions/activity';
+
+/* -------------------------------------------------------------------------- */
+/* Client folders — a view over existing leads, never a copy of them           */
+/* -------------------------------------------------------------------------- */
+
+export async function createClientFolder(
+  token: string,
+  input: { name: string; description?: string | null }
+): Promise<ActionResult<{ folderId: string }>> {
+  if (IS_DEMO) return demo.createClientFolder(input, actor().uid);
+  return _createClientFolder(token, input);
+}
+
+export async function updateClientFolder(
+  token: string,
+  folderId: string,
+  input: { name?: string; description?: string | null }
+): Promise<ActionResult> {
+  if (IS_DEMO) return demo.updateClientFolder(folderId, input);
+  return _updateClientFolder(token, folderId, input);
+}
+
+export async function deleteClientFolder(
+  token: string,
+  folderId: string
+): Promise<ActionResult<{ removed: number }>> {
+  if (IS_DEMO) return demo.deleteClientFolder(folderId);
+  return _deleteClientFolder(token, folderId);
+}
+
+export async function addLeadsToClientFolder(
+  token: string,
+  folderId: string,
+  leadIds: string[]
+): Promise<ActionResult<{ added: number; alreadyThere: number }>> {
+  if (IS_DEMO) return demo.addLeadsToClientFolder(folderId, leadIds);
+  return _addLeadsToClientFolder(token, folderId, leadIds);
+}
+
+export async function removeLeadFromClientFolder(
+  token: string,
+  folderId: string,
+  leadId: string
+): Promise<ActionResult> {
+  if (IS_DEMO) return demo.removeLeadFromClientFolder(folderId, leadId);
+  return _removeLeadFromClientFolder(token, folderId, leadId);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Attendance & leave                                                          */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Corrects one employee's day (§11).
+ *
+ * The observed times are never overwritten — the correction is stored beside
+ * them, with who made it and when.
+ */
+export async function adjustAttendance(
+  token: string,
+  uid: string,
+  dayKey: string,
+  change: AttendanceAdjustment
+): Promise<ActionResult> {
+  if (IS_DEMO) return demo.adjustAttendance(uid, dayKey, change);
+  const result = await _adjustAttendance(token, uid, dayKey, change);
+  if (result.ok) forgetSaved('getTeamAttendance', 'getAttendanceSummary', 'getPayroll');
+  return result;
+}
+
+export async function requestLeave(
+  token: string,
+  input: { type: LeaveType; from: string; to: string; reason: string; uid?: string }
+): Promise<ActionResult<{ requestId: string; days: number }>> {
+  if (IS_DEMO) return demo.requestLeave(input, actor().uid);
+  return _requestLeave(token, input);
+}
+
+/** Approve or reject. Nothing else in the app can write APPROVED (§7). */
+export async function decideLeave(
+  token: string,
+  requestId: string,
+  decision: 'APPROVED' | 'REJECTED',
+  note?: string
+): Promise<ActionResult<{ status: string; days: number }>> {
+  if (IS_DEMO) return demo.decideLeave(requestId, decision, note, actor().uid);
+  return _decideLeave(token, requestId, decision, note);
+}
+
+export async function cancelLeave(token: string, requestId: string): Promise<ActionResult> {
+  if (IS_DEMO) return demo.cancelLeave(requestId);
+  return _cancelLeave(token, requestId);
+}
+
+export async function getLeaveSummary(
+  token: string,
+  uid?: string,
+  year?: string
+): Promise<ActionResult<LeaveSummary>> {
+  if (IS_DEMO) return demo.getLeaveSummary(uid, year, actor().uid) as ActionResult<LeaveSummary>;
+  return _getLeaveSummary(token, uid, year);
+}
+
+export async function adjustLeaveBalance(
+  token: string,
+  uid: string,
+  type: LeaveType,
+  delta: number
+): Promise<ActionResult<{ adjustment: number }>> {
+  if (IS_DEMO) return demo.adjustLeaveBalance(uid, type, delta);
+  return _adjustLeaveBalance(token, uid, type, delta);
+}
+
+export type { LeaveSummary } from '@/app/actions/leave';
+export type { AttendanceAdjustment } from '@/app/actions/attendance';
+
+/**
+ * A date range of attendance for everyone the caller may see (§9, §10, §11).
+ *
+ * Read through an action rather than a listener: a Sales manager's team is a
+ * property of each employee's profile, not of the attendance row, so the scope
+ * check costs one roster read here instead of a rule lookup per day per person.
+ */
+export async function getTeamAttendance(
+  token: string,
+  input: { from: string; to: string; uid?: string }
+): Promise<ActionResult<TeamAttendanceResult>> {
+  if (IS_DEMO) {
+    const session = getDemoSession();
+    return demo.getTeamAttendance(
+      input.from,
+      input.to,
+      input.uid,
+      session?.uid ?? 'demo-admin',
+      session?.role ?? 'admin',
+      session?.managerKind
+    ) as ActionResult<TeamAttendanceResult>;
+  }
+  /*
+    A month that is already over is reused for six hours (owner, 2026-09-26 —
+    the read meter put this screen at ~430 reads a day). The current month is
+    always asked fresh: it is where the day's punches land and where yesterday's
+    missed check-out gets corrected. A correction to a past month made on this
+    browser drops the copy at once (`forgetSaved` in `adjustAttendance`); one
+    made on another device reaches this one within the six hours.
+  */
+  const thisMonthStarts = `${karachiMonthKey()}-01`;
+  const pastMonth = input.to < thisMonthStarts;
+  return savedOrLoad(
+    'getTeamAttendance',
+    [input],
+    () => _getTeamAttendance(token, input),
+    pastMonth ? 6 * 3600_000 : 0
+  );
+}
+
+export type { TeamAttendanceResult, TeamAttendanceRow, TeamAttendanceDay } from '@/app/actions/attendance';
+
+/**
+ * One person's month (§10). The only attendance read an employee may run, and
+ * it is scoped to themselves on the server — passing somebody else's uid is
+ * refused rather than filtered.
+ */
+export async function getAttendanceSummary(
+  token: string,
+  uid?: string,
+  monthKey?: string
+): Promise<ActionResult<AttendanceSummary>> {
+  if (IS_DEMO) {
+    return demo.getAttendanceSummary(uid, monthKey, actor().uid) as ActionResult<AttendanceSummary>;
+  }
+  return savedOrLoad('getAttendanceSummary', [uid ?? null, monthKey ?? null], () => _getAttendanceSummary(token, uid, monthKey));
+}
+
+export type { AttendanceSummary, AttendanceRules } from '@/app/actions/attendance';
+
+/**
+ * Closes a month's late deductions (§12).
+ *
+ * The figures are **copied** into the period rather than recomputed on read,
+ * so raising the deduction next month cannot change what last month cost.
+ */
+export async function finalizeAttendanceDeductions(
+  token: string,
+  monthKey: string
+): Promise<ActionResult<{ monthKey: string; total: number; people: number }>> {
+  if (IS_DEMO) return demo.finalizeAttendanceDeductions(monthKey, actor().uid);
+  const result = await _finalizeAttendanceDeductions(token, monthKey);
+  if (result.ok) forgetSaved('getTeamAttendance', 'getAttendanceSummary', 'getPayroll');
+  return result;
+}
+
+/** Undoing a payroll decision — deliberately its own action, not a second press. */
+export async function reopenAttendancePeriod(token: string, monthKey: string): Promise<ActionResult> {
+  if (IS_DEMO) return demo.reopenAttendancePeriod(monthKey);
+  const result = await _reopenAttendancePeriod(token, monthKey);
+  if (result.ok) forgetSaved('getTeamAttendance', 'getAttendanceSummary', 'getPayroll');
+  return result;
+}
+
+export async function getAttendancePeriod(
+  token: string,
+  monthKey: string
+): Promise<ActionResult<AttendancePeriod>> {
+  if (IS_DEMO) return demo.getAttendancePeriod(monthKey) as ActionResult<AttendancePeriod>;
+  return _getAttendancePeriod(token, monthKey);
+}
+
+export type { AttendancePeriod, PayrollDeductionLine } from '@/app/actions/attendance';
+
+/* -------------------------------------------------------------------------- */
+/* Payroll                                                                     */
+/* -------------------------------------------------------------------------- */
+
+export async function listSalaryProfiles(
+  token: string
+): Promise<ActionResult<{ profiles: SalaryProfileRecord[] }>> {
+  if (IS_DEMO) return demo.listSalaryProfiles() as ActionResult<{ profiles: SalaryProfileRecord[] }>;
+  return savedOrLoad('listSalaryProfiles', [], () => _listSalaryProfiles(token));
+}
+
+export async function saveSalaryProfile(
+  token: string,
+  uid: string,
+  input: { salary: number; allowance: number; joinedAt: string | null; leftAt?: string | null }
+): Promise<ActionResult<{ salary: number; allowance: number }>> {
+  if (IS_DEMO) return demo.saveSalaryProfile(uid, input, actor().uid);
+  const result = await _saveSalaryProfile(token, uid, input);
+  if (result.ok) forgetSaved('listSalaryProfiles', 'getPayroll');
+  return result;
+}
+
+/** One person's figures for one month, set by hand. That month only. */
+export async function savePayrollMonth(
+  token: string,
+  monthKey: string,
+  uid: string,
+  input: { figures: Record<string, unknown>; note?: string | null }
+): Promise<ActionResult<{ net: number; adjusted: number }>> {
+  if (IS_DEMO) return demo.savePayrollMonth(monthKey, uid, input);
+  const result = await _savePayrollMonth(token, monthKey, uid, input);
+  if (result.ok) forgetSaved('getPayroll');
+  return result;
+}
+
+/** A month's payroll, live — see `getPayroll`. */
+export async function getPayroll(
+  token: string,
+  monthKey: string
+): Promise<ActionResult<PayrollPeriod>> {
+  if (IS_DEMO) return demo.getPayroll(monthKey) as ActionResult<PayrollPeriod>;
+  return savedOrLoad('getPayroll', [monthKey], () => _getPayroll(token, monthKey));
+}
+
+/** Pays one person's month out of real accounts — see `payPayrollLine`. Admin only. */
+export async function payPayrollLine(
+  token: string,
+  monthKey: string,
+  uid: string,
+  input: { allocations: Array<{ accountId: string; amount: number }>; dayKey?: string; note?: string | null }
+) {
+  const result = await _payPayrollLine(token, monthKey, uid, input);
+  if (result.ok) forgetSaved('getPayroll');
+  return result;
+}
+
+/** Somebody's salary history. An employee gets their own and nobody else's. */
+export async function getPayslips(
+  token: string,
+  uid?: string
+): Promise<ActionResult<{ slips: Payslip[] }>> {
+  if (IS_DEMO) return demo.getPayslips(uid ?? actor().uid) as ActionResult<{ slips: Payslip[] }>;
+  return _getPayslips(token, uid);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Office expenses                                                             */
+/* -------------------------------------------------------------------------- */
+
+export async function getExpenseCategories(
+  token: string
+): Promise<ActionResult<{ categories: string[]; custom: string[] }>> {
+  if (IS_DEMO) return demo.getExpenseCategories();
+  return _getExpenseCategories(token);
+}
+
+export async function manageExpenseCategory(
+  token: string,
+  action: 'ADD' | 'RENAME' | 'REMOVE',
+  name: string,
+  renameTo?: string
+): Promise<ActionResult<{ categories: string[]; custom: string[]; moved?: number }>> {
+  if (IS_DEMO) return demo.manageExpenseCategory(action, name, renameTo);
+  return _manageExpenseCategory(token, action, name, renameTo);
+}
+
+export async function createOfficeExpense(
+  token: string,
+  input: OfficeExpenseInput
+): Promise<ActionResult<{ expenseId: string }>> {
+  if (IS_DEMO) return demo.createOfficeExpense(input, actor().uid, actor().email);
+  return _createOfficeExpense(token, input);
+}
+
+export async function updateOfficeExpense(
+  token: string,
+  expenseId: string,
+  input: OfficeExpenseInput
+): Promise<ActionResult> {
+  if (IS_DEMO) return demo.updateOfficeExpense(expenseId, input, actor().uid);
+  return _updateOfficeExpense(token, expenseId, input);
+}
+
+export async function setOfficeExpenseStatus(
+  token: string,
+  expenseId: string,
+  status: ExpenseStatus,
+  note?: string
+): Promise<ActionResult<{ status: ExpenseStatus }>> {
+  if (IS_DEMO) return demo.setOfficeExpenseStatus(expenseId, status, note, actor().uid);
+  return _setOfficeExpenseStatus(token, expenseId, status, note);
+}
+
+export async function deleteOfficeExpense(token: string, expenseId: string): Promise<ActionResult> {
+  if (IS_DEMO) return demo.deleteOfficeExpense(expenseId);
+  return _deleteOfficeExpense(token, expenseId);
+}
+
+export type {
+  PayrollPeriod,
+  Payslip,
+  SalaryProfileRecord,
+} from '@/app/actions/payroll';
+export type { OfficeExpenseInput } from '@/app/actions/officeExpenses';
+
+/* -------------------------------------------------------------------------- */
+/* Accounts — the ledger                                                       */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * These deliberately have **no demo-store branch**. The ledger is the one part
+ * of the product where a fabricated balance would be worse than an empty
+ * screen: demo mode exists so somebody can click around, and a demo that
+ * invents money teaches the wrong number. Against a real project they work
+ * exactly as every other action does.
+ */
+export async function createAccount(token: string, input: AccountInput) {
+  return _createAccount(token, input);
+}
+
+export async function updateAccount(
+  token: string,
+  accountId: string,
+  input: Partial<AccountInput> & { status?: 'ACTIVE' | 'ARCHIVED' }
+) {
+  return _updateAccount(token, accountId, input);
+}
+
+export async function recalculateBalances(token: string) {
+  return _recalculateBalances(token);
+}
+
+/** The one path money takes. See `actions/ledger`. */
+export async function payFromAccounts(token: string, input: PayInput) {
+  return _payFromAccounts(token, input);
+}
+
+export async function createTransfer(
+  token: string,
+  input: { fromAccountId: string; toAccountId: string; amount: number; dayKey?: string; note?: string | null }
+) {
+  return _createTransfer(token, input);
+}
+
+/** Puts money back into an account against a spending that came out of it. */
+export async function payBackSpending(token: string, input: PayBackInput) {
+  return _payBackSpending(token, input);
+}
+
+/** Marks a spending as a loan to somebody, or back to a plain spending. */
+export async function setSpendingLoan(
+  token: string,
+  input: { kind: 'TXN' | 'TICKET'; id: string; borrower: string | null }
+) {
+  return _setSpendingLoan(token, input);
+}
+
+/** Records money a borrower gave back on a loan. */
+export async function recordLoanReturn(token: string, input: LoanReturnInput) {
+  return _recordLoanReturn(token, input);
+}
+
+export async function addManualTransaction(
+  token: string,
+  input: {
+    accountId: string;
+    direction: 'IN' | 'OUT';
+    amount: number;
+    type?: PayInput['type'];
+    dayKey?: string;
+    label: string;
+    note?: string | null;
+    loanTo?: string | null;
+  }
+) {
+  return _addManualTransaction(token, input);
+}
+
+export async function reverseTransaction(token: string, transactionId: string, note?: string) {
+  return _reverseTransaction(token, transactionId, note);
+}
+
+export async function savePersonalExpense(token: string, input: PersonalExpenseInput, expenseId?: string) {
+  return _savePersonalExpense(token, input, expenseId);
+}
+
+export async function deletePersonalExpense(token: string, expenseId: string) {
+  return _deletePersonalExpense(token, expenseId);
+}
+
+export async function countPersonalExpensePayments(token: string, expenseId: string) {
+  return _countPersonalExpensePayments(token, expenseId);
+}
+
+export async function getPersonalExpenseCategories(token: string) {
+  return _getPersonalExpenseCategories(token);
+}
+
+export async function managePersonalExpenseCategory(
+  token: string,
+  action: 'ADD' | 'RENAME' | 'REMOVE',
+  name: string,
+  renameTo?: string
+) {
+  return _managePersonalExpenseCategory(token, action, name, renameTo);
+}
+
+export async function saveStateLifePolicy(token: string, input: StateLifeInputRow, policyId?: string) {
+  return _saveStateLifePolicy(token, input, policyId);
+}
+
+export async function receiveStateLifeSlab(
+  token: string,
+  policyId: string,
+  slab: StateLifeSlab,
+  accountId: string,
+  input?: { amount?: number; dayKey?: string; note?: string | null }
+) {
+  return _receiveStateLifeSlab(token, policyId, slab, accountId, input);
+}
+
+export async function unreceiveStateLifeSlab(token: string, policyId: string, slab: StateLifeSlab) {
+  return _unreceiveStateLifeSlab(token, policyId, slab);
+}
+
+export async function saveCapitalSpending(
+  token: string,
+  input: CapitalSpendingInput,
+  spendingId?: string
+) {
+  return _saveCapitalSpending(token, input, spendingId);
+}
+
+export async function deleteCapitalSpending(token: string, spendingId: string) {
+  return _deleteCapitalSpending(token, spendingId);
+}
+
+export async function countCapitalSpendingPayments(token: string, spendingId: string) {
+  return _countCapitalSpendingPayments(token, spendingId);
+}
+
+export async function getStateLifeRates(token: string) {
+  return _getStateLifeRates(token);
+}
+
+export async function setStateLifeRates(token: string, rates: Partial<StateLifeRates>) {
+  return _setStateLifeRates(token, rates);
+}
+
+export async function deleteStateLifePolicy(token: string, policyId: string) {
+  return _deleteStateLifePolicy(token, policyId);
+}
+
+export async function saveMarketingIncome(token: string, input: MarketingIncomeInput, recordId?: string) {
+  return _saveMarketingIncome(token, input, recordId);
+}
+
+export async function deleteMarketingIncome(token: string, recordId: string) {
+  return _deleteMarketingIncome(token, recordId);
+}
+
+export async function countMarketingIncomeReceipts(token: string, recordId: string) {
+  return _countMarketingIncomeReceipts(token, recordId);
+}
+
+export async function saveCarSale(token: string, input: CarSaleInput, recordId?: string) {
+  return _saveCarSale(token, input, recordId);
+}
+
+export async function deleteCarSale(token: string, recordId: string) {
+  return _deleteCarSale(token, recordId);
+}
+
+export async function countCarSaleProfit(token: string, recordId: string) {
+  return _countCarSaleProfit(token, recordId);
+}
+
+export async function updateTransaction(
+  token: string,
+  transactionId: string,
+  input: { amount?: number; label?: string; dayKey?: string; note?: string | null }
+) {
+  return _updateTransaction(token, transactionId, input);
+}
+
+export async function deleteTransaction(token: string, transactionId: string) {
+  return _deleteTransaction(token, transactionId);
+}
+
+export async function reversePayments(token: string, transactionIds: string[], note?: string | null) {
+  return _reversePayments(token, transactionIds, note);
+}
+
+export async function listDeletedForAccount(token: string, accountId: string) {
+  return _listDeletedForAccount(token, accountId);
+}
+
+export async function deleteAccount(token: string, accountId: string) {
+  return _deleteAccount(token, accountId);
+}
+
+export async function countAccountContents(token: string, accountId: string) {
+  return _countAccountContents(token, accountId);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Paying a period's total, Investment with X, Mahziyar Group, Receivables     */
+/* -------------------------------------------------------------------------- */
+
+import {
+  payExpensesTotal as _payExpensesTotal,
+  type PayTotalInput,
+} from '@/app/actions/ledger';
+import {
+  saveInvestmentBook as _saveInvestmentBook,
+  deleteInvestmentBook as _deleteInvestmentBook,
+  saveInvestmentRound as _saveInvestmentRound,
+  deleteInvestmentRound as _deleteInvestmentRound,
+  setInvestmentRoundReceived as _setInvestmentRoundReceived,
+  type InvestmentBookInput,
+  type InvestmentRoundInput,
+} from '@/app/actions/investmentWithX';
+import {
+  saveGroupConfig as _saveGroupConfig,
+  saveGroupEntry as _saveGroupEntry,
+  deleteGroupEntry as _deleteGroupEntry,
+  setGroupIncomeEdit as _setGroupIncomeEdit,
+  setGroupCell as _setGroupCell,
+  setGroupDescription as _setGroupDescription,
+  closeGroupMonth as _closeGroupMonth,
+  reopenGroupMonth as _reopenGroupMonth,
+  type GroupEntryInput,
+} from '@/app/actions/groupFinance';
+import {
+  saveSheetEntry as _saveSheetEntry,
+  settleSheetEntry as _settleSheetEntry,
+  settleSheetEntryThroughAccounts as _settleSheetEntryThroughAccounts,
+  deleteSheetEntry as _deleteSheetEntry,
+  saveSheetGroups as _saveSheetGroups,
+  importLegacyReceivables as _importLegacyReceivables,
+  countLegacyReceivables as _countLegacyReceivables,
+  type SheetEntryInput,
+} from '@/app/actions/receivableSheet';
+import {
+  saveAmanatEntry as _saveAmanatEntry,
+  payAmanatExpenseThroughAccounts as _payAmanatExpenseThroughAccounts,
+  deleteAmanatEntry as _deleteAmanatEntry,
+  type AmanatEntryInput,
+} from '@/app/actions/amanatSheet';
+import type { GroupField, BuiltinColumn } from '@/lib/groupFinance';
+import type { LedgerSide } from '@/lib/receivableSheet';
+
+/** Every unpaid expense in a period, paid at once from one or more accounts. */
+export async function payExpensesTotal(token: string, input: PayTotalInput) {
+  return _payExpensesTotal(token, input);
+}
+
+export async function saveInvestmentBook(token: string, input: InvestmentBookInput, bookId?: string) {
+  return _saveInvestmentBook(token, input, bookId);
+}
+export async function deleteInvestmentBook(token: string, bookId: string) {
+  return _deleteInvestmentBook(token, bookId);
+}
+export async function saveInvestmentRound(token: string, input: InvestmentRoundInput, roundId?: string) {
+  return _saveInvestmentRound(token, input, roundId);
+}
+export async function deleteInvestmentRound(token: string, roundId: string) {
+  return _deleteInvestmentRound(token, roundId);
+}
+export async function setInvestmentRoundReceived(token: string, roundId: string, received: boolean, dayKey?: string | null) {
+  return _setInvestmentRoundReceived(token, roundId, received, dayKey);
+}
+
+export async function saveGroupConfig(
+  token: string,
+  input: { fields: Array<Partial<GroupField>>; labels?: Partial<Record<BuiltinColumn, string>> }
+) {
+  return _saveGroupConfig(token, input);
+}
+export async function saveGroupEntry(token: string, monthKey: string, input: GroupEntryInput, entryId?: string) {
+  return _saveGroupEntry(token, monthKey, input, entryId);
+}
+export async function deleteGroupEntry(token: string, monthKey: string, entryId: string) {
+  return _deleteGroupEntry(token, monthKey, entryId);
+}
+export async function setGroupIncomeEdit(
+  token: string,
+  monthKey: string,
+  transactionId: string,
+  amount: number | null,
+  note?: string | null
+) {
+  return _setGroupIncomeEdit(token, monthKey, transactionId, amount, note);
+}
+export async function setGroupCell(
+  token: string,
+  monthKey: string,
+  columnKey: string,
+  value: number | null | undefined,
+  note?: string | null
+) {
+  return _setGroupCell(token, monthKey, columnKey, value, note);
+}
+export async function setGroupDescription(token: string, monthKey: string, description: string) {
+  return _setGroupDescription(token, monthKey, description);
+}
+export async function closeGroupMonth(token: string, monthKey: string) {
+  return _closeGroupMonth(token, monthKey);
+}
+export async function reopenGroupMonth(token: string, monthKey: string) {
+  return _reopenGroupMonth(token, monthKey);
+}
+
+export async function saveSheetEntry(token: string, input: SheetEntryInput, entryId?: string) {
+  return _saveSheetEntry(token, input, entryId);
+}
+export async function settleSheetEntry(
+  token: string,
+  entryId: string,
+  input: { amount: number; dayKey?: string | null; note?: string | null }
+) {
+  return _settleSheetEntry(token, entryId, input);
+}
+export async function settleSheetEntryThroughAccounts(
+  token: string,
+  entryId: string,
+  input: {
+    allocations: Array<{ accountId: string; amount: number }>;
+    dayKey?: string | null;
+    note?: string | null;
+    sourceLabel?: string | null;
+  }
+) {
+  return _settleSheetEntryThroughAccounts(token, entryId, input);
+}
+export async function deleteSheetEntry(token: string, entryId: string) {
+  return _deleteSheetEntry(token, entryId);
+}
+export async function saveSheetGroups(
+  token: string,
+  side: LedgerSide,
+  groups: string[],
+  renames?: Array<{ from: string; to: string }>
+) {
+  return _saveSheetGroups(token, side, groups, renames);
+}
+export async function importLegacyReceivables(token: string) {
+  return _importLegacyReceivables(token);
+}
+export async function countLegacyReceivables(token: string) {
+  return _countLegacyReceivables(token);
+}
+
+export async function saveAmanatEntry(token: string, input: AmanatEntryInput, entryId?: string) {
+  return _saveAmanatEntry(token, input, entryId);
+}
+
+export async function payAmanatExpenseThroughAccounts(
+  token: string,
+  entryId: string,
+  input: {
+    allocations: Array<{ accountId: string; amount: number }>;
+    dayKey?: string | null;
+    note?: string | null;
+  }
+) {
+  return _payAmanatExpenseThroughAccounts(token, entryId, input);
+}
+
+export async function deleteAmanatEntry(token: string, entryId: string) {
+  return _deleteAmanatEntry(token, entryId);
+}
+
+/*
+  What the outbox sends after noon (`lib/outbox`): the same Server Actions,
+  called with a fresh token and the arguments kept at the time.
+*/
+registerReplayers({
+  acceptLead: (token, [leadId]) => _acceptLead(token, leadId as string),
+  passLead: (token, [leadId]) => _passLead(token, leadId as string),
+  setLeadStatus: (token, [leadId, status]) => _setLeadStatus(token, leadId as string, status as LeadStatus),
+  addFollowUp: (token, [leadId, input]) => _addFollowUp(token, leadId as string, input as Parameters<typeof _addFollowUp>[2]),
+  updateFollowUp: (token, [leadId, followUpId, input]) =>
+    _updateFollowUp(token, leadId as string, followUpId as string, input as Parameters<typeof _updateFollowUp>[3]),
+});

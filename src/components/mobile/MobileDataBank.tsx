@@ -1,0 +1,2165 @@
+"use client";
+
+/**
+ * The Data Bank on a phone — two screens and an overlay, in the same idiom as
+ * the phone leads pipeline.
+ *
+ * The desktop Data Bank is a two-pane workspace: a 372px list beside a detail
+ * pane. There is no width for that on a phone, and rendering it anyway is what
+ * made this screen unusable — a 372px column and a detail pane both trying to
+ * fit in 390px, with the record's field table scrolling sideways.
+ *
+ * So the phone gets the shape a phone wants: a list that fills the frame, and
+ * a record that takes the whole screen when you open it. Every write goes
+ * through the same `clientActions` with the same payloads as the desktop, so
+ * the two surfaces cannot drift.
+ *
+ * Inline styles rather than Tailwind, for the reason recorded in
+ * `mobileChrome`: a value the content scanner never saw emits no rule at all.
+ */
+
+import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import { useEmployees, useSubAdmins } from "@/hooks/useEmployees";
+import {
+  useDataBankFolders,
+  useDataBankFolder,
+  useDataBankRecords,
+  RECORDS_PER_PAGE,
+  type DataBankFolder,
+  type DataBankRecord,
+} from "@/hooks/useDataBank";
+import {
+  deleteDataBankFolder,
+  updateDataBankRecord,
+  deleteDataBankRecord,
+  promoteDataBankRecord,
+  assignRecordsToManager,
+} from "@/lib/clientActions";
+import { RECORD_STATUSES, RECORD_STATUS_LABELS, type DataBankStatus } from "@/lib/dataBank";
+import { formatBusinessDate } from "@/lib/dates";
+import { withTimeout, ActionTimeout } from "@/lib/withTimeout";
+import { watchGone } from "@/lib/watchGone";
+import { initialsOf } from "@/lib/leadDisplay";
+import { useOpenedLeads } from "@/hooks/useOpenedLeads";
+import { CursorPager, Pager } from "@/components/employees/DossierControls";
+import { useFolderAssigned } from "@/hooks/useFolderAssigned";
+import { usePagination } from "@/hooks/usePagination";
+import { filterByAssignee, groupByAssignee, matchesAssignedSearch } from "@/lib/dataBankAssigned";
+import { MobileLeadDetail } from "./MobileLeadDetail";
+import {
+  buildAssignOptions,
+  assignActionFor,
+  describeAssignee,
+  groupAssignOptions,
+  type AssignOption,
+} from "@/lib/assignTargets";
+import { FolderFormModal } from "@/components/dataBank/FolderFormModal";
+import { BulkPromoteBar } from "@/components/dataBank/BulkPromoteBar";
+import { ReassignBar } from "@/components/dataBank/ReassignBar";
+import { AssignModal } from "@/components/admin/AssignModal";
+import { ImportModal } from "@/components/dataBank/ImportModal";
+import { RecordFormModal } from "@/components/dataBank/RecordFormModal";
+import { M, HeaderCircle, MobileHeader } from "./mobileChrome";
+import { AccountButton } from "./MobileAccount";
+
+/** Status accent, matching the desktop workspace's `STATUS_TONE` exactly. */
+const TONE: Record<DataBankStatus, { bg: string; text: string; dot: string }> = {
+  NEW: { bg: M.blueBg, text: M.blue, dot: M.blue },
+  CONTACTED: { bg: M.tealTint, text: M.tealDeep, dot: M.tealDeep },
+  NOT_INTERESTED: { bg: "#f2f7f6", text: M.faint, dot: M.ghost },
+};
+
+/**
+ * The same read-state tones the leads list uses — dark to light so the eye
+ * lands on new work first, with `selected` deepest of all because a ticked row
+ * is the one the bulk bar is about to act on.
+ */
+const ROW_TONES = {
+  selected: { background: "#c6e0dc", border: "#3f8f8a" },
+  unopened: { background: "#e2f0ee", border: "#c9dedb" },
+  opened: { background: M.cardBg, border: M.cardBorder },
+} as const;
+
+/* ========================================================================== */
+/* Screen 1 — the sources                                                     */
+/* ========================================================================== */
+
+export function MobileDataBankFolders() {
+  const { role, user, getIdToken } = useAuth();
+  const isAdmin = role === "admin";
+  const isManager = role === "admin" || role === "subadmin";
+  const router = useRouter();
+
+  // A sub admin sees the folders assigned to them; the query and the Security
+  // Rule agree on that, so nothing is filtered afterwards.
+  // Meta campaign folders are listed on Meta Ads, not here — see `useDataBank`.
+  const { folders, mirrors, loading, error } = useDataBankFolders(isManager, {
+    role,
+    uid: user?.uid,
+  });
+  // To name the manager on a handed-over folder, and to name who is holding a
+  // folder's handed-over rows. The mirrors are no longer cards of their own in
+  // the admin's list — same name as their source, next to it in a
+  // name-ordered list, which read as a duplicate appearing on its own.
+  const { subAdmins } = useSubAdmins(isAdmin);
+  const managerNames = useMemo(
+    () => new Map(subAdmins.map((manager) => [manager.uid, manager.name])),
+    [subAdmins]
+  );
+
+  /* Mirrors grouped under the folder they came out of, from the same snapshot
+     the list is already reading — so this costs no extra reads. */
+  const heldBySource = useMemo(() => {
+    const byId = new Map<string, Array<{ id: string; name: string; records: number }>>();
+    for (const mirror of mirrors) {
+      if (!mirror.sourceFolderId) continue;
+      const list = byId.get(mirror.sourceFolderId) ?? [];
+      list.push({
+        id: mirror.id,
+        name: mirror.subAdminUid ? (managerNames.get(mirror.subAdminUid) ?? "a manager") : "a manager",
+        records: mirror.recordCount,
+      });
+      byId.set(mirror.sourceFolderId, list);
+    }
+    return byId;
+  }, [mirrors, managerNames]);
+
+  const [formFor, setFormFor] = useState<{ folder: DataBankFolder | null } | null>(null);
+  const [confirming, setConfirming] = useState<DataBankFolder | null>(null);
+  const [banner, setBanner] = useState<{ tone: "error" | "success"; text: string } | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const totals = useMemo(
+    () => ({
+      records: folders.reduce((sum, folder) => sum + folder.recordCount, 0),
+      promoted: folders.reduce((sum, folder) => sum + folder.promotedCount, 0),
+    }),
+    [folders]
+  );
+
+  const remove = async (folder: DataBankFolder) => {
+    setBusy(true);
+    try {
+      const res = await deleteDataBankFolder(await getIdToken(), folder.id);
+      if (res.ok) {
+        setBanner({
+          tone: "success",
+          /*
+            A big folder is removed over more than one run so a single press
+            cannot spend the day's delete quota and stop the whole app. The
+            folder is hidden either way, so this says what actually happened
+            rather than claiming it is finished when it is not.
+          */
+          text: res.data.done
+            ? `${folder.name} deleted, along with ${res.data.deleted.toLocaleString()} records.`
+            : `${folder.name} is gone from your list. ${res.data.deleted.toLocaleString()} records removed and ${res.data.remaining.toLocaleString()} still to go — press delete again to finish, or leave it until tomorrow.`,
+        });
+        setConfirming(null);
+      } else {
+        setBanner({ tone: "error", text: res.error });
+      }
+    } catch {
+      setBanner({ tone: "error", text: "Network error." });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <>
+      <MobileHeader>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 14 }}>
+          <div style={{ minWidth: 0 }}>
+            <div style={EYEBROW}>Data Bank</div>
+            <h1 style={TITLE}>Sources</h1>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+            {/* Both managing roles: a manager's own cold list is theirs to
+                create. Whose folder it is still comes from the token, not from
+                this screen — see `createDataBankFolder`. */}
+            {isManager && (
+              <HeaderCircle label="New folder" onClick={() => setFormFor({ folder: null })}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" aria-hidden>
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
+              </HeaderCircle>
+            )}
+            <AccountButton />
+          </div>
+        </div>
+
+        <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
+          <HeaderStat label="Sources" value={folders.length.toLocaleString()} />
+          <HeaderStat label="Cold records" value={totals.records.toLocaleString()} />
+          <HeaderStat label="Promoted" value={totals.promoted.toLocaleString()} />
+        </div>
+      </MobileHeader>
+
+      <div style={LIST_BODY}>
+        {error && <Note tone="error">{error}</Note>}
+        {banner && <Note tone={banner.tone}>{banner.text}</Note>}
+
+        {loading ? (
+          <SkeletonCards />
+        ) : folders.length === 0 ? (
+          <Empty
+            title="No sources yet."
+            body="A folder is one source — Capital Smart City, F2F, a walk-in list. Create it with the columns that source's sheet has, then import the file."
+          />
+        ) : (
+          folders.map((folder, index) => (
+            <div
+              key={folder.id}
+              style={{
+                background: M.cardBg,
+                border: `1px solid ${M.cardBorder}`,
+                borderRadius: M.cardRadius,
+                overflow: "hidden",
+                // A flex item in a column container shrinks below its content
+                // by default, and the scroll container above is `flex: 1` —
+                // without this the card's own action row is clipped off the
+                // bottom edge. Caught in the browser, not in review.
+                flexShrink: 0,
+                animation:
+                  index < 8 ? `mob-rise 300ms cubic-bezier(0.22,0.61,0.36,1) ${index * 32}ms both` : undefined,
+              }}
+            >
+              <button
+                className="mob-press"
+                onClick={() => router.push(`/admin/data-bank/${folder.id}`)}
+                style={{
+                  display: "block",
+                  width: "100%",
+                  textAlign: "left",
+                  border: "none",
+                  background: "transparent",
+                  padding: "15px 16px 13px",
+                  cursor: "pointer",
+                  WebkitTapHighlightColor: "transparent",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+                  {folder.code && (
+                    <span
+                      style={{
+                        flexShrink: 0,
+                        borderRadius: 7,
+                        background: M.tealTint,
+                        color: M.tealDeep,
+                        padding: "2px 7px",
+                        fontSize: 10.5,
+                        fontWeight: 700,
+                        letterSpacing: "0.5px",
+                      }}
+                    >
+                      {folder.code}
+                    </span>
+                  )}
+                  <span
+                    style={{
+                      fontSize: 16,
+                      fontWeight: 700,
+                      letterSpacing: "-0.35px",
+                      color: M.ink,
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {folder.name}
+                  </span>
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke={M.teal}
+                    strokeWidth="2.4"
+                    strokeLinecap="round"
+                    style={{ marginLeft: "auto", flexShrink: 0 }}
+                    aria-hidden
+                  >
+                    <path d="m9 6 6 6-6 6" />
+                  </svg>
+                </div>
+
+                {isAdmin && folder.subAdminUid && (
+                  <span
+                    style={{
+                      display: "inline-block",
+                      marginTop: 6,
+                      borderRadius: 999,
+                      background: "#eaf1f6",
+                      color: "#4d7590",
+                      padding: "2px 9px",
+                      fontSize: 11,
+                      fontWeight: 700,
+                    }}
+                  >
+                    Handed to {managerNames.get(folder.subAdminUid) ?? "a manager"}
+                  </span>
+                )}
+
+                {folder.description && (
+                  <div
+                    style={{
+                      marginTop: 4,
+                      fontSize: 12,
+                      fontWeight: 500,
+                      color: M.fainter,
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {folder.description}
+                  </div>
+                )}
+
+                <div style={{ display: "flex", alignItems: "flex-end", gap: 22, marginTop: 12 }}>
+                  <Figure value={folder.recordCount.toLocaleString()} label="Records" />
+                  <Figure value={folder.promotedCount.toLocaleString()} label="Promoted" tone={M.tealDeep} />
+                </div>
+
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 11 }}>
+                  {folder.fields.slice(0, 3).map((field) => (
+                    <span
+                      key={field.key}
+                      style={{
+                        borderRadius: 7,
+                        background: M.trackFlat,
+                        color: M.muted,
+                        padding: "3px 8px",
+                        fontSize: 11,
+                        fontWeight: 600,
+                      }}
+                    >
+                      {field.label}
+                    </span>
+                  ))}
+                  {folder.fields.length > 3 && (
+                    <span style={{ padding: "3px 4px", fontSize: 11, fontWeight: 600, color: M.fainter }}>
+                      +{folder.fields.length - 3}
+                    </span>
+                  )}
+                </div>
+              </button>
+
+              {/* Outside the navigating button, because each chip is its own
+                  destination — the folder those rows are sitting in now. */}
+              {(heldBySource.get(folder.id)?.length ?? 0) > 0 && (
+                <div style={{ borderTop: `1px solid ${M.divider}`, padding: "10px 16px" }}>
+                  <div
+                    style={{
+                      fontSize: 10.5,
+                      fontWeight: 700,
+                      letterSpacing: "0.9px",
+                      textTransform: "uppercase",
+                      color: M.fainter,
+                    }}
+                  >
+                    Held by
+                  </div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 7 }}>
+                    {heldBySource.get(folder.id)?.map((mirror) => (
+                      <button
+                        key={mirror.id}
+                        type="button"
+                        className="mob-press"
+                        onClick={() => router.push(`/admin/data-bank/${mirror.id}`)}
+                        style={{
+                          border: "none",
+                          borderRadius: 999,
+                          background: "#eaf1f6",
+                          color: "#4d7590",
+                          padding: "5px 11px",
+                          fontSize: 11.5,
+                          fontWeight: 700,
+                          cursor: "pointer",
+                          WebkitTapHighlightColor: "transparent",
+                        }}
+                      >
+                        {mirror.name} — {mirror.records.toLocaleString()} ›
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Outside the navigating button, so they are separate targets.
+                  A manager owns every folder their query returns, so both are
+                  theirs; the Server Action re-checks it. */}
+              {isManager && (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  borderTop: `1px solid ${M.divider}`,
+                  padding: "8px 12px",
+                }}
+              >
+                <MiniAction onPress={() => setFormFor({ folder })} d="M4 20h4L19 9l-4-4L4 16zM14 5l4 4" >
+                  Edit fields
+                </MiniAction>
+                <div style={{ marginLeft: "auto" }}>
+                  <MiniAction
+                    tone={M.red}
+                    onPress={() => setConfirming(folder)}
+                    d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"
+                  >
+                    Delete
+                  </MiniAction>
+                </div>
+              </div>
+              )}
+            </div>
+          ))
+        )}
+      </div>
+
+      {formFor && (
+        <FolderFormModal
+          folder={formFor.folder}
+          /* Mirrors included: they are hidden from the grid, but a new folder
+             sharing a mirror's name is exactly the collision worth warning
+             about. No extra read — both lists are already on screen. */
+          existing={[...folders, ...mirrors]}
+          getIdToken={getIdToken}
+          onClose={() => setFormFor(null)}
+          onSaved={(message) => {
+            setFormFor(null);
+            setBanner({ tone: "success", text: message });
+          }}
+        />
+      )}
+
+      {confirming && (
+        <ConfirmSheet
+          title={`Delete ${confirming.name}?`}
+          body={`This removes the folder and all ${confirming.recordCount.toLocaleString()} records in it. Leads already promoted into the pipeline are not affected. This cannot be undone.`}
+          confirmLabel={busy ? "Deleting…" : `Delete ${confirming.recordCount.toLocaleString()} records`}
+          busy={busy}
+          onCancel={() => setConfirming(null)}
+          onConfirm={() => void remove(confirming)}
+        />
+      )}
+    </>
+  );
+}
+
+/* ========================================================================== */
+/* Screen 2 — one folder's records                                            */
+/* ========================================================================== */
+
+export function MobileFolderWorkspace({ folderId }: { folderId: string }) {
+  const { role, managerKind, user, getIdToken } = useAuth();
+  // A sub admin works the records inside their own folders exactly as an admin
+  // does — adding, editing and promoting are all allowed. Only the folder
+  // itself is admin-owned, and that lives on the previous screen.
+  const isManager = role === "admin" || role === "subadmin";
+  const router = useRouter();
+
+  const { folder, loading: folderLoading, error: folderError } = useDataBankFolder(folderId, isManager);
+  const { employees } = useEmployees(isManager, { role, uid: user?.uid });
+  // Managers come from their own query — `useEmployees` is `role ==
+  // "employee"`, so the Managers group was always empty without this.
+  const { subAdmins } = useSubAdmins(isManager && role === "admin");
+  const { isOpened, markOpened } = useOpenedLeads(user?.uid);
+  // Who an assigned lead may be reassigned to — wider for HR than who a record
+  // may be promoted to. Same two rules the desktop reads; see `FolderWorkspace`.
+  const companyWide = role === "subadmin" && managerKind === "HR";
+  const canReassignSideways = role === "admin" || companyWide;
+  const { employees: reachable } = useEmployees(isManager, { role, uid: user?.uid, companyWide });
+  const { subAdmins: reachableManagers } = useSubAdmins(isManager && canReassignSideways);
+  const reassignOptions = useMemo(
+    () =>
+      buildAssignOptions(
+        [...reachable, ...(canReassignSideways ? reachableManagers : [])],
+        { uid: user?.uid ?? "", name: "Me", role: role ?? null }
+      ).filter((option) => option.group !== "MYSELF"),
+    [reachable, reachableManagers, canReassignSideways, user?.uid, role]
+  );
+
+  const [query, setQuery] = useState("");
+  const [status, setStatus] = useState<DataBankStatus | "ALL">("ALL");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  // Unassigned / Assigned, and whose assigned rows — the desktop's two halves.
+  const [view, setView] = useState<"UNASSIGNED" | "ASSIGNED">("UNASSIGNED");
+  const [assigneeFilter, setAssigneeFilter] = useState<string | null>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [openAssignedId, setOpenAssignedId] = useState<string | null>(null);
+  const [pickedAssigned, setPickedAssigned] = useState<Set<string>>(new Set());
+  const [reassigningLead, setReassigningLead] = useState<string | null>(null);
+  const bankPath = role === "subadmin" ? "/subadmin/data-bank" : "/admin/data-bank";
+  const [importOpen, setImportOpen] = useState(false);
+  const [formFor, setFormFor] = useState<{ record: DataBankRecord | null } | null>(null);
+  const [banner, setBanner] = useState<{ tone: "error" | "success"; text: string } | null>(null);
+  /**
+   * The bulk selection, by id rather than index so a row that scrolls away or
+   * is filtered out stays selected — and so the payload sent to the server is
+   * exactly what the bar counted. The desktop workspace does the same.
+   */
+  const [picked, setPicked] = useState<Set<string>>(new Set());
+
+  const page = useDataBankRecords(folderId, { search: query, status, enabled: isManager });
+  const selected = page.records.find((record) => record.id === selectedId) ?? null;
+
+  const names = useMemo(
+    () =>
+      new Map(
+        [...employees, ...reachable, ...subAdmins, ...reachableManagers].map((person) => [
+          person.uid,
+          person.name,
+        ])
+      ),
+    [employees, reachable, subAdmins, reachableManagers]
+  );
+  const managers = useMemo(
+    () => subAdmins.map((manager) => ({ uid: manager.uid, name: manager.name })),
+    [subAdmins]
+  );
+  const assigned = useFolderAssigned(folderId, isManager, {
+    role,
+    uid: user?.uid,
+    managerKind,
+    managers,
+    names,
+  });
+  const assignees = useMemo(() => groupByAssignee(assigned.items), [assigned.items]);
+  const assignedVisible = useMemo(
+    () =>
+      filterByAssignee(assigned.items, assigneeFilter).filter((item) =>
+        matchesAssignedSearch(item, query)
+      ),
+    [assigned.items, assigneeFilter, query]
+  );
+  const assignedPages = usePagination(assignedVisible, RECORDS_PER_PAGE);
+  const pickedAssignee = assignees.find((entry) => entry.uid === assigneeFilter) ?? null;
+  const openAssigned = openAssignedId
+    ? (assigned.items.find((item) => item.id === openAssignedId) ?? null)
+    : null;
+
+  /**
+   * Employees, managers and "Admin / Myself" (§2) — the same list the desktop
+   * Data Bank offers, from the same builder, so the two surfaces cannot
+   * disagree about who a record may go to.
+   */
+  const assignOptions = useMemo(
+    () =>
+      buildAssignOptions([...employees, ...subAdmins], {
+        uid: user?.uid ?? "",
+        name: user?.email?.split("@")[0] ?? "Me",
+        role: role ?? null,
+      }),
+    [employees, subAdmins, user?.uid, user?.email, role]
+  );
+
+  const afterWrite = (message: string) => {
+    setBanner({ tone: "success", text: message });
+    page.refresh();
+  };
+
+  const toggle = (id: string) =>
+    setPicked((current) => {
+      const next = new Set(current);
+      if (!next.delete(id)) next.add(id);
+      return next;
+    });
+
+  if (!folderLoading && !folder) {
+    return (
+      <>
+        <MobileHeader>
+          <h1 style={TITLE}>Data Bank</h1>
+        </MobileHeader>
+        <div style={LIST_BODY}>
+          <Note tone="error">{folderError ?? "That folder no longer exists."}</Note>
+          <button
+            className="mob-press"
+            onClick={() => router.push(bankPath)}
+            style={{ ...PRIMARY_BUTTON, marginTop: 4 }}
+          >
+            Back to the Data Bank
+          </button>
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <MobileHeader>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 10, minWidth: 0 }}>
+            <HeaderCircle label="Back to the Data Bank" onClick={() => router.push(bankPath)} size={34}>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M15 5l-7 7 7 7" />
+              </svg>
+            </HeaderCircle>
+            <div style={{ minWidth: 0 }}>
+              <div style={EYEBROW}>{folder?.code || "Source"}</div>
+              <h1 style={{ ...TITLE, fontSize: 21 }}>{folder?.name ?? "…"}</h1>
+              <div style={{ fontSize: 11.5, fontWeight: 600, opacity: 0.8, marginTop: 2, fontVariantNumeric: "tabular-nums" }}>
+                {(folder?.recordCount ?? 0).toLocaleString()} unassigned ·{" "}
+                {assigned.items.length.toLocaleString()} assigned
+              </div>
+            </div>
+          </div>
+          <div style={{ flexShrink: 0 }}>
+            <AccountButton />
+          </div>
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 9,
+            marginTop: 15,
+            padding: "11px 15px",
+            borderRadius: 999,
+            background: M.searchBg,
+            border: `1px solid ${M.searchBorder}`,
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="2" aria-hidden>
+            <circle cx="11" cy="11" r="6.5" />
+            <path d="m16 16 4.5 4.5" />
+          </svg>
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Name, or a phone number"
+            aria-label="Search this folder"
+            style={{
+              flex: 1,
+              minWidth: 0,
+              border: "none",
+              outline: "none",
+              background: "transparent",
+              fontSize: 13.5,
+              fontWeight: 500,
+              color: "#fff",
+            }}
+          />
+        </div>
+
+        <div style={{ display: "flex", gap: 9, marginTop: 12 }}>
+          <button className="mob-press" onClick={() => setImportOpen(true)} style={HEADER_BUTTON}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+            </svg>
+            <span>Import CSV</span>
+          </button>
+          <button
+            className="mob-press"
+            onClick={() => setFormFor({ record: null })}
+            style={{ ...HEADER_BUTTON, background: "#fff", color: M.tealDeep, borderColor: "#fff" }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={M.tealDeep} strokeWidth="2.4" strokeLinecap="round" aria-hidden>
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            <span>Add record</span>
+          </button>
+        </div>
+      </MobileHeader>
+
+      {/* Unassigned / Assigned — the desktop's two halves. */}
+      <div
+        role="tablist"
+        aria-label="Assigned or unassigned records"
+        style={{ display: "flex", gap: 8, padding: "14px 18px 0", flexShrink: 0 }}
+      >
+        {(
+          [
+            ["UNASSIGNED", "Unassigned", folder?.recordCount ?? 0],
+            ["ASSIGNED", "Assigned", assigned.items.length],
+          ] as const
+        ).map(([key, label, count]) => {
+          const active = view === key;
+          return (
+            <button
+              key={key}
+              role="tab"
+              aria-selected={active}
+              onClick={() => {
+                setView(key);
+                setPickerOpen(false);
+              }}
+              className="mob-press"
+              style={{
+                flex: 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 7,
+                padding: "10px 12px",
+                borderRadius: 999,
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: "pointer",
+                WebkitTapHighlightColor: "transparent",
+                border: `1px solid ${active ? M.tealDeep : M.cardBorder}`,
+                background: active ? M.tealDeep : M.cardBg,
+                color: active ? "#fff" : M.muted,
+                transition: "background-color 160ms ease, color 160ms ease, border-color 160ms ease",
+              }}
+            >
+              <span>{label}</span>
+              <span
+                style={{
+                  borderRadius: 999,
+                  padding: "1px 7px",
+                  fontSize: 11,
+                  fontVariantNumeric: "tabular-nums",
+                  background: active ? "rgba(255,255,255,0.22)" : M.tealTint,
+                  color: active ? "#fff" : M.tealDeep,
+                }}
+              >
+                {count.toLocaleString()}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {view === "UNASSIGNED" ? (
+      /* Chips — the same cuts as the desktop workspace. */
+      <div
+        role="tablist"
+        aria-label="Filter records"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          padding: "10px 18px 10px",
+          overflowX: "auto",
+          overscrollBehavior: "contain",
+          flexShrink: 0,
+          scrollbarWidth: "none",
+        }}
+      >
+        {(["ALL", ...RECORD_STATUSES] as const).map((key) => {
+          const active = status === key;
+          return (
+            <button
+              key={key}
+              role="tab"
+              aria-selected={active}
+              onClick={() => setStatus(key)}
+              className="mob-press"
+              style={{
+                flexShrink: 0,
+                padding: "9px 17px",
+                borderRadius: 999,
+                fontSize: 12.5,
+                fontWeight: 600,
+                cursor: "pointer",
+                WebkitTapHighlightColor: "transparent",
+                border: `1px solid ${active ? M.teal : M.cardBorder}`,
+                background: active ? M.teal : M.cardBg,
+                color: active ? "#fff" : M.muted,
+                transition: "background-color 160ms ease, color 160ms ease, border-color 160ms ease",
+              }}
+            >
+              {key === "ALL" ? "All" : RECORD_STATUS_LABELS[key]}
+            </button>
+          );
+        })}
+      </div>
+      ) : (
+        /* Who these went to — a disclosure that pushes the list down, never a
+           floating menu the tab bar could cover. */
+        <div style={{ padding: "10px 18px 10px", flexShrink: 0 }}>
+          <button
+            className="mob-press"
+            onClick={() => setPickerOpen((open) => !open)}
+            aria-expanded={pickerOpen}
+            style={{
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              gap: 9,
+              padding: "11px 14px",
+              borderRadius: 14,
+              border: `1px solid ${M.cardBorder}`,
+              background: M.cardBg,
+              color: M.ink,
+              fontSize: 14,
+              fontWeight: 600,
+              textAlign: "left",
+              cursor: "pointer",
+              WebkitTapHighlightColor: "transparent",
+            }}
+          >
+            <span style={{ color: M.faint, fontWeight: 500, flexShrink: 0 }}>Assigned to</span>
+            <span style={{ flex: 1, minWidth: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              {pickedAssignee ? pickedAssignee.name : "Everyone"}
+            </span>
+            <span
+              style={{
+                borderRadius: 999,
+                padding: "1px 8px",
+                fontSize: 11.5,
+                fontVariantNumeric: "tabular-nums",
+                background: M.tealTint,
+                color: M.tealDeep,
+                flexShrink: 0,
+              }}
+            >
+              {(pickedAssignee?.count ?? assigned.items.length).toLocaleString()}
+            </span>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke={M.faint}
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              aria-hidden
+              style={{ flexShrink: 0, transform: pickerOpen ? "rotate(180deg)" : undefined, transition: "transform 200ms ease" }}
+            >
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </button>
+          {pickerOpen && (
+            <div
+              role="list"
+              aria-label="People these records are assigned to"
+              style={{
+                marginTop: 6,
+                maxHeight: 280,
+                overflowY: "auto",
+                overscrollBehavior: "contain",
+                borderRadius: 14,
+                border: `1px solid ${M.cardBorder}`,
+                background: M.cardBg,
+                padding: "4px 0",
+              }}
+            >
+              {[{ uid: null as string | null, name: "Everyone", count: assigned.items.length }, ...assignees].map(
+                (entry) => {
+                  const active = assigneeFilter === entry.uid;
+                  return (
+                    <button
+                      key={entry.uid ?? "all"}
+                      role="listitem"
+                      className="mob-press"
+                      onClick={() => {
+                        setAssigneeFilter(entry.uid);
+                        setPickerOpen(false);
+                      }}
+                      style={{
+                        width: "100%",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 10,
+                        padding: "12px 14px",
+                        border: "none",
+                        background: active ? M.tealTint : "transparent",
+                        color: active ? M.tealDeep : M.ink,
+                        fontSize: 14,
+                        fontWeight: active ? 700 : 600,
+                        textAlign: "left",
+                        cursor: "pointer",
+                        WebkitTapHighlightColor: "transparent",
+                      }}
+                    >
+                      <span style={{ flex: 1, minWidth: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        {entry.name}
+                      </span>
+                      <span
+                        style={{
+                          borderRadius: 999,
+                          padding: "1px 9px",
+                          fontSize: 12,
+                          fontVariantNumeric: "tabular-nums",
+                          background: active ? "#fff" : M.tealTint,
+                          color: M.tealDeep,
+                          flexShrink: 0,
+                        }}
+                      >
+                        {entry.count.toLocaleString()}
+                      </span>
+                    </button>
+                  );
+                }
+              )}
+              {assignees.length === 0 && (
+                <div style={{ padding: "10px 14px", fontSize: 13, color: M.faint }}>Nothing assigned yet.</div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      <div style={LIST_BODY}>
+        {banner && <Note tone={banner.tone}>{banner.text}</Note>}
+        {page.error && view === "UNASSIGNED" && <Note tone="error">{page.error}</Note>}
+        {assigned.error && view === "ASSIGNED" && <Note tone="error">{assigned.error}</Note>}
+
+        {view === "ASSIGNED" ? (
+          <>
+            {/* Reassign — the desktop's bar in its `compact` form. */}
+            <ReassignBar
+              compact
+              selected={assigned.items.filter((item) => pickedAssigned.has(item.id))}
+              available={assignedPages.items.length}
+              options={reassignOptions}
+              getIdToken={getIdToken}
+              onSelectCount={(n) => {
+                const take = assignedPages.items.slice(0, n).map((item) => item.id);
+                setPickedAssigned(new Set(take));
+                return take.length;
+              }}
+              onClear={() => setPickedAssigned(new Set())}
+              onDone={(message) => {
+                setPickedAssigned(new Set());
+                afterWrite(message);
+              }}
+            />
+            {assigned.loading ? (
+              <SkeletonCards />
+            ) : assignedVisible.length === 0 ? (
+              <Empty
+                title={
+                  query.trim()
+                    ? `Nothing assigned matches “${query.trim()}”.`
+                    : assigned.items.length === 0
+                      ? "Nothing assigned yet."
+                      : "Nobody in this filter."
+                }
+                body="Records promoted to a lead, or handed to a manager, are listed here under the person who has them."
+              />
+            ) : (
+              assignedPages.items.map((item, index) => {
+                const seen = isOpened(item.id);
+                const tickedRow = pickedAssigned.has(item.id);
+                const shade = ROW_TONES[tickedRow ? "selected" : seen ? "opened" : "unopened"];
+                const lead = item.kind === "LEAD";
+                const toggleRow = () =>
+                  setPickedAssigned((current) => {
+                    const next = new Set(current);
+                    if (!next.delete(item.id)) next.add(item.id);
+                    return next;
+                  });
+                return (
+                  <button
+                    key={item.id}
+                    className="mob-press"
+                    onClick={() => {
+                      setOpenAssignedId(item.id);
+                      markOpened(item.id);
+                    }}
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "48px minmax(0,1fr) auto",
+                      alignItems: "center",
+                      gap: 13,
+                      background: shade.background,
+                      border: `1px solid ${shade.border}`,
+                      borderRadius: M.cardRadius,
+                      padding: "14px 16px",
+                      textAlign: "left",
+                      cursor: "pointer",
+                      WebkitTapHighlightColor: "transparent",
+                      flexShrink: 0,
+                      animation:
+                        index < 8 ? `mob-rise 300ms cubic-bezier(0.22,0.61,0.36,1) ${index * 32}ms both` : undefined,
+                    }}
+                  >
+                    {/* The avatar is the tick target, as on the Unassigned half. */}
+                    <span
+                      role="checkbox"
+                      aria-checked={tickedRow}
+                      aria-label={`Select ${item.name}`}
+                      tabIndex={0}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        toggleRow();
+                      }}
+                      onKeyDown={(event) => {
+                        if (event.key !== " " && event.key !== "Enter") return;
+                        event.preventDefault();
+                        event.stopPropagation();
+                        toggleRow();
+                      }}
+                      style={{
+                        width: 48,
+                        height: 48,
+                        borderRadius: "50%",
+                        background: tickedRow ? M.teal : "#fff",
+                        border: `2px solid ${tickedRow ? M.tealDeep : lead ? M.tealDeep : M.blue}`,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: 14,
+                        fontWeight: 700,
+                        color: tickedRow ? "#fff" : "#4a5c5a",
+                        flexShrink: 0,
+                        cursor: "pointer",
+                        transition: "background-color 140ms ease, border-color 140ms ease",
+                      }}
+                    >
+                      {tickedRow ? (
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                          <path d="m5 13 4 4L19 7" />
+                        </svg>
+                      ) : (
+                        initialsOf(item.name)
+                      )}
+                    </span>
+                    <span style={{ minWidth: 0 }}>
+                      <span style={{ display: "flex", alignItems: "center", gap: 7, minWidth: 0 }}>
+                        {!seen && (
+                          <span
+                            style={{ width: 7, height: 7, borderRadius: "50%", background: M.teal, flexShrink: 0 }}
+                            aria-hidden
+                          />
+                        )}
+                        <span
+                          style={{
+                            fontSize: 15.5,
+                            fontWeight: 700,
+                            letterSpacing: "-0.35px",
+                            color: M.ink,
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          {item.name}
+                        </span>
+                        {!seen && <span className="sr-only">(not opened yet)</span>}
+                      </span>
+                      <span
+                        style={{
+                          display: "block",
+                          marginTop: 4,
+                          fontSize: 12,
+                          fontWeight: 500,
+                          color: M.faint,
+                          fontVariantNumeric: "tabular-nums",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {item.phone || "No number"} · {lead ? "Lead" : "In their Data Bank"}
+                      </span>
+                    </span>
+                    <span
+                      style={{
+                        maxWidth: 118,
+                        borderRadius: 999,
+                        background: lead ? M.tealTint : M.blueBg,
+                        color: lead ? M.tealDeep : M.blue,
+                        padding: "3px 9px",
+                        fontSize: 10.5,
+                        fontWeight: 700,
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      {item.assigneeName || "Unassigned"}
+                    </span>
+                  </button>
+                );
+              })
+            )}
+            <Pager pagination={assignedPages} variant="mobile" noun="records" />
+          </>
+        ) : (
+        <>
+        {/* Bulk selection, the desktop's bar in its `compact` form — one
+            implementation, so the phone cannot offer different quantities or a
+            different set of recipients. */}
+        <BulkPromoteBar
+          compact
+          selected={[...picked]}
+          available={page.records.length}
+          assignOptions={assignOptions}
+          getIdToken={getIdToken}
+          onSelectCount={(n) => {
+            const take = page.records.slice(0, n).map((record) => record.id);
+            setPicked(new Set(take));
+            return take.length;
+          }}
+          onClear={() => setPicked(new Set())}
+          onDone={(message) => {
+            setPicked(new Set());
+            afterWrite(message);
+          }}
+        />
+
+        {page.loading ? (
+          <SkeletonCards />
+        ) : page.records.length === 0 ? (
+          <Empty
+            title={query.trim() ? `Nothing matches “${query.trim()}”.` : "No records in this filter."}
+            body={
+              query.trim()
+                ? "Search matches a name from its start, or a whole phone number."
+                : "Import a CSV, or add a record by hand."
+            }
+          />
+        ) : (
+          page.records.map((record, index) => {
+            const seen = isOpened(record.id);
+            const ticked = picked.has(record.id);
+            const shade = ROW_TONES[ticked ? "selected" : seen ? "opened" : "unopened"];
+            const tone = TONE[record.status];
+            return (
+              <button
+                key={record.id}
+                className="mob-press"
+                onClick={() => {
+                  setSelectedId(record.id);
+                  markOpened(record.id);
+                }}
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "48px minmax(0,1fr) auto",
+                  alignItems: "center",
+                  gap: 13,
+                  background: shade.background,
+                  border: `1px solid ${shade.border}`,
+                  borderRadius: M.cardRadius,
+                  padding: "14px 16px",
+                  textAlign: "left",
+                  cursor: "pointer",
+                  WebkitTapHighlightColor: "transparent",
+                  flexShrink: 0,
+                  animation:
+                    index < 8 ? `mob-rise 300ms cubic-bezier(0.22,0.61,0.36,1) ${index * 32}ms both` : undefined,
+                }}
+              >
+                {/* The avatar doubles as the tick target. A separate checkbox
+                    column would cost 28px of a 390px row and push the phone
+                    number off the end; tapping the avatar is the gesture the
+                    row already invites. */}
+                <span
+                  role="checkbox"
+                  aria-checked={ticked}
+                  aria-label={`Select ${record.name}`}
+                  tabIndex={0}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    toggle(record.id);
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key !== " " && event.key !== "Enter") return;
+                    event.preventDefault();
+                    event.stopPropagation();
+                    toggle(record.id);
+                  }}
+                  style={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: "50%",
+                    background: ticked ? M.teal : "#fff",
+                    border: `2px solid ${ticked ? M.tealDeep : tone.dot}`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 14,
+                    fontWeight: 700,
+                    color: ticked ? "#fff" : "#4a5c5a",
+                    flexShrink: 0,
+                    cursor: "pointer",
+                    transition: "background-color 140ms ease, border-color 140ms ease",
+                  }}
+                >
+                  {ticked ? (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                      <path d="m5 13 4 4L19 7" />
+                    </svg>
+                  ) : (
+                    initialsOf(record.name)
+                  )}
+                </span>
+
+                <span style={{ minWidth: 0 }}>
+                  <span style={{ display: "flex", alignItems: "center", gap: 7, minWidth: 0 }}>
+                    {!seen && (
+                      <span
+                        style={{ width: 7, height: 7, borderRadius: "50%", background: M.teal, flexShrink: 0 }}
+                        aria-hidden
+                      />
+                    )}
+                    <span
+                      style={{
+                        fontSize: 15.5,
+                        fontWeight: 700,
+                        letterSpacing: "-0.35px",
+                        color: M.ink,
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      {record.name}
+                    </span>
+                    {!seen && <span className="sr-only">(not opened yet)</span>}
+                  </span>
+                  <span
+                    style={{
+                      display: "block",
+                      marginTop: 4,
+                      fontSize: 12,
+                      fontWeight: 500,
+                      color: M.faint,
+                      fontVariantNumeric: "tabular-nums",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {record.phone || "No number"}
+                  </span>
+                </span>
+
+                <span style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 7, flexShrink: 0 }}>
+                  <span
+                    style={{
+                      borderRadius: 999,
+                      background: tone.bg,
+                      color: tone.text,
+                      padding: "3px 9px",
+                      fontSize: 10.5,
+                      fontWeight: 700,
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {RECORD_STATUS_LABELS[record.status]}
+                  </span>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={M.teal} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                    <path d="m6 6 6 6-6 6M14 6l6 6-6 6" />
+                  </svg>
+                </span>
+              </button>
+            );
+          })
+        )}
+
+        <CursorPager
+          page={page.page}
+          pageSize={RECORDS_PER_PAGE}
+          count={page.records.length}
+          hasNext={page.hasNext}
+          hasPrevious={page.hasPrevious}
+          busy={page.loading}
+          onNext={page.next}
+          onPrevious={page.previous}
+          variant="mobile"
+        />
+        </>
+        )}
+      </div>
+
+      {openAssigned?.kind === "LEAD" && assigned.leadsById.get(openAssigned.id) && (
+        <MobileLeadDetail
+          key={openAssigned.id}
+          lead={assigned.leadsById.get(openAssigned.id)!}
+          onClose={() => setOpenAssignedId(null)}
+          userRole={role === "subadmin" ? "subadmin" : "admin"}
+          getIdToken={getIdToken}
+          assigneeName={openAssigned.assigneeName}
+          onReassign={() => setReassigningLead(openAssigned.id)}
+        />
+      )}
+
+      {reassigningLead && assigned.leadsById.get(reassigningLead) && (
+        <AssignModal
+          lead={assigned.leadsById.get(reassigningLead)!}
+          employees={reachable}
+          managers={canReassignSideways ? reachableManagers : []}
+          onClose={() => setReassigningLead(null)}
+          getIdToken={getIdToken}
+          runAction={async (fn, success) => {
+            try {
+              const res = await fn();
+              setBanner(res.ok ? { tone: "success", text: success } : { tone: "error", text: res.error || "Failed." });
+              return res.ok;
+            } catch {
+              setBanner({ tone: "error", text: "Network error." });
+              return false;
+            }
+          }}
+        />
+      )}
+
+      {openAssigned?.kind === "HANDOFF" && folder && assigned.handoffsById.get(openAssigned.id) && (
+        <MobileRecordDetail
+          key={openAssigned.id}
+          record={assigned.handoffsById.get(openAssigned.id)!}
+          folder={folder}
+          assignOptions={assignOptions}
+          getIdToken={getIdToken}
+          onClose={() => setOpenAssignedId(null)}
+          onEdit={() => setFormFor({ record: assigned.handoffsById.get(openAssigned.id)! })}
+          onChanged={afterWrite}
+          onRemoved={(message) => {
+            setOpenAssignedId(null);
+            afterWrite(message);
+          }}
+        />
+      )}
+
+      {selected && folder && (
+        <MobileRecordDetail
+          key={selected.id}
+          record={selected}
+          folder={folder}
+          assignOptions={assignOptions}
+          getIdToken={getIdToken}
+          onClose={() => setSelectedId(null)}
+          onEdit={() => setFormFor({ record: selected })}
+          onChanged={afterWrite}
+          onRemoved={(message) => {
+            setSelectedId(null);
+            afterWrite(message);
+          }}
+        />
+      )}
+
+      {importOpen && folder && (
+        <ImportModal
+          folder={folder}
+          getIdToken={getIdToken}
+          onClose={() => setImportOpen(false)}
+          onFinished={(message) => {
+            setImportOpen(false);
+            afterWrite(message);
+          }}
+        />
+      )}
+
+      {formFor && folder && (
+        <RecordFormModal
+          folder={folder}
+          record={formFor.record}
+          getIdToken={getIdToken}
+          onClose={() => setFormFor(null)}
+          onSaved={(message) => {
+            setFormFor(null);
+            afterWrite(message);
+          }}
+        />
+      )}
+    </>
+  );
+}
+
+/* ========================================================================== */
+/* The record overlay                                                         */
+/* ========================================================================== */
+
+function MobileRecordDetail({
+  record,
+  folder,
+  assignOptions,
+  getIdToken,
+  onClose,
+  onEdit,
+  onChanged,
+  onRemoved,
+}: {
+  record: DataBankRecord;
+  folder: DataBankFolder;
+  assignOptions: AssignOption[];
+  getIdToken: () => Promise<string>;
+  onClose: () => void;
+  onEdit: () => void;
+  onChanged: (message: string) => void;
+  onRemoved: (message: string) => void;
+}) {
+  const [assignee, setAssignee] = useState("");
+  /** Hand the record to a manager, or promote it into a lead. */
+  const handoff = assignee ? assignActionFor(assignOptions, assignee) === "HANDOFF" : false;
+  const [notes, setNotes] = useState(record.notes ?? "");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
+  const call = record.phone ? `tel:${record.phone.replace(/[^\d+]/g, "")}` : null;
+  const whatsapp = record.phone
+    ? `https://wa.me/${record.phone.replace(/\D/g, "").replace(/^0/, "92")}`
+    : null;
+
+  const setStatus = async (next: DataBankStatus) => {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await updateDataBankRecord(await getIdToken(), record.id, { status: next });
+      if (res.ok) onChanged(`Marked as ${RECORD_STATUS_LABELS[next].toLowerCase()}.`);
+      else setError(res.error);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const saveNotes = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await updateDataBankRecord(await getIdToken(), record.id, { notes });
+      if (res.ok) onChanged("Note saved.");
+      else setError(res.error);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const promote = async () => {
+    if (!assignee) {
+      setError("Choose who this lead goes to.");
+      return;
+    }
+    setBusy(true);
+    setError(null);
+
+    // A manager is handed the record to distribute; everybody else is handed a
+    // lead. The same split the desktop makes, from the same option field.
+    if (handoff) {
+      try {
+        const res = await withTimeout(
+          assignRecordsToManager(await getIdToken(), [record.id], assignee)
+        );
+        if (res.ok) {
+          onRemoved(
+            `${record.name} handed to ${describeAssignee(assignOptions, assignee)}. It is now in their Data Bank.`
+          );
+        } else {
+          setError(res.error);
+        }
+      } catch (err) {
+        setError(
+          err instanceof ActionTimeout
+            ? err.message
+            : "Could not reach the server. Nothing was changed."
+        );
+      } finally {
+        setBusy(false);
+      }
+      return;
+    }
+
+    // Gone means "out of this folder", not "deleted": promotion files the row
+    // under a reserved folder id and removes the document afterwards, so
+    // waiting for the document to disappear could outlast the work by a lot.
+    const gone = watchGone(
+      "dataBankRecords",
+      record.id,
+      (data) => data.folderId !== record.folderId
+    );
+    try {
+      // Raced against Firestore confirming the deletion — see the desktop
+      // `promote` and `lib/watchGone` for why the action's response alone is
+      // not a reliable signal on this project.
+      const outcome = await withTimeout(
+        Promise.race([
+          promoteDataBankRecord(await getIdToken(), record.id, assignee).then(
+            (res) => ({ from: "action" as const, res })
+          ),
+          gone.promise.then(() => ({ from: "database" as const, res: null })),
+        ])
+      );
+      if (outcome.from === "database" || outcome.res?.ok) {
+        const who = describeAssignee(assignOptions, assignee);
+        onRemoved(`${record.name} is now a lead assigned to ${who}.`);
+      } else if (outcome.res) {
+        setError(outcome.res.error);
+      }
+    } catch (err) {
+      setError(
+        err instanceof ActionTimeout
+          ? err.message
+          : "Could not reach the server. Nothing was changed."
+      );
+    } finally {
+      gone.cancel();
+      setBusy(false);
+    }
+  };
+
+  const remove = async () => {
+    setBusy(true);
+    try {
+      const res = await deleteDataBankRecord(await getIdToken(), record.id);
+      if (res.ok) onRemoved(`${record.name} removed from ${folder.name}.`);
+      else setError(res.error);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div
+      className="mob-slide-in"
+      role="dialog"
+      aria-modal="true"
+      aria-label={record.name}
+      style={{
+        position: "absolute",
+        inset: 0,
+        zIndex: 30,
+        background: M.page,
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <MobileHeader>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <HeaderCircle label="Back to the records" onClick={onClose} size={34}>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M15 5l-7 7 7 7" />
+            </svg>
+          </HeaderCircle>
+          <span
+            style={{
+              width: 44,
+              height: 44,
+              borderRadius: "50%",
+              background: "rgba(255,255,255,0.2)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 14.5,
+              fontWeight: 700,
+              flexShrink: 0,
+            }}
+            aria-hidden
+          >
+            {initialsOf(record.name)}
+          </span>
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <h2
+              style={{
+                fontSize: 18,
+                fontWeight: 800,
+                letterSpacing: "-0.5px",
+                color: "#fff",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {record.name}
+            </h2>
+            <div
+              style={{
+                fontSize: 12,
+                fontWeight: 600,
+                opacity: 0.85,
+                fontVariantNumeric: "tabular-nums",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {record.phone || "No number"} · {folder.code || folder.name}
+            </div>
+          </div>
+        </div>
+
+        {/* The three things you actually do to a cold record, at thumb height. */}
+        <div style={{ display: "flex", gap: 9, marginTop: 15 }}>
+          {call && (
+            <a href={call} style={{ ...HEADER_BUTTON, flex: 1, justifyContent: "center", textDecoration: "none" }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.9" strokeLinecap="round" aria-hidden>
+                <path d="M5 4h3l2 5-2.2 1.6a12 12 0 0 0 5.6 5.6L15 14l5 2v3a2 2 0 0 1-2.2 2A16 16 0 0 1 3 6.2 2 2 0 0 1 5 4Z" />
+              </svg>
+              <span>Call</span>
+            </a>
+          )}
+          {whatsapp && (
+            <a
+              href={whatsapp}
+              target="_blank"
+              rel="noreferrer"
+              style={{ ...HEADER_BUTTON, flex: 1, justifyContent: "center", textDecoration: "none" }}
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 20.5l1.7-5.5A8.5 8.5 0 1 1 21 11.5Z" />
+              </svg>
+              <span>WhatsApp</span>
+            </a>
+          )}
+          <button
+            className="mob-press"
+            onClick={onEdit}
+            style={{ ...HEADER_BUTTON, flex: call && whatsapp ? "0 0 auto" : 1, justifyContent: "center" }}
+            aria-label="Edit this record"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M4 20h4L19 9l-4-4L4 16zM14 5l4 4" />
+            </svg>
+            {!(call && whatsapp) && <span>Edit</span>}
+          </button>
+        </div>
+      </MobileHeader>
+
+      <div
+        style={{
+          minHeight: 0,
+          flex: 1,
+          overflowY: "auto",
+          overscrollBehavior: "contain",
+          WebkitOverflowScrolling: "touch",
+          padding: "16px 18px calc(env(safe-area-inset-bottom, 0px) + 26px)",
+          display: "flex",
+          flexDirection: "column",
+          gap: 13,
+        }}
+      >
+        {error && <Note tone="error">{error}</Note>}
+
+        {/* Call status */}
+        <Card title="Call status">
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {RECORD_STATUSES.map((key) => {
+              const active = record.status === key;
+              return (
+                <button
+                  key={key}
+                  className="mob-press"
+                  onClick={() => void setStatus(key)}
+                  disabled={busy || active}
+                  style={{
+                    padding: "9px 15px",
+                    borderRadius: 999,
+                    fontSize: 12.5,
+                    fontWeight: 600,
+                    cursor: active ? "default" : "pointer",
+                    WebkitTapHighlightColor: "transparent",
+                    border: `1px solid ${active ? M.teal : M.cardBorder}`,
+                    background: active ? M.teal : "#fff",
+                    color: active ? "#fff" : M.muted,
+                    opacity: busy && !active ? 0.5 : 1,
+                  }}
+                >
+                  {RECORD_STATUS_LABELS[key]}
+                </button>
+              );
+            })}
+          </div>
+
+          <label style={{ display: "block", marginTop: 14 }}>
+            <span style={LABEL}>Note</span>
+            <textarea
+              rows={3}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="What happened on the call"
+              style={{
+                marginTop: 6,
+                width: "100%",
+                resize: "vertical",
+                borderRadius: M.fieldRadius,
+                border: `1px solid ${M.cardBorder}`,
+                background: "#f7fbfa",
+                padding: "11px 13px",
+                fontSize: 13.5,
+                fontWeight: 500,
+                color: M.ink,
+                outline: "none",
+                fontFamily: "inherit",
+              }}
+            />
+          </label>
+          {notes !== (record.notes ?? "") && (
+            <button
+              className="mob-press"
+              onClick={() => void saveNotes()}
+              disabled={busy}
+              style={{ ...PRIMARY_BUTTON, marginTop: 10 }}
+            >
+              Save note
+            </button>
+          )}
+        </Card>
+
+        {/* Every field this source carries, in its own words. */}
+        <Card title={`${folder.name} record`}>
+          <dl style={{ display: "flex", flexDirection: "column", gap: 11 }}>
+            {folder.fields.map((field) => {
+              const value = record.values[field.key]?.trim() ?? "";
+              const isRole = field.key === folder.roles.name || field.key === folder.roles.phone;
+              return (
+                <div key={field.key}>
+                  <dt style={{ ...LABEL, display: "flex", alignItems: "center", gap: 6 }}>
+                    <span>{field.label}</span>
+                    {isRole && (
+                      <span
+                        style={{
+                          borderRadius: 5,
+                          background: M.tealTint,
+                          color: M.tealDeep,
+                          padding: "1px 5px",
+                          fontSize: 9.5,
+                          fontWeight: 700,
+                        }}
+                      >
+                        {field.key === folder.roles.name ? "name" : "phone"}
+                      </span>
+                    )}
+                  </dt>
+                  <dd
+                    style={{
+                      marginTop: 3,
+                      fontSize: 13.5,
+                      fontWeight: 600,
+                      color: value ? M.ink : "#c3d5d3",
+                      wordBreak: "break-word",
+                      fontVariantNumeric: field.key === folder.roles.phone ? "tabular-nums" : undefined,
+                    }}
+                  >
+                    {value || "—"}
+                  </dd>
+                </div>
+              );
+            })}
+          </dl>
+          {record.createdAt && (
+            <div style={{ marginTop: 13, fontSize: 11.5, fontWeight: 500, color: M.fainter }}>
+              Added {formatBusinessDate(record.createdAt)}
+            </div>
+          )}
+        </Card>
+
+        {/* Promotion — the point of the whole Data Bank. */}
+        <div
+          style={{
+            borderRadius: M.cardRadius,
+            border: "1px solid #bfe0dc",
+            background: M.tealTint,
+            padding: "15px 16px",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 14.5, fontWeight: 700, color: M.tealDark }}>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M7 17 17 7M8 7h9v9" />
+            </svg>
+            <span>Hand this record on</span>
+          </div>
+          <p style={{ marginTop: 5, fontSize: 12.5, fontWeight: 500, color: M.body, lineHeight: 1.5 }}>
+            Either way it moves to this folder&rsquo;s Assigned list, under that person&rsquo;s name, and every field above travels with it.
+          </p>
+          <select
+            value={assignee}
+            onChange={(e) => setAssignee(e.target.value)}
+            aria-label="Assign this lead to"
+            style={{
+              marginTop: 12,
+              width: "100%",
+              borderRadius: M.fieldRadius,
+              border: "1px solid #bfe0dc",
+              background: "#fff",
+              padding: "12px 13px",
+              fontSize: 13.5,
+              fontWeight: 600,
+              color: M.ink,
+              outline: "none",
+              fontFamily: "inherit",
+            }}
+          >
+            <option value="">Choose who this goes to…</option>
+            {groupAssignOptions(assignOptions).map((section) => (
+              <optgroup key={section.group} label={section.label}>
+                {section.options.map((option) => (
+                  <option key={option.uid} value={option.uid}>
+                    {option.label}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+          <button
+            className="mob-press"
+            onClick={() => void promote()}
+            disabled={busy || !assignee}
+            style={{
+              ...PRIMARY_BUTTON,
+              marginTop: 10,
+              width: "100%",
+              background: M.tealDeep,
+              opacity: busy || !assignee ? 0.5 : 1,
+            }}
+          >
+            {busy ? "Working…" : handoff ? "Hand to manager" : "Promote to lead"}
+          </button>
+          {assignOptions.length === 0 && (
+            <p style={{ marginTop: 9, fontSize: 12, fontWeight: 600, color: M.amberInk }}>
+              Nobody to assign to — resume someone in the Team directory first.
+            </p>
+          )}
+          <p style={{ marginTop: 8, fontSize: 11.5, color: M.faint, lineHeight: 1.5 }}>
+            An employee gets a lead in their pipeline. You get a lead in your Client section. A
+            manager gets the record in their own Data Bank, to hand on or take themselves.
+          </p>
+        </div>
+
+        <button
+          className="mob-press"
+          onClick={() => setConfirmDelete(true)}
+          disabled={busy}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+            width: "100%",
+            borderRadius: 999,
+            border: "1px solid #f0c4bd",
+            background: "#fff",
+            color: M.red,
+            padding: "12px 18px",
+            fontSize: 13,
+            fontWeight: 700,
+            cursor: "pointer",
+            WebkitTapHighlightColor: "transparent",
+            fontFamily: "inherit",
+          }}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13" />
+          </svg>
+          <span>Remove from this folder</span>
+        </button>
+      </div>
+
+      {confirmDelete && (
+        <ConfirmSheet
+          title={`Remove ${record.name}?`}
+          body={`This deletes the row from ${folder.name}. It cannot be undone — re-importing the source file would bring it back as a new record with no call status.`}
+          confirmLabel={busy ? "Removing…" : "Remove"}
+          busy={busy}
+          onCancel={() => setConfirmDelete(false)}
+          onConfirm={() => void remove()}
+        />
+      )}
+    </div>
+  );
+}
+
+/* ========================================================================== */
+/* Small shared pieces                                                        */
+/* ========================================================================== */
+
+export const EYEBROW = {
+  fontSize: 11.5,
+  fontWeight: 600,
+  letterSpacing: "1.4px",
+  textTransform: "uppercase",
+  opacity: 0.78,
+} as const;
+
+export const TITLE = {
+  fontSize: 24,
+  fontWeight: 800,
+  letterSpacing: "-0.7px",
+  marginTop: 2,
+  color: "#fff",
+} as const;
+
+const LABEL = {
+  fontSize: 10.5,
+  fontWeight: 700,
+  letterSpacing: "0.9px",
+  textTransform: "uppercase",
+  color: M.fainter,
+} as const;
+
+export const LIST_BODY = {
+  minHeight: 0,
+  flex: 1,
+  overflowY: "auto",
+  overscrollBehavior: "contain",
+  WebkitOverflowScrolling: "touch",
+  padding: "14px 18px calc(env(safe-area-inset-bottom, 0px) + 18px)",
+  display: "flex",
+  flexDirection: "column",
+  gap: 11,
+} as const;
+
+const HEADER_BUTTON = {
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 7,
+  padding: "9px 15px",
+  borderRadius: 999,
+  border: `1px solid ${M.searchBorder}`,
+  background: M.searchBg,
+  color: "#fff",
+  fontSize: 12.5,
+  fontWeight: 700,
+  cursor: "pointer",
+  WebkitTapHighlightColor: "transparent",
+  fontFamily: "inherit",
+} as const;
+
+const PRIMARY_BUTTON = {
+  borderRadius: 999,
+  border: "none",
+  background: M.teal,
+  color: "#fff",
+  padding: "12px 22px",
+  fontSize: 13,
+  fontWeight: 700,
+  cursor: "pointer",
+  WebkitTapHighlightColor: "transparent",
+  fontFamily: "inherit",
+} as const;
+
+export function HeaderStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div
+      style={{
+        flex: 1,
+        minWidth: 0,
+        borderRadius: M.fieldRadius,
+        background: M.wellBg,
+        border: `1px solid ${M.wellBorder}`,
+        padding: "9px 11px",
+      }}
+    >
+      <div style={{ fontSize: 17, fontWeight: 800, color: "#fff", fontVariantNumeric: "tabular-nums" }}>
+        {value}
+      </div>
+      <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.5px", opacity: 0.8, marginTop: 1 }}>
+        {label}
+      </div>
+    </div>
+  );
+}
+
+export function Figure({ value, label, tone = M.ink }: { value: string; label: string; tone?: string }) {
+  return (
+    <div>
+      <div style={{ fontSize: 21, fontWeight: 800, color: tone, fontVariantNumeric: "tabular-nums", lineHeight: 1.1 }}>
+        {value}
+      </div>
+      <div style={{ ...LABEL, marginTop: 2 }}>{label}</div>
+    </div>
+  );
+}
+
+function Card({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div
+      style={{
+        borderRadius: M.cardRadius,
+        border: `1px solid ${M.cardBorder}`,
+        background: M.cardBg,
+        padding: "15px 16px",
+      }}
+    >
+      <div style={{ ...LABEL, marginBottom: 11 }}>{title}</div>
+      {children}
+    </div>
+  );
+}
+
+export function MiniAction({
+  children,
+  onPress,
+  d,
+  tone = M.muted,
+}: {
+  children: React.ReactNode;
+  onPress: () => void;
+  d: string;
+  tone?: string;
+}) {
+  return (
+    <button
+      className="mob-press"
+      onClick={onPress}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 6,
+        border: "none",
+        background: "transparent",
+        color: tone,
+        padding: "7px 9px",
+        borderRadius: 9,
+        fontSize: 12,
+        fontWeight: 600,
+        cursor: "pointer",
+        WebkitTapHighlightColor: "transparent",
+        fontFamily: "inherit",
+      }}
+    >
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <path d={d} />
+      </svg>
+      <span>{children}</span>
+    </button>
+  );
+}
+
+export function Note({ tone, children }: { tone: "error" | "success"; children: React.ReactNode }) {
+  const error = tone === "error";
+  return (
+    <div
+      role={error ? "alert" : "status"}
+      style={{
+        borderRadius: M.rowRadius,
+        border: `1px solid ${error ? "#f0c4bd" : "#bfe0dc"}`,
+        background: error ? "#fdeeeb" : "#eef8f7",
+        color: error ? "#a33a29" : M.tealDeep,
+        padding: "11px 13px",
+        fontSize: 12.5,
+        fontWeight: 600,
+        lineHeight: 1.45,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+export function Empty({ title, body }: { title: string; body: string }) {
+  return (
+    <div style={{ padding: "44px 14px", textAlign: "center" }}>
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke={M.ghost} strokeWidth="1.5" style={{ margin: "0 auto" }} aria-hidden>
+        <ellipse cx="12" cy="6" rx="8" ry="3" />
+        <path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3" />
+      </svg>
+      <div style={{ marginTop: 12, fontSize: 14.5, fontWeight: 700, color: M.ink }}>{title}</div>
+      <p style={{ margin: "6px auto 0", maxWidth: 300, fontSize: 12.5, fontWeight: 500, color: M.faint, lineHeight: 1.55 }}>
+        {body}
+      </p>
+    </div>
+  );
+}
+
+/** Placeholder cards while the first snapshot lands — see `MobileLeads`. */
+export function SkeletonCards() {
+  return (
+    <>
+      {[0, 1, 2, 3].map((i) => (
+        <div
+          key={i}
+          aria-hidden
+          style={{
+            display: "grid",
+            gridTemplateColumns: "48px 1fr",
+            alignItems: "center",
+            gap: 13,
+            background: M.cardBg,
+            border: `1px solid ${M.cardBorder}`,
+            borderRadius: M.cardRadius,
+            padding: "14px 16px",
+            opacity: 0.55,
+            animation: `mob-fade 260ms ease ${i * 60}ms both`,
+          }}
+        >
+          <div style={{ width: 48, height: 48, borderRadius: "50%", background: M.track }} />
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <div style={{ height: 12, width: "58%", borderRadius: 6, background: M.track }} />
+            <div style={{ height: 10, width: "40%", borderRadius: 5, background: M.trackFlat }} />
+          </div>
+        </div>
+      ))}
+    </>
+  );
+}
+
+/**
+ * A destructive confirmation, as a bottom sheet.
+ *
+ * Deleting a folder takes thousands of numbers with it, so the count is in the
+ * prompt and the confirm button names it. Not a `window.confirm` — that gives
+ * no room to say what is actually about to be lost.
+ */
+function ConfirmSheet({
+  title,
+  body,
+  confirmLabel,
+  busy,
+  onCancel,
+  onConfirm,
+}: {
+  title: string;
+  body: string;
+  confirmLabel: string;
+  busy: boolean;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <div style={{ position: "absolute", inset: 0, zIndex: 60, display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
+      <div
+        className="mob-fade"
+        onClick={busy ? undefined : onCancel}
+        style={{ position: "absolute", inset: 0, background: "rgba(30,58,56,0.45)" }}
+        aria-hidden
+      />
+      <div
+        className="mob-sheet"
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+        style={{
+          position: "relative",
+          background: "#fff",
+          borderRadius: `${M.sheetRadius}px ${M.sheetRadius}px 0 0`,
+          padding: "22px 20px calc(env(safe-area-inset-bottom, 0px) + 20px)",
+        }}
+      >
+        <div style={{ fontSize: 17, fontWeight: 800, color: M.ink, letterSpacing: "-0.4px" }}>{title}</div>
+        <p style={{ marginTop: 8, fontSize: 13, fontWeight: 500, color: M.body, lineHeight: 1.55 }}>{body}</p>
+        <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
+          <button
+            className="mob-press"
+            onClick={onCancel}
+            disabled={busy}
+            style={{
+              flex: 1,
+              borderRadius: 999,
+              border: `1px solid ${M.cardBorder}`,
+              background: "#fff",
+              color: M.muted,
+              padding: "13px 18px",
+              fontSize: 13,
+              fontWeight: 700,
+              cursor: "pointer",
+              fontFamily: "inherit",
+            }}
+          >
+            Keep it
+          </button>
+          <button
+            className="mob-press"
+            onClick={onConfirm}
+            disabled={busy}
+            style={{
+              flex: 1,
+              borderRadius: 999,
+              border: "none",
+              background: M.red,
+              color: "#fff",
+              padding: "13px 18px",
+              fontSize: 13,
+              fontWeight: 700,
+              cursor: "pointer",
+              opacity: busy ? 0.6 : 1,
+              fontFamily: "inherit",
+            }}
+          >
+            {confirmLabel}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

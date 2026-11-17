@@ -1,0 +1,471 @@
+"use server";
+
+import { assertMonthOpen } from "@/lib/groupMonthGuard";
+import { adminDb } from "@/lib/firebase/server";
+import { cached, docKey } from "@/lib/server/serverCache";
+import { requireAdmin, requireManager, type DecodedAuth } from "@/lib/firebase/serverAuth";
+import { isHrManager } from "@/lib/constants/hierarchy";
+import { runAction, UserFacingError, type ActionResult } from "@/lib/actionResult";
+import { formatMoney, parseMoney } from "@/lib/money";
+import { karachiDayKey } from "@/lib/dates";
+import {
+  DEFAULT_EXPENSE_CATEGORIES,
+  EXPENSE_STATUSES,
+  LEGACY_EXPENSE_CATEGORIES,
+  PAYMENT_METHODS,
+  normalizeExpenseStatus,
+  type ExpenseStatus,
+} from "@/lib/officeExpenses";
+import { FieldValue } from "firebase-admin/firestore";
+
+/**
+ * Office expenses.
+ *
+ * **Admin and HR only** — the brief is explicit, and it is enforced here in
+ * every action rather than by hiding a menu item. A manager or an employee
+ * reaching any of these is refused, whatever route they came in on.
+ *
+ * This extends the **existing `expenses` collection** rather than starting a
+ * second one. `addExpense` in `actions/expenses.ts` still works and still
+ * writes readable records; what is new is the approval state, who paid, how,
+ * the receipt, and a change history. Records written before this module have
+ * no status and read as approved — see `normalizeExpenseStatus` for why.
+ */
+
+const EXPENSES = "expenses";
+const CATEGORY_DOC = "expenseCategories";
+
+/** Admin or HR. Nobody else, and no team-scoped middle ground. */
+async function requireExpenseAccess(token: string): Promise<DecodedAuth> {
+  const auth = await requireManager(token);
+  if (auth.role === "admin") return auth;
+
+  const profile = await adminDb.collection("users").doc(auth.uid).get();
+  if (isHrManager(auth.role, profile.data()?.managerKind)) return auth;
+
+  throw new UserFacingError("Office expenses are limited to the admin and HR.");
+}
+
+/* -------------------------------------------------------------------------- */
+/* Categories                                                                  */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * The categories in force.
+ *
+ * The defaults plus anything the admin has added, plus the four legacy names,
+ * so an old record never fails validation on its next edit. Deduplicated,
+ * because an admin adding "Rent" a second time should be a no-op rather than a
+ * duplicate entry in every dropdown.
+ */
+export async function getExpenseCategories(
+  token: string
+): Promise<ActionResult<{ categories: string[]; custom: string[] }>> {
+  return runAction("getExpenseCategories", async () => {
+    await requireExpenseAccess(token);
+
+    // Cached a minute — read on every expense screen, changed rarely; saving
+    // them drops it on this server at once (`lib/server/serverCache`).
+    const stored = await cached(docKey(`config/${CATEGORY_DOC}`), 60_000, async () =>
+      (await adminDb.collection("config").doc(CATEGORY_DOC).get()).data() ?? {}
+    );
+    const custom = ((stored.categories ?? []) as unknown[])
+      .map((value) => String(value).trim())
+      .filter(Boolean);
+
+    const categories = [
+      ...new Set([...DEFAULT_EXPENSE_CATEGORIES, ...custom, ...LEGACY_EXPENSE_CATEGORIES]),
+    ];
+
+    return { categories, custom };
+  });
+}
+
+/**
+ * Adds, renames or removes a category.
+ *
+ * **Renaming rewrites the expenses that use it**, in batches. The alternative —
+ * leaving old records pointing at a name that no longer exists — would split
+ * one category into two on every report, which is worse than the write cost.
+ * Removing a category only removes it from the dropdown: the expenses that
+ * used it keep their label, because rewriting history to tidy a list is not a
+ * trade worth making.
+ */
+export async function manageExpenseCategory(
+  token: string,
+  action: "ADD" | "RENAME" | "REMOVE",
+  name: string,
+  renameTo?: string
+): Promise<ActionResult<{ categories: string[]; custom: string[]; moved?: number }>> {
+  return runAction("manageExpenseCategory", async () => {
+    const auth = await requireExpenseAccess(token);
+    const ref = adminDb.collection("config").doc(CATEGORY_DOC);
+
+    const snap = await ref.get();
+    const custom = ((snap.data()?.categories ?? []) as unknown[])
+      .map((value) => String(value).trim())
+      .filter(Boolean);
+
+    const label = name.trim();
+    if (!label) throw new UserFacingError("Give the category a name.");
+    if (label.length > 40) throw new UserFacingError("That name is too long for a category.");
+
+    let next = custom;
+    let moved: number | undefined;
+
+    if (action === "ADD") {
+      const known = new Set<string>([
+        ...DEFAULT_EXPENSE_CATEGORIES,
+        ...LEGACY_EXPENSE_CATEGORIES,
+        ...custom,
+      ]);
+      if (known.has(label)) throw new UserFacingError(`"${label}" is already a category.`);
+      next = [...custom, label];
+    } else if (action === "REMOVE") {
+      next = custom.filter((entry) => entry !== label);
+      if (next.length === custom.length) {
+        throw new UserFacingError("Only categories you added can be removed.");
+      }
+    } else {
+      const target = (renameTo ?? "").trim();
+      if (!target) throw new UserFacingError("Give the category its new name.");
+      next = custom.map((entry) => (entry === label ? target : entry));
+
+      // Move the records with it, so one category does not become two.
+      const affected = await adminDb.collection(EXPENSES).where("category", "==", label).get();
+      moved = affected.size;
+      for (let index = 0; index < affected.docs.length; index += 400) {
+        const batch = adminDb.batch();
+        for (const doc of affected.docs.slice(index, index + 400)) {
+          batch.update(doc.ref, { category: target });
+        }
+        await batch.commit();
+      }
+    }
+
+    await ref.set(
+      {
+        categories: next,
+        updatedAt: FieldValue.serverTimestamp(),
+        updatedByUid: auth.uid,
+      },
+      { merge: true }
+    );
+
+    // `custom` comes back too, so the dialog's own list is correct the instant
+    // a rename returns rather than after the refetch it also triggers.
+    return {
+      categories: [...new Set([...DEFAULT_EXPENSE_CATEGORIES, ...next, ...LEGACY_EXPENSE_CATEGORIES])],
+      custom: next,
+      moved,
+    };
+  });
+}
+
+/* -------------------------------------------------------------------------- */
+/* Expenses                                                                    */
+/* -------------------------------------------------------------------------- */
+
+export interface OfficeExpenseInput {
+  title: string;
+  category: string;
+  amount: number;
+  /** `YYYY-MM-DD`. Expenses are usually recorded after the money went out. */
+  date?: string;
+  paidBy?: string;
+  paymentMethod?: string;
+  description?: string;
+  /** Artifact asset URL or any link to the scanned receipt. */
+  receiptUrl?: string;
+  receiptName?: string;
+  /** New expenses start Pending unless the person recording it approves it. */
+  status?: ExpenseStatus;
+}
+
+/** Validates and normalises the shared parts of create and edit. */
+async function cleanInput(input: OfficeExpenseInput) {
+  const title = (input.title ?? "").trim();
+  if (!title) throw new UserFacingError("Give the expense a title.");
+
+  const amount = parseMoney(input.amount);
+  if (amount <= 0) throw new UserFacingError("Enter an amount greater than zero.");
+
+  const category = (input.category ?? "").trim();
+  if (!category) throw new UserFacingError("Choose a category.");
+
+  const method = (input.paymentMethod ?? "").trim();
+  if (method && !PAYMENT_METHODS.includes(method as (typeof PAYMENT_METHODS)[number])) {
+    throw new UserFacingError("Choose one of the listed payment methods.");
+  }
+
+  const dayKey = normalizeDayKey(input.date);
+
+  return {
+    title,
+    category,
+    amount,
+    dayKey,
+    date: new Date(`${dayKey}T12:00:00+05:00`),
+    paidBy: (input.paidBy ?? "").trim() || null,
+    paymentMethod: method || null,
+    description: (input.description ?? "").trim() || null,
+    receiptUrl: (input.receiptUrl ?? "").trim() || null,
+    receiptName: (input.receiptName ?? "").trim() || null,
+  };
+}
+
+/** `YYYY-MM-DD`, today when unset, never in the future. */
+function normalizeDayKey(raw: string | undefined): string {
+  const today = karachiDayKey();
+  const value = (raw ?? "").trim().slice(0, 10);
+
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return today;
+  if (value > today) throw new UserFacingError("The expense date cannot be in the future.");
+  return value;
+}
+
+/** Records an office expense. */
+export async function createOfficeExpense(
+  token: string,
+  input: OfficeExpenseInput
+): Promise<ActionResult<{ expenseId: string }>> {
+  return runAction("createOfficeExpense", async () => {
+    const auth = await requireExpenseAccess(token);
+    const clean = await cleanInput(input);
+    await assertMonthOpen(clean.dayKey);
+
+    /*
+      **Only the admin may record an expense as already approved.** An HR
+      manager files one and it goes to the admin for a decision — letting the
+      person recording the spend also approve it is the single thing an approval
+      step exists to prevent, and hiding the control on the screen is not
+      enforcement. Asked of the token, never of the payload.
+    */
+    const asked = EXPENSE_STATUSES.includes(input.status as ExpenseStatus)
+      ? (input.status as ExpenseStatus)
+      : "PENDING";
+    const status: ExpenseStatus = auth.role === "admin" ? asked : "PENDING";
+
+    const ref = adminDb.collection(EXPENSES).doc();
+    await ref.create({
+      ...clean,
+      status,
+      addedByUid: auth.uid,
+      addedByEmail: auth.email ?? null,
+      addedByName: auth.name ?? null,
+      createdAt: FieldValue.serverTimestamp(),
+      // An expense recorded as already approved records who approved it, or the
+      // audit trail would show an approval with nobody behind it.
+      ...(status === "APPROVED"
+        ? { decidedByUid: auth.uid, decidedByName: auth.name ?? auth.email ?? null }
+        : {}),
+      history: [
+        {
+          at: new Date(),
+          byUid: auth.uid,
+          byName: auth.name ?? auth.email ?? null,
+          action: "CREATED",
+          detail: `${clean.title} — ${clean.amount}`,
+        },
+      ],
+    });
+
+    /*
+      **An expense waiting on somebody is told to them.** A Pending row nobody
+      is looking at is an approval that never happens, and HR has no way to
+      chase it — they cannot see the screen the admin decides on. Only for a
+      non-admin: the admin recording their own does not need telling about it.
+    */
+    if (auth.role !== "admin" && status === "PENDING") {
+      await adminDb.collection("notifications").doc().create({
+        type: "EXPENSE_APPROVAL",
+        targetRole: "admin",
+        targetUid: null,
+        payload: {
+          message: `${auth.name ?? auth.email ?? "HR"} recorded an office expense: ${clean.title} — ${formatMoney(clean.amount)}. It needs your approval.`,
+          expenseId: ref.id,
+          amount: clean.amount,
+          category: clean.category,
+        },
+        read: false,
+        createdAt: FieldValue.serverTimestamp(),
+      });
+    }
+
+    return { expenseId: ref.id };
+  });
+}
+
+/**
+ * Edits an expense.
+ *
+ * Every change appends the fields that moved, with their previous values, to
+ * the expense's own history. A receipt and an amount are the two things people
+ * dispute, so an amount that changed silently would be the one thing this
+ * module could not answer for.
+ */
+export async function updateOfficeExpense(
+  token: string,
+  expenseId: string,
+  input: OfficeExpenseInput
+): Promise<ActionResult> {
+  return runAction("updateOfficeExpense", async () => {
+    const auth = await requireExpenseAccess(token);
+    const clean = await cleanInput(input);
+
+    const ref = adminDb.collection(EXPENSES).doc(expenseId);
+    const snap = await ref.get();
+    if (!snap.exists) throw new UserFacingError("That expense no longer exists.");
+
+    const before = snap.data() ?? {};
+    // Both months: moving an expense out of a closed month changes it as much
+    // as moving one in.
+    await assertMonthOpen(before.dayKey as string | undefined, clean.dayKey);
+
+    /*
+      **HR edits only what HR recorded.** The read is already scoped to their own
+      rows, so this is the case where somebody holds an id from somewhere else —
+      a stale tab, a copied link, a screen open since before the scope changed.
+      The server is the boundary; a scoped query is not one.
+    */
+    if (auth.role !== "admin" && before.addedByUid !== auth.uid) {
+      throw new UserFacingError("That expense is not yours to edit.");
+    }
+
+    /*
+      **An expense cannot be edited below what has already left an account.**
+      The transactions funding it are real money movements and are not rewritten
+      by editing the obligation, so an amount under `paidAmount` would leave a
+      record insisting it was over-funded — and `readPaid` would report Rs 0
+      outstanding on an expense that had been paid for twice over.
+    */
+    const paidSoFar = Number(before.paidAmount) || 0;
+    if (paidSoFar > 0 && Number(clean.amount) < paidSoFar) {
+      throw new UserFacingError(
+        `${formatMoney(paidSoFar)} has already been paid against this expense, so it cannot be reduced below that. Remove the funding movement from its account first.`
+      );
+    }
+
+    const changes: string[] = [];
+    for (const [key, value] of Object.entries(clean)) {
+      if (key === "date") continue; // Covered by dayKey.
+      const previous = before[key] ?? null;
+      if (String(previous ?? "") !== String(value ?? "")) {
+        changes.push(`${key}: ${previous ?? "—"} → ${value ?? "—"}`);
+      }
+    }
+
+    await ref.update({
+      ...clean,
+      updatedAt: FieldValue.serverTimestamp(),
+      updatedByUid: auth.uid,
+      history: FieldValue.arrayUnion({
+        at: new Date(),
+        byUid: auth.uid,
+        byName: auth.name ?? auth.email ?? null,
+        action: "EDITED",
+        detail: changes.join("; ") || "No field changed",
+      }),
+    });
+  });
+}
+
+/** Approves or rejects, with the reason kept. */
+/**
+ * Approves or rejects — **the admin's alone**.
+ *
+ * HR records expenses and the admin decides them. Both halves matter: an
+ * approver who can also file the spend is not an approver, and an HR manager
+ * approving the admin's own expenses would be deciding on money they are not
+ * even shown.
+ */
+export async function setOfficeExpenseStatus(
+  token: string,
+  expenseId: string,
+  status: ExpenseStatus,
+  note?: string
+): Promise<ActionResult<{ status: ExpenseStatus }>> {
+  return runAction("setOfficeExpenseStatus", async () => {
+    const auth = await requireAdmin(token);
+
+    if (!EXPENSE_STATUSES.includes(status)) {
+      throw new UserFacingError("That is not an expense status.");
+    }
+
+    const ref = adminDb.collection(EXPENSES).doc(expenseId);
+    const snap = await ref.get();
+    if (!snap.exists) throw new UserFacingError("That expense no longer exists.");
+
+    await assertMonthOpen(snap.data()?.dayKey as string | undefined);
+    const current = normalizeExpenseStatus(snap.data()?.status);
+    if (current === status) {
+      throw new UserFacingError(`This expense is already ${status.toLowerCase()}.`);
+    }
+
+    /*
+      **A funded expense may be rejected, and the payment stays on the account.**
+      This was refused for one round, on the reasoning that rejecting takes the
+      expense out of approved spend while the cash has already gone. The owner's
+      call is that the decision is theirs to make: a payment that turns out to
+      have been wrong is exactly when somebody needs to mark the expense
+      rejected, and being told to go and unpick the ledger first is a dead end
+      at the moment they are trying to record what happened.
+
+      What must not happen is the money going quiet. It does not: the funding
+      transactions stay posted on the account that paid — the rupees really did
+      leave it — the rejection is written into the expense's own history beside
+      the amount already paid, and the row carries its payment pill whatever the
+      status, so a rejected expense that cost money reads as `Rejected · Paid`
+      rather than as a clean refusal. Removing the funding movement from the
+      account is still what un-pays it; it is now a choice rather than a gate.
+    */
+
+    await ref.update({
+      status,
+      decidedByUid: auth.uid,
+      decidedByName: auth.name ?? auth.email ?? null,
+      decidedAt: FieldValue.serverTimestamp(),
+      decisionNote: (note ?? "").trim() || null,
+      history: FieldValue.arrayUnion({
+        at: new Date(),
+        byUid: auth.uid,
+        byName: auth.name ?? auth.email ?? null,
+        action: `STATUS_${status}`,
+        detail: `${current} → ${status}${note?.trim() ? ` (${note.trim()})` : ""}`,
+      }),
+    });
+
+    return { status };
+  });
+}
+
+/**
+ * Deletes an expense.
+ *
+ * **Admin only**, deliberately narrower than the rest of this module: an
+ * expense is a financial record, and removing one should be rare enough to
+ * need the account that owns the books. Approved expenses cannot be deleted at
+ * all — correcting one that has been counted means rejecting it, which leaves
+ * the record and the reason behind.
+ */
+export async function deleteOfficeExpense(
+  token: string,
+  expenseId: string
+): Promise<ActionResult> {
+  return runAction("deleteOfficeExpense", async () => {
+    await requireAdmin(token);
+
+    const ref = adminDb.collection(EXPENSES).doc(expenseId);
+    const snap = await ref.get();
+    if (!snap.exists) throw new UserFacingError("That expense no longer exists.");
+
+    await assertMonthOpen(snap.data()?.dayKey as string | undefined);
+    if (normalizeExpenseStatus(snap.data()?.status) === "APPROVED") {
+      throw new UserFacingError(
+        "An approved expense cannot be deleted. Reject it instead — that keeps the record and the reason."
+      );
+    }
+
+    await ref.delete();
+  });
+}
