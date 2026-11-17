@@ -16,7 +16,7 @@ import {
   normalizeExpenseStatus,
   type ExpenseStatus,
 } from "@/lib/officeExpenses";
-import { FieldValue } from "firebase-admin/firestore";
+import { FieldValue } from "@/lib/db/firestore";
 
 /**
  * Office expenses.

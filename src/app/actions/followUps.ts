@@ -8,7 +8,7 @@ import { isConnect, normalizeDurationSeconds } from "@/lib/kpi";
 import { meetsColdRule } from "@/lib/pipelineStage";
 import { entryAllowance } from "@/lib/followUpKind";
 import { writeActivityDelta } from "@/lib/server/activityDays";
-import { FieldValue, Transaction } from "firebase-admin/firestore";
+import { FieldValue, Transaction } from "@/lib/db/firestore";
 
 export interface FollowUpInput {
   message: string;

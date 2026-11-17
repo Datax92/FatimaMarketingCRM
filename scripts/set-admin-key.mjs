@@ -164,7 +164,7 @@ console.log(`    FIREBASE_PRIVATE_KEY  = (${key.private_key.length} characters, 
 console.log('\n  Checking it against the live project…');
 
 const { initializeApp, cert } = await import('firebase-admin/app');
-const { initializeFirestore } = await import('firebase-admin/firestore');
+const { getAuth } = await import('firebase-admin/auth');
 
 const started = Date.now();
 try {
@@ -180,18 +180,17 @@ try {
     projectId: key.project_id,
   });
 
-  // REST, matching the app — see the note in `lib/firebase/server.ts`.
-  const db = initializeFirestore(app, { preferRest: true });
-
-  const snap = await db.collection('users').limit(1).get();
-  console.log(`  ✔ Firestore answered in ${Date.now() - started}ms (${snap.size} document read).`);
+  // The key is used for sign-in only (the data is in Neon Postgres), so it is
+  // proved against Firebase Auth.
+  const page = await getAuth(app).listUsers(1);
+  console.log(`  ✔ Firebase Auth answered in ${Date.now() - started}ms (${page.users.length} user listed).`);
   console.log('\n  Now restart the dev server — .env.local is only read at startup.');
   console.log('  The [firebase-admin] warning should stop appearing.\n');
   console.log(`  Then delete the key file: ${keyPath}`);
-  console.log('  It is full access to your database and cannot be changed, only revoked.\n');
+  console.log('  It is full access to your Firebase project and cannot be changed, only revoked.\n');
   process.exit(0);
 } catch (error) {
-  console.error(`\n  ✖ The key was written but Firestore refused it after ${Date.now() - started}ms.`);
+  console.error(`\n  ✖ The key was written but Firebase refused it after ${Date.now() - started}ms.`);
   console.error(`    ${error.message}\n`);
 
   if (/invalid_grant/i.test(error.message)) {
@@ -202,7 +201,7 @@ try {
     console.error('    file was edited, truncated, or is not the original download. Generate a');
     console.error('    fresh key and run this again without opening the JSON.');
   } else if (/permission|PERMISSION_DENIED/i.test(error.message)) {
-    console.error('    The service account exists but lacks Firestore access. In Google Cloud');
+    console.error('    The service account exists but lacks Firebase Auth access. In Google Cloud');
     console.error('    IAM, give it "Cloud Datastore User" — or generate the key from the');
     console.error('    Firebase console, which grants it automatically.');
   }

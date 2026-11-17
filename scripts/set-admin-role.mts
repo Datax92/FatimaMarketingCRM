@@ -17,7 +17,9 @@
  */
 
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
-import { getFirestore, FieldValue } from 'firebase-admin/firestore';
+// The profile lives in Neon Postgres now; Firebase is sign-in only.
+import { getFirestore, FieldValue } from '../src/lib/db/firestore.ts';
+import { getPool } from '../src/lib/db/pg.ts';
 import { getAuth } from 'firebase-admin/auth';
 import { createInterface } from 'node:readline/promises';
 import { stdin, stdout } from 'node:process';
@@ -112,6 +114,7 @@ async function main() {
 
   console.log(`\n${email} is now an administrator.`);
   console.log('They must sign out and sign in again for the change to take effect.\n');
+  await getPool().end();
 }
 
 main().catch((error) => {

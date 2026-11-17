@@ -1,10 +1,8 @@
 import { initializeApp, getApps, cert, type App } from "firebase-admin/app";
-import { getFirestore, initializeFirestore, type Firestore } from "firebase-admin/firestore";
+import { getFirestore, type Firestore } from "@/lib/db/firestore";
 import { getAuth, type Auth } from "firebase-admin/auth";
-import { installLeadStamp } from "@/lib/server/leadStampInstall";
-import { installReadMeter } from "@/lib/server/readMeter";
 
-const EMULATED = Boolean(process.env.FIRESTORE_EMULATOR_HOST);
+const EMULATED = Boolean(process.env.FIREBASE_AUTH_EMULATOR_HOST);
 
 function getAdminApp(): App {
   const existing = getApps();
@@ -55,68 +53,15 @@ function getAdminApp(): App {
 }
 
 /**
- * **The Admin SDK talks to Firestore over plain HTTPS, not gRPC.**
- *
- * This is the fix for the single most stubborn bug on this project: Server
- * Actions that hung for tens of seconds — or never returned — while the same
- * user's browser read and wrote the same collections instantly.
- *
- * The two use completely different transports. The browser SDK speaks HTTP
- * long-polling / WebSocket to `firestore.googleapis.com`. The Admin SDK
- * defaults to **gRPC over HTTP/2**, and gRPC is far more fragile in the wild:
- * corporate proxies, some consumer ISPs, VPNs, Windows firewalls and
- * antivirus TLS inspection all routinely mangle or stall HTTP/2 streams while
- * leaving ordinary HTTPS working perfectly. When that happens the SDK does not
- * fail — it retries with backoff, which is exactly the "sometimes it works,
- * sometimes it hangs for 25 seconds" signature that was reported four times.
- *
- * **REST is now the default**, and the reason is stronger than transport
- * fragility: *it is the only way a refused write reports itself*. Measured
- * against the live project on 2026-09-02, with the day's delete quota spent:
- *
- * | transport | a delete Firestore is refusing |
- * |---|---|
- * | gRPC | still retrying after **170 s** — no error, ever |
- * | REST | `429 RESOURCE_EXHAUSTED` in **293 ms** |
- *
- * gRPC treats `RESOURCE_EXHAUSTED` as retryable and backs off forever, so the
- * error never reaches `runAction`, never reaches `isQuotaExhausted`, and the
- * user gets a 25-second timeout that blames the network. Over REST the same
- * condition surfaces immediately as the quota message it actually is. Every
- * "sometimes it works, sometimes it hangs" report on this project has this
- * shape.
- *
- * The only feature that needs gRPC is a **server-side** `onSnapshot`, which
- * this app never uses — every realtime listener lives in the browser
- * (`hooks/use*.ts`).
- *
- * Set `FIREBASE_PREFER_REST=false` to go back to gRPC. The emulator forces
- * gRPC regardless: `FIRESTORE_EMULATOR_HOST` is honoured by the gRPC path but
- * the REST path still demands a real access token, so REST cannot talk to the
- * emulator at all.
+ * **The database is Neon Postgres** (`lib/db/firestore`), behind the same
+ * document API the server code was written against. Firebase is used for
+ * **Auth only** — `getAdminAuth` below — so the service account is needed to
+ * verify ID tokens and set custom claims, never to read or write data.
  */
-const PREFER_REST = !EMULATED && process.env.FIREBASE_PREFER_REST !== "false";
-
 let firestore: Firestore | null = null;
 
 export function getAdminDb(): Firestore {
-  if (firestore) return firestore;
-
-  // Every write to a lead gets `updatedAt`, which the browsers' "only what
-  // changed" sync reads. See `lib/leadStamp`.
-  installLeadStamp();
-  const app = getAdminApp();
-  try {
-    firestore = initializeFirestore(app, { preferRest: PREFER_REST });
-  } catch {
-    // Already initialised — this happens on a hot reload, where the module's
-    // own `firestore` cache is cleared but the Firebase app survives. The
-    // existing instance already carries the settings applied the first time.
-    firestore = getFirestore(app);
-  }
-  // Counts every document the server reads, into the server log only. See
-  // `lib/server/readMeter`.
-  installReadMeter(firestore);
+  if (!firestore) firestore = getFirestore();
   return firestore;
 }
 

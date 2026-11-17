@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { meterReads } from '@/lib/server/readMeter';
 import { adminDb } from '@/lib/firebase/server';
-import { FieldValue, Transaction, type QueryDocumentSnapshot } from 'firebase-admin/firestore';
+import { FieldValue, Transaction, type QueryDocumentSnapshot } from '@/lib/db/firestore';
 import {
   getNextAssigneeAndState,
   resolveCascadeAssignee,

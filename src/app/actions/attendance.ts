@@ -38,7 +38,7 @@ import {
 import { roleTitle } from "@/lib/constants/hierarchy";
 import { cached, docKey } from "@/lib/server/serverCache";
 import { readAttendanceMonth, readRoster } from "@/lib/server/attendanceMonth";
-import { FieldValue, Transaction } from "firebase-admin/firestore";
+import { FieldValue, Transaction } from "@/lib/db/firestore";
 
 /**
  * The stored settings.

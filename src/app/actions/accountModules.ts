@@ -25,7 +25,7 @@ import { karachiDayKey } from "@/lib/dates";
 import { money } from "@/lib/ledger";
 import { formatMoney } from "@/lib/money";
 import { PERSONAL_EXPENSE_CATEGORIES } from "@/lib/personalExpenses";
-import { FieldValue } from "firebase-admin/firestore";
+import { FieldValue } from "@/lib/db/firestore";
 
 const PERSONAL = "personalExpenses";
 /** The ledger owns this collection; named here only to restore a balance. */

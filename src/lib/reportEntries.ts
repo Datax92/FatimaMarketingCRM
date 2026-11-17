@@ -16,6 +16,7 @@
 
 import { adminDb } from "@/lib/firebase/server";
 import type { CountableEntry } from "@/lib/leadBuckets";
+import type * as DbTypes from "@/lib/db/firestore";
 
 /**
  * Every follow-up entry in the range.
@@ -68,7 +69,7 @@ export async function loadEntries(
    * Omitted, the range is read unscoped as before.
    */
   creditUids?: string[]
-): Promise<{ entries: FirebaseFirestore.QueryDocumentSnapshot[]; warning: string | null }> {
+): Promise<{ entries: DbTypes.QueryDocumentSnapshot[]; warning: string | null }> {
   try {
     if (creditUids) {
       const uids = [...new Set(creditUids.filter(Boolean))];
@@ -108,7 +109,7 @@ export async function loadEntries(
             : []),
         ])
       );
-      const byPath = new Map<string, FirebaseFirestore.QueryDocumentSnapshot>();
+      const byPath = new Map<string, DbTypes.QueryDocumentSnapshot>();
       for (const snap of snaps) for (const doc of snap.docs) byPath.set(doc.ref.path, doc);
       return { entries: [...byPath.values()], warning: null };
     }
@@ -134,7 +135,7 @@ export async function loadEntries(
     if (!missingIndex) throw error;
 
     const ids = typeof leadIds === "function" ? await leadIds() : leadIds;
-    const entries: FirebaseFirestore.QueryDocumentSnapshot[] = [];
+    const entries: DbTypes.QueryDocumentSnapshot[] = [];
     const BATCH = 25;
     for (let index = 0; index < ids.length; index += BATCH) {
       const slice = ids.slice(index, index + BATCH);
@@ -177,7 +178,7 @@ export async function loadEntries(
 
 /** Every entry in the range, reduced to what a tally needs. */
 export function toCountableEntries(
-  docs: FirebaseFirestore.QueryDocumentSnapshot[]
+  docs: DbTypes.QueryDocumentSnapshot[]
 ): CountableEntry[] {
   return docs.map((doc) => {
     const entry = doc.data();

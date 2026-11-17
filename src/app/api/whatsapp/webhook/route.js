@@ -15,7 +15,7 @@
 //   FIREBASE_PROJECT_ID / FIREBASE_CLIENT_EMAIL / FIREBASE_PRIVATE_KEY - the CRM's admin credentials
 
 import crypto from "node:crypto";
-import { FieldValue } from "firebase-admin/firestore";
+import { FieldValue } from "@/lib/db/firestore";
 import { getDeadline, waitUntil } from "@/lib/whatsapp/server/runtime.js";
 import { db, eachLimit } from "@/lib/whatsapp/server/admin.js";
 import { messageSortKey, numberSortKey } from "@/lib/whatsapp/server/keys.js";

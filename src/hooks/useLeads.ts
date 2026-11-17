@@ -7,7 +7,7 @@ import {
   orderBy,
   limit,
   type Timestamp,
-} from 'firebase/firestore';
+} from '@/lib/db/client';
 // Metered: counts the reads Google bills, into the server log only.
 import { onSnapshot } from '@/lib/firebase/meteredFirestore';
 import { db } from '@/lib/firebase/client';
@@ -327,8 +327,12 @@ export function useLeads(
     sync every six hours. Scoped lists keep the ordinary listener — see
     `lib/leadSync` for why a delta cannot serve them.
   */
-  // Every list syncs by delta since 2026-09-25 — see the scoped `buildDelta`.
-  const synced = key !== 'idle' && !IS_DEMO;
+  // **Off since the move to Postgres.** The delta sync existed to dodge
+  // Firestore's per-document read bill; Postgres has none, and the plain
+  // shared query (`useLive` → `lib/db/client`) answers an unchanged list with
+  // an empty "unchanged" reply anyway. It is also more correct: a delta cannot
+  // see a lead that left a scoped list, the plain query can.
+  const synced = false as boolean;
   /*
     **The size is part of the sync key, and that is deliberate.** `leadSync`
     stores its watermark under this key, so a key it has not seen has no meta and

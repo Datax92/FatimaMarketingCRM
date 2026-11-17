@@ -1,4 +1,4 @@
-import { FieldValue, WriteBatch } from "firebase-admin/firestore";
+import { FieldValue, WriteBatch } from "@/lib/db/firestore";
 import { isLeadDocPath, stampData, stampSetOptions, stampUpdateData } from "@/lib/leadStamp";
 import { noteWrite } from "@/lib/server/serverCache";
 

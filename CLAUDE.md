@@ -12,7 +12,41 @@ these differences:
 - UI is the Property-CRM design system: `src/components/shell/`, `src/app/fm-shell.css`,
   menus in `src/lib/navigation.ts`. `/home` is the app grid; the Day End dashboard is `/dashboard`.
 - WhatsApp monitor from Datadash: `src/app/api/whatsapp/*`, `src/components/whatsapp/`, admin only.
-- Planned: data layer moves to Neon Postgres; Firebase Auth stays.
+- **The data is in Neon Postgres (2026-11-17); Firebase is sign-in only.** Read the section
+  below before touching any data code. Everything further down that talks about Firestore
+  quotas, read meters, rules deploys, indexes deploys, quiet hours or leadSync is history.
+
+## Database: Neon Postgres behind the Firestore API
+
+- **One table, `docs`** (`path` PK, `parent`, `coll`, `id`, `data jsonb`, `create_time`,
+  `update_time`) — a row per document, subcollections included. `npm run db:migrate` creates
+  it and its indexes (idempotent); the btree indexes are generated from
+  `firestore.indexes.json`, so **add a composite index there** and re-run the migration.
+  A GIN index on `data` serves every equality filter.
+- **Server: `@/lib/db/firestore`** implements the `firebase-admin/firestore` API the code
+  already used — `collection/doc/where/orderBy/limit/startAfter/count/getAll/collectionGroup`,
+  `batch`, `runTransaction`, `bulkWriter`, `FieldValue.*`, `Timestamp`. `getAdminDb()` returns
+  it. A transaction is a Postgres transaction: every document it reads takes a
+  transaction-scoped advisory lock on its path, writes are applied at commit, deadlocks retry,
+  a lock not granted in 15 s is an error (never a hang). **Never write to a document from
+  outside a transaction that holds it** — the outer write waits on the lock and fails. Leads
+  are stamped `updatedAt` on every write inside the store (`withLeadStamp`). Timestamps are
+  stored as `{"__t": ms}` so they sort in SQL (`lib/db/codec`).
+- **Browser: `@/lib/db/client`** implements the `firebase/firestore` subset the hooks use.
+  Browsers never touch the database: queries go to **`/api/db`**, which verifies the Firebase
+  ID token (`verifyAuth`) and checks **every returned document** against `lib/db/access` —
+  `firestore.rules` ported clause for clause (that file is deleted; change access there).
+  `onSnapshot` is a **shared poller**: 20 s (`NEXT_PUBLIC_DB_POLL_MS`), 5 s for the incoming-lead
+  offer, paused in hidden tabs, an unchanged answer is an empty reply, and **any Server Action
+  return triggers an immediate refresh** (a `fetch` hook on the `Next-Action` header).
+- The only browser write is an admin renaming a WhatsApp number label (`canClientUpdate`).
+- `vercel.json` pins functions to **`sin1`** — Neon is in Singapore; another region adds
+  ~200 ms to every query.
+- Tests: `npm run test:db` runs the store against the real database in throwaway collections.
+  Scripts that use the store run with `--experimental-strip-types --conditions=react-server`
+  and relative `.ts` imports (see `set-admin-role`).
+- Firebase still needed for: Auth (client config + service account for `verifyIdToken` and
+  claims) and Storage (WhatsApp media archive).
 
 ---
 

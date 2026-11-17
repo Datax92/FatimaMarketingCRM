@@ -3,7 +3,7 @@
 import { adminDb } from "@/lib/firebase/server";
 import { requireAdmin } from "@/lib/firebase/serverAuth";
 import { runAction, UserFacingError, type ActionResult } from "@/lib/actionResult";
-import { FieldValue } from "firebase-admin/firestore";
+import { FieldValue } from "@/lib/db/firestore";
 
 /**
  * Alerts are admin-facing (FR-19). Marking one read is a soft acknowledgement —

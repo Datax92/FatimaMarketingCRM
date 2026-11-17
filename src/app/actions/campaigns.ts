@@ -4,7 +4,7 @@ import { adminDb } from "@/lib/firebase/server";
 import { requireAdmin } from "@/lib/firebase/serverAuth";
 import { runAction, UserFacingError, type ActionResult } from "@/lib/actionResult";
 import { parseMoney } from "@/lib/money";
-import { FieldValue } from "firebase-admin/firestore";
+import { FieldValue } from "@/lib/db/firestore";
 
 export interface CreateCampaignInput {
   name: string;

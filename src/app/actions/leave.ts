@@ -34,7 +34,7 @@ import {
   type LeaveStatus,
   type LeaveType,
 } from "@/lib/attendancePolicy";
-import { FieldValue, Transaction } from "firebase-admin/firestore";
+import { FieldValue, Transaction } from "@/lib/db/firestore";
 
 const REQUESTS = "leaveRequests";
 const DAY = /^\d{4}-\d{2}-\d{2}$/;

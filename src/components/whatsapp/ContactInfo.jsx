@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { collection, getCountFromServer, getDocs, limit, orderBy, query, where } from "firebase/firestore";
+import { collection, getCountFromServer, getDocs, limit, orderBy, query, where } from "@/lib/db/client";
 import {
   MdClose, MdContentCopy, MdOpenInNew, MdPersonOutline, MdSchedule, MdForum, MdCallReceived,
   MdCallMade, MdTimer, MdEvent, MdPhotoLibrary, MdMarkChatUnread,

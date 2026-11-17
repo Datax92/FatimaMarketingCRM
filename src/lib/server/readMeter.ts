@@ -1,5 +1,5 @@
 import { AsyncLocalStorage } from "node:async_hooks";
-import { DocumentReference, Firestore, Query, Transaction } from "firebase-admin/firestore";
+import { DocumentReference, Firestore, Query, Transaction } from "@/lib/db/firestore";
 
 /**
  * The server half of the read meter (owner, 2026-09-23): how many Firestore
@@ -123,6 +123,11 @@ function queryCollection(query: unknown): string {
 }
 
 export function installReadMeter(db: Firestore): void {
+  // The data now lives in Postgres, which does not bill per document read, so
+  // there is nothing to meter. Kept so callers need no change; the scope
+  // labelling above still works and simply records nothing.
+  void db;
+  return;
   if (installed) return;
   installed = true;
 

@@ -17,7 +17,7 @@
 //
 // Runs at most once every 5 minutes (each run stops before 4 minutes).
 
-import { FieldValue } from "firebase-admin/firestore";
+import { FieldValue } from "@/lib/db/firestore";
 import { getDeadline } from "@/lib/whatsapp/server/runtime.js";
 import { db, eachLimit, json, requireAdmin } from "@/lib/whatsapp/server/admin.js";
 import { messageSortKey, numberSortKey } from "@/lib/whatsapp/server/keys.js";

@@ -33,7 +33,6 @@ import {
   type ColumnMap,
   type ParsedSheet,
 } from "@/lib/dataBank";
-import { FREE_TIER_DAILY_WRITES } from "@/lib/quotaError";
 import type { DataBankFolder } from "@/hooks/useDataBank";
 
 type Step = "pick" | "reading" | "map" | "running" | "done";
@@ -364,27 +363,12 @@ export function ImportModal({
 
                   Shown for anything big enough to be worth planning around;
                   amber once it would not fit inside a day's free allowance. */}
+              {/* Postgres has no daily write allowance, so a large file is
+                  simply a count — the old "split it over several days"
+                  warning described Firestore's free plan. */}
               {cost.writes >= 1_000 && (
-                <div
-                  className={
-                    cost.writes > FREE_TIER_DAILY_WRITES
-                      ? "rounded-md border border-[var(--accent-edge)] bg-[var(--warn-wash)] px-4 py-3 text-[13px] text-[var(--warn)]"
-                      : "rounded-md border border-[var(--rule)] bg-white px-4 py-3 text-[13px] text-[var(--ink-2)]"
-                  }
-                >
-                  {/* No plan, quota or billing talk on screen (owner, 2026-09-23) —
-                      only the practical advice. The ceiling itself is unchanged. */}
-                  {cost.writes > FREE_TIER_DAILY_WRITES ? (
-                    <>
-                      <strong>This file is too large to import in one day.</strong> Importing it all
-                      at once can stop the CRM saving for everyone until tomorrow — split it into
-                      smaller files and import them on different days.
-                    </>
-                  ) : (
-                    <>
-                      <strong>{(prepared?.rows.length ?? 0).toLocaleString()} records</strong> ready to import.
-                    </>
-                  )}
+                <div className="rounded-md border border-[var(--rule)] bg-white px-4 py-3 text-[13px] text-[var(--ink-2)]">
+                  <strong>{(prepared?.rows.length ?? 0).toLocaleString()} records</strong> ready to import.
                 </div>
               )}
             </>

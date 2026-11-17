@@ -1,7 +1,7 @@
 import 'server-only';
 
 import { adminDb } from '@/lib/firebase/server';
-import { FieldValue } from 'firebase-admin/firestore';
+import { FieldValue } from '@/lib/db/firestore';
 import { MIN_PRIORITY, MAX_PRIORITY } from '@/lib/constants/distribution';
 import { karachiMonthKey } from '@/lib/dates';
 import {

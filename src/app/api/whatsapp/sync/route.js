@@ -9,7 +9,7 @@
 //   within 24 hours of the number being linked, and only if the employee chose
 //   to share history when scanning the QR code.
 
-import { FieldValue } from "firebase-admin/firestore";
+import { FieldValue } from "@/lib/db/firestore";
 import { db, json, requireAdmin, tokenFor } from "@/lib/whatsapp/server/admin.js";
 
 const GRAPH = "https://graph.facebook.com/v25.0";

@@ -46,7 +46,7 @@ import {
   readReceivedAmount,
   readRemaining,
 } from "@/lib/dealAmounts";
-import { FieldValue } from "firebase-admin/firestore";
+import { FieldValue } from "@/lib/db/firestore";
 
 const DISTRIBUTIONS = "dealDistributions";
 const PAYOUTS = "dealPayouts";

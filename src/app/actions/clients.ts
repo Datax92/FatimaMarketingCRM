@@ -24,7 +24,7 @@
 import { adminDb } from "@/lib/firebase/server";
 import { requireManager, type DecodedAuth } from "@/lib/firebase/serverAuth";
 import { runAction, UserFacingError, type ActionResult } from "@/lib/actionResult";
-import { FieldValue } from "firebase-admin/firestore";
+import { FieldValue } from "@/lib/db/firestore";
 
 const FOLDERS = "clientFolders";
 const MEMBERS = "clientFolderLeads";

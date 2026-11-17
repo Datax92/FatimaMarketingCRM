@@ -5,7 +5,7 @@ import {
   where,
   orderBy,
   limit,
-} from 'firebase/firestore';
+} from '@/lib/db/client';
 import { db } from '@/lib/firebase/client';
 import { describeLiveError, useLeads, type FirestoreTimestamp } from './useLeads';
 import { useLive } from './useLive';

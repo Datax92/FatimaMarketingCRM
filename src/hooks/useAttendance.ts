@@ -7,7 +7,7 @@ import {
   getDocsFromCache,
   query,
   where,
-} from 'firebase/firestore';
+} from '@/lib/db/client';
 // Metered: counts the reads Google bills, into the server log only.
 import { getDocs, onSnapshot } from '@/lib/firebase/meteredFirestore';
 import { db } from '@/lib/firebase/client';

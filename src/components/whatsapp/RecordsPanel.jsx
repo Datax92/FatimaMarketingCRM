@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { collection, limit, onSnapshot, orderBy, query, where } from "firebase/firestore";
+import { collection, limit, onSnapshot, orderBy, query, where } from "@/lib/db/client";
 import { MdDeleteOutline, MdEdit, MdVisibilityOff, MdPersonOutline } from "react-icons/md";
 import { db } from "@/lib/firebase/client";
 import { Avatar } from "./ui";

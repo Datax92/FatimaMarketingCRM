@@ -12,7 +12,7 @@ import { dealAmounts } from "@/lib/dealAmounts";
 import { isTerminal, isUserSettable, stageForStatus, LEAD_STATUS_LABELS, type LeadStatus } from "@/lib/leadStatus";
 import { PIPELINE_STAGES, type PipelineStage } from "@/lib/pipelineStage";
 import { toE164Digits } from "@/lib/phone";
-import { FieldValue, Transaction } from "firebase-admin/firestore";
+import { FieldValue, Transaction } from "@/lib/db/firestore";
 import {
   ADMIN_ASSIGN_WINDOW_MS,
   ACCEPT_WINDOW_MS,

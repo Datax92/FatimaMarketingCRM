@@ -22,7 +22,7 @@
  */
 
 import { adminDb } from '@/lib/firebase/server';
-import { FieldValue } from 'firebase-admin/firestore';
+import { FieldValue } from '@/lib/db/firestore';
 import { phoneKey } from '@/lib/dataBank';
 import {
   buildMetaRecord,

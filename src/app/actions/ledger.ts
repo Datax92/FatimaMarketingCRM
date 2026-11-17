@@ -43,7 +43,7 @@ import {
   type TransactionType,
 } from "@/lib/ledger";
 import { formatMoney } from "@/lib/money";
-import { FieldValue, Transaction } from "firebase-admin/firestore";
+import { FieldValue, Transaction } from "@/lib/db/firestore";
 import { archiveInBatch, archiveInTransaction, DELETED_RECORDS } from "@/lib/server/deletedArchive";
 import { loanBlocksRemoval, removeLoanReturn } from "@/lib/server/loanLedger";
 import { normalizeBorrower } from "@/lib/spendingLoan";

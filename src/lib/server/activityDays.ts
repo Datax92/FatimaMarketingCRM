@@ -1,4 +1,4 @@
-import { FieldValue, type Transaction } from "firebase-admin/firestore";
+import { FieldValue, type Transaction } from "@/lib/db/firestore";
 import { adminDb } from "@/lib/firebase/server";
 import { cached, docKey } from "@/lib/server/serverCache";
 import {

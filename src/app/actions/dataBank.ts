@@ -24,7 +24,7 @@ import {
   type DecodedAuth,
 } from "@/lib/firebase/serverAuth";
 import { runAction, UserFacingError, type ActionResult } from "@/lib/actionResult";
-import { FieldValue } from "firebase-admin/firestore";
+import { FieldValue } from "@/lib/db/firestore";
 import {
   assignedPhoneMessage,
   duplicatePhoneMessage,
@@ -45,6 +45,7 @@ import { applyFieldMapping, normalizeMapsTo } from "@/lib/fieldMapping";
 import { normalizeLaneUids } from "@/lib/distribution";
 import { folderScopeIds } from "@/lib/dataBankAssigned";
 import { campaignForFolderLead } from "@/lib/metaIntake";
+import type * as DbTypes from "@/lib/db/firestore";
 
 const FOLDERS = "dataBankFolders";
 const RECORDS = "dataBankRecords";
@@ -1284,7 +1285,7 @@ async function ensureClientFolder(
   owner: AssigneeTarget,
   source: { id: string; name: string },
   actor: DecodedAuth
-): Promise<{ ref: FirebaseFirestore.DocumentReference; created: boolean }> {
+): Promise<{ ref: DbTypes.DocumentReference; created: boolean }> {
   const ref = clientFolderRefFor(owner.uid, source.id);
   const snap = await ref.get();
   if (snap.exists) return { ref, created: false };
@@ -1349,7 +1350,7 @@ export async function promoteDataBankRecords(
      * several, and creating the same folder per record would be a read and a
      * write per lead for no reason.
      */
-    const clientFolders = new Map<string, FirebaseFirestore.DocumentReference>();
+    const clientFolders = new Map<string, DbTypes.DocumentReference>();
     const clientAdds = new Map<string, number>();
 
     let promoted = 0;
@@ -1610,7 +1611,7 @@ async function ensureManagerFolder(
   manager: { uid: string; name: string },
   source: Awaited<ReturnType<typeof loadFolder>> & { id: string },
   actor: DecodedAuth
-): Promise<{ ref: FirebaseFirestore.DocumentReference; created: boolean }> {
+): Promise<{ ref: DbTypes.DocumentReference; created: boolean }> {
   const ref = managerFolderRefFor(manager.uid, source.id);
   const snap = await ref.get();
   if (snap.exists) return { ref, created: false };
@@ -1701,7 +1702,7 @@ export async function assignRecordsToManager(
     let moved = 0;
     let skipped = 0;
     const folders = new Map<string, Awaited<ReturnType<typeof loadFolder>> & { id: string }>();
-    const mirrors = new Map<string, FirebaseFirestore.DocumentReference>();
+    const mirrors = new Map<string, DbTypes.DocumentReference>();
     const mirrorAdds = new Map<string, number>();
 
     for (let index = 0; index < ids.length; index += 100) {

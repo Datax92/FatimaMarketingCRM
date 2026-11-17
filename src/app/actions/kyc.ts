@@ -18,7 +18,7 @@ import { adminDb } from "@/lib/firebase/server";
 import { verifyAuth, type DecodedAuth } from "@/lib/firebase/serverAuth";
 import { runAction, UserFacingError, type ActionResult } from "@/lib/actionResult";
 import { validateKyc, leadPatchFromKyc, type KycValues } from "@/lib/kyc";
-import { FieldValue, Transaction } from "firebase-admin/firestore";
+import { FieldValue, Transaction } from "@/lib/db/firestore";
 
 /**
  * Who may edit a lead's client record.

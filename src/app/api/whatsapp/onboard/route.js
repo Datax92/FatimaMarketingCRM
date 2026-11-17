@@ -19,7 +19,7 @@
 //   FIREBASE_PROJECT_ID / FIREBASE_CLIENT_EMAIL / FIREBASE_PRIVATE_KEY - the CRM's admin credentials
 //   WHATSAPP_ACCESS_TOKEN       - system-user token (only for the { wabaId } route)
 
-import { FieldValue } from "firebase-admin/firestore";
+import { FieldValue } from "@/lib/db/firestore";
 import { db, json, requireAdmin } from "@/lib/whatsapp/server/admin.js";
 
 const GRAPH = "https://graph.facebook.com/v25.0";

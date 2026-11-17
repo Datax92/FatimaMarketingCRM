@@ -8,7 +8,7 @@ import { toE164Digits } from "@/lib/phone";
 import { isTerminal } from "@/lib/leadStatus";
 import { karachiMonthKey } from "@/lib/dates";
 import { normalizeDealCategory } from "@/lib/constants/deals";
-import { FieldValue, Timestamp, Transaction } from "firebase-admin/firestore";
+import { FieldValue, Timestamp, Transaction } from "@/lib/db/firestore";
 
 /**
  * The Entry Module (FR-20, FR-21, BR-18, BR-19).

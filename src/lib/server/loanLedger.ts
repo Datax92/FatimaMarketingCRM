@@ -1,5 +1,5 @@
 import { adminDb } from "@/lib/firebase/server";
-import { FieldValue, type Transaction } from "firebase-admin/firestore";
+import { FieldValue, type Transaction } from "@/lib/db/firestore";
 import type { DecodedAuth } from "@/lib/firebase/serverAuth";
 import { archiveInTransaction } from "@/lib/server/deletedArchive";
 import { readLoan } from "@/lib/spendingLoan";

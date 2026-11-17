@@ -35,7 +35,7 @@
 import {
   type Query,
   type DocumentData,
-} from 'firebase/firestore';
+} from '@/lib/db/client';
 // Metered: counts the reads Google bills, into the server log only.
 import { onSnapshot, onSnapshotLive } from '@/lib/firebase/meteredFirestore';
 

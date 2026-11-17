@@ -14,7 +14,8 @@ import {
   type PriorityChange,
 } from "@/lib/server/recalcPriorities";
 import { runAction, UserFacingError, type ActionResult } from "@/lib/actionResult";
-import { FieldValue } from "firebase-admin/firestore";
+import { FieldValue } from "@/lib/db/firestore";
+import type * as DbTypes from "@/lib/db/firestore";
 
 export type { PriorityChange };
 
@@ -540,7 +541,7 @@ async function reassignTeamOwnership(
 
   for (const collection of ["leads", "closedDeals"] as const) {
     const field = collection === "leads" ? "assignedUserId" : "userId";
-    let cursor: FirebaseFirestore.QueryDocumentSnapshot | null = null;
+    let cursor: DbTypes.QueryDocumentSnapshot | null = null;
 
     for (;;) {
       let query = adminDb.collection(collection).where(field, "==", employeeUid).limit(400);

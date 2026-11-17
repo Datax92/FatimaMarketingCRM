@@ -48,6 +48,7 @@ import { addTally, entryTally } from "@/lib/leadBuckets";
 import { loadEntries } from "@/lib/reportEntries";
 import { ACTIVITY_DAYS, ACTIVITY_FIELDS, readCounts, readWorkedMinutes, splitRange } from "@/lib/activityDays";
 import { attendanceMinutes, readActivityTotalsFrom } from "@/lib/server/activityDays";
+import type * as DbTypes from "@/lib/db/firestore";
 import {
   blankMetrics,
   describeSubject,
@@ -136,7 +137,7 @@ export async function buildTeamReport(
     // extra read, and only for a manager. An admin and an employee never pay
     // for it.
     let seesEveryone = auth.role === "admin";
-    let ownProfile: FirebaseFirestore.DocumentData | undefined;
+    let ownProfile: DbTypes.DocumentData | undefined;
 
     if (auth.role === "subadmin") {
       const profile = await adminDb.collection("users").doc(auth.uid).get();
@@ -295,7 +296,7 @@ export async function buildTeamReport(
     const range = splitRange(from, to, await readActivityTotalsFrom());
     const { entries, warning } = range.entries
       ? await loadEntries(range.entries.from, range.entries.to, leadIds, uids)
-      : { entries: [] as FirebaseFirestore.QueryDocumentSnapshot[], warning: null };
+      : { entries: [] as DbTypes.QueryDocumentSnapshot[], warning: null };
     const activityMs = since();
 
     for (const doc of entries) {
@@ -473,9 +474,9 @@ function inWindow(value: unknown, window: { start: number; end: number }): boole
 async function loadPeople(
   auth: { uid: string; role: string | null; name?: string | null; email?: string | null },
   seesEveryone: boolean,
-  ownProfile?: FirebaseFirestore.DocumentData
+  ownProfile?: DbTypes.DocumentData
 ): Promise<ReportPerson[]> {
-  const toPerson = (uid: string, data: FirebaseFirestore.DocumentData): ReportPerson => ({
+  const toPerson = (uid: string, data: DbTypes.DocumentData): ReportPerson => ({
     uid,
     name: (data.name as string) || (data.email as string) || "Unnamed",
     role: (data.role as ReportPerson["role"]) ?? "employee",

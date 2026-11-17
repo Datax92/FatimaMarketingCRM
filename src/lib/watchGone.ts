@@ -23,7 +23,7 @@
 
 import {
   doc,
-} from "firebase/firestore";
+} from "@/lib/db/client";
 // Metered: counts the reads Google bills, into the server log only.
 import { onSnapshot } from "@/lib/firebase/meteredFirestore";
 import { db } from "@/lib/firebase/client";

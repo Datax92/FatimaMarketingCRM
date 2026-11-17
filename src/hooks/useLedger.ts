@@ -13,7 +13,7 @@
  */
 
 import { useCallback, useMemo } from 'react';
-import { collection, query, orderBy, limit, where } from 'firebase/firestore';
+import { collection, query, orderBy, limit, where } from '@/lib/db/client';
 import { useLive } from './useLive';
 import { db } from '@/lib/firebase/client';
 import { describeFirestoreError, type FirestoreTimestamp } from './useLeads';

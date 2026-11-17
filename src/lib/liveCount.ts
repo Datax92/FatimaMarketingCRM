@@ -25,7 +25,7 @@
  * to the nearest 500.
  */
 
-import type { Query, DocumentData } from 'firebase/firestore';
+import type { Query, DocumentData } from '@/lib/db/client';
 // Metered: counts the reads Google bills, into the server log only.
 import { getCountFromServer } from '@/lib/firebase/meteredFirestore';
 

@@ -16,7 +16,7 @@
 // same for days, which is what lets the browser reuse that cache.
 
 import { getStorage } from "firebase-admin/storage";
-import { FieldValue } from "firebase-admin/firestore";
+import { FieldValue } from "@/lib/db/firestore";
 import { db, tokenFor } from "./admin.js";
 
 const GRAPH = "https://graph.facebook.com/v25.0";

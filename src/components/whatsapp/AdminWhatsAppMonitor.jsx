@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { collection, doc, getCountFromServer, getDocs, limit, onSnapshot, orderBy, query, where } from "firebase/firestore";
+import { collection, doc, getCountFromServer, getDocs, limit, onSnapshot, orderBy, query, where } from "@/lib/db/client";
 import toast from "react-hot-toast";
 import { FaWhatsapp } from "react-icons/fa";
 import { MdChat, MdGroups, MdAddLink, MdLock, MdManageHistory } from "react-icons/md";

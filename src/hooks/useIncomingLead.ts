@@ -20,7 +20,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { collection, query, where } from 'firebase/firestore';
+import { collection, query, where } from '@/lib/db/client';
 import { db } from '@/lib/firebase/client';
 import { useLive } from './useLive';
 import { describeLiveError, type Lead } from './useLeads';

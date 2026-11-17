@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc } from "@/lib/db/client";
 import { MdClose } from "react-icons/md";
 import { db } from "@/lib/firebase/client";
 import { Avatar } from "./ui";

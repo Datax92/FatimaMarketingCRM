@@ -19,7 +19,7 @@ import 'server-only';
  */
 
 import { adminDb } from '@/lib/firebase/server';
-import type { DocumentData, QuerySnapshot, Transaction } from 'firebase-admin/firestore';
+import type { DocumentData, QuerySnapshot, Transaction } from '@/lib/db/firestore';
 import {
   normalizeLaneUids,
   readChosenLaneMember,

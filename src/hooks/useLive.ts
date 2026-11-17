@@ -24,7 +24,7 @@
  */
 
 import { useCallback, useSyncExternalStore } from 'react';
-import type { Query, DocumentData } from 'firebase/firestore';
+import type { Query, DocumentData } from '@/lib/db/client';
 import { subscribeLive, liveState, SERVER_STATE, type LiveState } from '@/lib/liveCollection';
 import { IS_DEMO } from '@/lib/demo/store';
 import { demoLiveRows, demoLedgerVersion, subscribeDemoLedger } from '@/lib/demo/accountsFixture';

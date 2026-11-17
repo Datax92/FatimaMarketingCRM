@@ -1,5 +1,5 @@
 import { adminDb } from "@/lib/firebase/server";
-import { FieldValue, type DocumentSnapshot, type Transaction, type WriteBatch } from "firebase-admin/firestore";
+import { FieldValue, type DocumentSnapshot, type Transaction, type WriteBatch } from "@/lib/db/firestore";
 import type { DecodedAuth } from "@/lib/firebase/serverAuth";
 
 /**

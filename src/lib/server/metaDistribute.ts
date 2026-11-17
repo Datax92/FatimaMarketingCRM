@@ -33,7 +33,7 @@ import 'server-only';
 
 import { adminDb } from '@/lib/firebase/server';
 import { owningSubAdminFor } from '@/lib/constants/hierarchy';
-import { FieldValue, type Transaction } from 'firebase-admin/firestore';
+import { FieldValue, type Transaction } from '@/lib/db/firestore';
 import {
   getNextAssigneeAndState,
   laneDisplayName,

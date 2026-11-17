@@ -1,5 +1,6 @@
 import { adminDb } from "@/lib/firebase/server";
 import { cached } from "@/lib/server/serverCache";
+import type * as DbTypes from "@/lib/db/firestore";
 
 /**
  * A month of attendance, and the roster, read once and shared for a minute by
@@ -27,7 +28,7 @@ const TTL_MS = 60_000;
 
 export interface CachedDoc {
   id: string;
-  data: FirebaseFirestore.DocumentData;
+  data: DbTypes.DocumentData;
 }
 
 /** Every attendance record dated in `monthKey` (`YYYY-MM`). */
