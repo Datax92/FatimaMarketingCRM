@@ -48,8 +48,9 @@ export function AttendanceShell({
         minHeight: "100%",
         // Cancels the <main> padding so the module owns the full frame. Every
         // child then renders in normal flow and cannot climb over the strip.
-        margin: isMobile ? "-18px -16px" : "-24px -28px",
-        padding: isMobile ? "0 16px 26px" : "22px 28px 34px",
+        // On a phone the title bar cancels the top itself, so only the sides here.
+        margin: isMobile ? "0 -16px" : "-32px",
+        padding: isMobile ? "0 16px 26px" : "22px 32px 34px",
       }}
     >
       {isMobile && (

@@ -17,7 +17,8 @@ export function DemoBanner() {
   return (
     <div className="flex shrink-0 items-center justify-center gap-2 bg-amber-500 px-4 py-1.5 text-center text-[11px] font-bold uppercase tracking-wider text-amber-950">
       <FlaskConical size={13} className="shrink-0" />
-      <span>Demonstration mode — sample data, nothing is saved</span>
+      <span className="hidden sm:inline">Demonstration mode — sample data, nothing is saved</span>
+      <span className="sm:hidden">Demo · nothing is saved</span>
     </div>
   );
 }

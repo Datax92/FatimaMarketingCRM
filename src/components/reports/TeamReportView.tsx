@@ -486,8 +486,8 @@ export function TeamReportView() {
         background: E.page,
         color: E.ink,
         minHeight: "100%",
-        margin: isMobile ? "-18px -16px" : "-24px -28px",
-        padding: isMobile ? "16px 16px 26px" : "20px 28px 30px",
+        margin: isMobile ? "0 -16px" : "-32px",
+        padding: isMobile ? "0 16px 26px" : "20px 32px 30px",
       }}
     >
       <style>{REPORT_CSS}</style>

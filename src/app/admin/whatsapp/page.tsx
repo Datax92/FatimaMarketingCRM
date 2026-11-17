@@ -33,7 +33,7 @@ export default function WhatsAppPage() {
   }
 
   return (
-    <div className="-mx-6 -mt-5 -mb-14">
+    <div className="-mx-8 -mt-8 -mb-14">
       <AdminWhatsAppMonitor />
     </div>
   );

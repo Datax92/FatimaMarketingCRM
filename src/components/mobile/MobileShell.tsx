@@ -24,6 +24,9 @@ import { createContext, useContext, useEffect, useMemo, useState, type ReactNode
 import { usePathname } from "next/navigation";
 import { M } from "./mobileChrome";
 import { MobileTabBar, type CentreAction } from "./MobileTabBar";
+import { MobileSubHeader } from "./MobileSubHeader";
+import { useAuth } from "@/context/AuthContext";
+import { activeItem, navFor } from "@/lib/navigation";
 
 const CentreContext = createContext<((action: CentreAction) => void) | null>(null);
 
@@ -111,9 +114,26 @@ function hasOwnChrome(pathname: string): boolean {
   );
 }
 
+/** Screens whose layout or view already draws a phone title bar. */
+function hasOwnHeader(pathname: string): boolean {
+  return (
+    pathname.startsWith("/admin/financials") ||
+    pathname.startsWith("/subadmin/financials") ||
+    pathname.startsWith("/admin/accounts") ||
+    pathname.includes("/attendance")
+  );
+}
+
 export function MobileShell({ role, children }: { role: string | undefined; children: ReactNode }) {
   const pathname = usePathname();
+  const { isHr } = useAuth();
   const bare = hasOwnChrome(pathname);
+  const titleBar = useMemo(() => {
+    if (bare || hasOwnHeader(pathname)) return null;
+    if (pathname === "/appearance") return { eyebrow: "Settings", title: "Appearance" };
+    const hit = activeItem(navFor(role, isHr), pathname);
+    return hit ? { eyebrow: hit.section.label, title: hit.item.tile ?? hit.item.label } : null;
+  }, [bare, pathname, role, isHr]);
   const [centre, setCentre] = useState<CentreAction>(null);
   // Stable identity, so `useMobileCentre`'s effect does not re-run whenever
   // the shell re-renders for an unrelated reason.
@@ -159,7 +179,8 @@ export function MobileShell({ role, children }: { role: string | undefined; chil
                 }),
           }}
         >
-          {children}
+          {titleBar && <MobileSubHeader eyebrow={titleBar.eyebrow} title={titleBar.title} home="/home" />}
+          {titleBar ? <div className="mob-titled">{children}</div> : children}
         </div>
         <MobileTabBar role={role} centre={centre} />
       </div>

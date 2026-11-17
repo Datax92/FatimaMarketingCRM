@@ -40,7 +40,12 @@ let listeners: Array<() => void> = [];
 let current = false;
 
 function measure(): boolean {
-  return window.innerWidth < MOBILE_BREAKPOINT;
+  // A phone's layout viewport grows when something on the page is wider than the
+  // screen, which used to flip a phone into the desktop shell; the screen never does.
+  // Only touch devices are measured by their screen; a desktop goes by its window.
+  const touch = window.matchMedia("(pointer: coarse)").matches;
+  const width = touch ? Math.min(window.innerWidth, window.screen.width) : window.innerWidth;
+  return width < MOBILE_BREAKPOINT;
 }
 
 function subscribe(onChange: () => void): () => void {

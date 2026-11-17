@@ -132,19 +132,12 @@ export default function ProfitDistributionPage() {
     return (
       <div style={{ display: "flex", flexDirection: "column", minHeight: "100%" }}>
         <MobileHeader>
-          <div style={{ fontSize: 11.5, fontWeight: 700, letterSpacing: "1.1px", opacity: 0.78 }}>
-            MONEY
-          </div>
-          <h1 style={{ fontSize: 25, fontWeight: 800, letterSpacing: "-0.3px", marginTop: 2 }}>
-            Profit Distribution
-          </h1>
-
+          {/* The financials layout's title bar already names the screen. */}
           <div
             style={{
               display: "flex",
               alignItems: "center",
               gap: 10,
-              marginTop: 15,
               padding: "13px 15px",
               borderRadius: 18,
               background: M.wellBg,

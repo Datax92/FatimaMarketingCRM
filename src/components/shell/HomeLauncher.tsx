@@ -4,6 +4,8 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import { useIsMobile } from '@/hooks/useIsMobile';
+import { AccountButton } from '@/components/mobile/MobileAccount';
 import { useAppearance } from '@/context/AppearanceContext';
 import { SHORTCUTS, MAX_SHORTCUTS, findWallpaper, type ShortcutDef } from '@/lib/appearance';
 import { navFor, allItems } from '@/lib/navigation';
@@ -63,6 +65,7 @@ export function HomeLauncher() {
   const router = useRouter();
   const { user, role, isHr } = useAuth();
   const { look, update, surprise } = useAppearance();
+  const isMobile = useIsMobile();
   const tone = findWallpaper(look.wallpaper).tone;
   const r = (role ?? 'employee') as 'admin' | 'subadmin' | 'employee';
 
@@ -210,12 +213,16 @@ export function HomeLauncher() {
     <div className="page o-home" data-tone={tone}>
       <Wallpaper id={look.wallpaper} seed={look.seed} themeKey={look.theme + (look.uniqueName || '')} />
 
-      <div className="fm-hello">
-        <h1>
-          {greeting()}
-          {who && <span>, {who}</span>}
-        </h1>
-        <p>{new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'Asia/Karachi' }).format(new Date())}</p>
+      <div className="fm-hello fm-hello-row">
+        <div>
+          <h1>
+            {greeting()}
+            {who && <span>, {who}</span>}
+          </h1>
+          <p>{new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'Asia/Karachi' }).format(new Date())}</p>
+        </div>
+        {/* On a phone there is no navbar, so sign-out and the account live here. */}
+        {isMobile && <AccountButton />}
       </div>
 
       {(shortcuts.length > 0 || editing) && (

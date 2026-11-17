@@ -50,7 +50,8 @@ export function MobileSubHeader({
         color: "#fff",
         borderRadius: `0 0 ${M.headerRadius}px ${M.headerRadius}px`,
         padding: "calc(env(safe-area-inset-top, 0px) + 12px) 18px 16px",
-        margin: "-18px -16px 16px",
+        // Exactly undoes the shell's top padding, so the bar sits flush and nothing is clipped.
+        margin: "calc(-16px - env(safe-area-inset-top, 0px)) -16px 16px",
         flexShrink: 0,
       }}
     >

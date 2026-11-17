@@ -251,7 +251,8 @@
   h6 {
     font-family: var(--font-heading);
     font-weight: var(--font-semibold);
-    color: var(--color-text-primary);
+    /* Inherit, so a heading on a dark header is white like the text around it. */
+    color: inherit;
     line-height: 1.3;
   }
 

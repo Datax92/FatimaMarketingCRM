@@ -1517,7 +1517,8 @@ button.ap-card:hover { transform: translateY(-2px); box-shadow: 0 14px 26px -18p
 
 @layer components {
   /* CRM screens keep their own headers; the shell gives them the Property canvas and spacing. */
-  #main.fm-page { padding: 20px 24px 56px; background: var(--paper); }
+  /* 32px, the CRM's own page padding — full-bleed screens cancel exactly this with -m-8. */
+  #main.fm-page { padding: 32px 32px 56px; background: var(--paper); }
   .fm-drop { animation: o-drop .16s var(--ease) both; transform-origin: top right; }
   .o-nav-logo { color: inherit; }
 }
@@ -1529,4 +1530,43 @@ button.ap-card:hover { transform: translateY(-2px); box-shadow: 0 14px 26px -18p
   .fm-hello p { margin: 4px 0 0; font-size: 13px; color: var(--ink-3); animation: o-rise .4s .06s var(--ease) both; }
   .o-home[data-tone="dark"] .fm-hello h1, .o-home[data-tone="dark"] .fm-hello h1 span { color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.4); }
   .o-home[data-tone="dark"] .fm-hello p { color: rgba(255,255,255,.8); }
+}
+
+@layer components {
+  /* Phone home: denser grid, compact shortcuts, a one-line toolbar. */
+  .fm-hello-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  @media (max-width: 640px) {
+    .page.o-home { padding: 18px 14px 24px; width: 100%; min-width: 0; max-width: 100%; box-sizing: border-box; }
+    .launch-bar, .shortcuts, .launch { min-width: 0; max-width: 100%; }
+    .fm-hello { margin-bottom: 14px; }
+    .fm-hello h1 { font-size: 22px; }
+    .shortcuts { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
+    .shortcut { flex-direction: column; align-items: flex-start; gap: 8px; padding: 12px 10px; min-height: 0; }
+    .shortcut .sc-t small, .shortcut .sc-plus { display: none; }
+    .shortcut .sc-t b { font-size: 13px; line-height: 1.2; }
+    .shortcut .sc-ic { width: 38px; height: 38px; }
+    .launch-bar { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+    .launch-bar::-webkit-scrollbar { display: none; }
+    .launch-bar > * { flex-shrink: 0; }
+    .launch-bar .kicker, .launch-bar .spacer { display: none; }
+    .launch { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px 2px; padding: 12px 0; }
+    .cell { min-height: 92px; }
+    .tile-ic { width: 54px; height: 54px; border-radius: 14px; }
+    .tile-ic svg { width: 32px; height: 32px; }
+    .tile-l { font-size: 11.5px; }
+  }
+}
+@layer components {
+  .fm-hello-row > button, .fm-hello-row > div > button { box-shadow: 0 0 0 1px var(--rule-2), var(--sh-2); }
+}
+
+@layer utilities {
+  /* Phone shell pads 16px; full-bleed screens written for 24px cancel exactly that here. */
+  .mob-shell .-m-6 { margin: -16px; }
+  .mob-shell .px-6 { padding-left: 16px; padding-right: 16px; }
+}
+@layer components {
+  /* Under the phone title bar the page's own heading would only repeat it. */
+  .mob-titled { display: contents; }
+  .mob-titled h1 { display: none; }
 }
