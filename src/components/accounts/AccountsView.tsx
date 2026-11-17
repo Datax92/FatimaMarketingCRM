@@ -19,7 +19,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Wallet, Plus, ArrowRightLeft, ArrowDownLeft, ArrowUpRight,
-  ExternalLink, Landmark, TrendingUp, TrendingDown, Receipt, PiggyBank,
+  ExternalLink, Landmark, TrendingUp, TrendingDown,
   Clock, Search, Pencil, Trash2, MoreHorizontal, AlertTriangle,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
@@ -292,8 +292,6 @@ function Dashboard({
         {([
           ["Income", thisMonth.income, <ArrowDownLeft key="i" size={14} />, A.positive, cmp(thisMonth.income, lastMonth.income)],
           ["Expenses", thisMonth.expenses, <ArrowUpRight key="e" size={14} />, A.negative, cmp(thisMonth.expenses, lastMonth.expenses)],
-          ["Investments", thisMonth.investments, <PiggyBank key="v" size={14} />, undefined, cmp(thisMonth.investments, lastMonth.investments)],
-          ["Reimbursements", thisMonth.reimbursements, <Receipt key="r" size={14} />, undefined, cmp(thisMonth.reimbursements, lastMonth.reimbursements)],
           ["Transfers", thisMonth.transfersOut, <ArrowRightLeft key="t" size={14} />, A.neutral, undefined],
           ["Net movement", thisMonth.netMovement, <TrendingUp key="n" size={14} />, thisMonth.netMovement < 0 ? A.negative : A.positive, cmp(thisMonth.netMovement, lastMonth.netMovement)],
         ] as const).map(([label, value, icon, tone, trend]) => (
@@ -658,7 +656,7 @@ function AccountStatement({
           <Chip label="All" active={flow === "ALL" && typeFilter === "ALL"} onClick={() => { setFlow("ALL"); setTypeFilter("ALL"); }} />
           <Chip label="Money in" active={flow === "IN"} onClick={() => setFlow(flow === "IN" ? "ALL" : "IN")} />
           <Chip label="Money out" active={flow === "OUT"} onClick={() => setFlow(flow === "OUT" ? "ALL" : "OUT")} />
-          {(["INVESTMENT", "EXPENSE", "INCOME", "TRANSFER", "REIMBURSEMENT"] as const).map((t) => (
+          {(["INCOME", "EXPENSE", "TRANSFER"] as const).map((t) => (
             <Chip key={t} label={TRANSACTION_TYPE_LABELS[t]} active={typeFilter === t} onClick={() => setTypeFilter(typeFilter === t ? "ALL" : t)} />
           ))}
         </div>
@@ -671,7 +669,7 @@ function AccountStatement({
           body="Pay an expense from this account anywhere in the CRM and the movement records itself, linked to what caused it — or add a receipt or a spending directly, for money that belongs to no other module."
           action={
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center" }}>
-              <Button icon={<ArrowDownLeft size={14} />} onClick={() => setEntering("IN")}>Add received</Button>
+              <Button icon={<ArrowDownLeft size={14} />} onClick={() => setEntering("IN")}>Add income</Button>
               <Button primary icon={<ArrowUpRight size={14} />} onClick={() => setEntering("OUT")}>Add spending</Button>
             </div>
           }
@@ -680,14 +678,14 @@ function AccountStatement({
       ) : (
         <div style={{ display: "grid", gap: 12, gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fit, minmax(330px, 1fr))" }}>
           <StatementColumn
-            title="Amount Received"
+            title="Income received"
             rows={received}
             tone={A.positive}
             isMobile={isMobile}
             getIdToken={getIdToken}
             onDone={onDone}
             onAdd={() => setEntering("IN")}
-            addLabel="Add received"
+            addLabel="Add income"
             onEdit={setEditingRow}
           />
           <StatementColumn

@@ -69,7 +69,7 @@ export function HomeLauncher() {
   const sections = useMemo(() => navFor(role, isHr), [role, isHr]);
   const TILES = useMemo(() => {
     const out: Record<string, HomeTile> = {};
-    for (const item of allItems(sections)) out[item.path] = { icon: item.icon, label: item.label, value: item.hint, go: item.path };
+    for (const item of allItems(sections)) out[item.path] = { icon: item.icon, label: item.tile ?? item.label, value: item.hint, go: item.path };
     return out;
   }, [sections]);
   const defaultLayout = useMemo(() => Object.keys(TILES), [TILES]);

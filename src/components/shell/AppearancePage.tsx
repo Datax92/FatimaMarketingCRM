@@ -7,6 +7,7 @@ import { useAppearance } from '@/context/AppearanceContext';
 import { AppIcon } from './AppIcons';
 import { Icon } from './Icons';
 import { BrandMark } from './Brand';
+import { COMPANY } from '@/lib/brand';
 import { Wallpaper } from './Wallpapers';
 import {
   THEMES, WALLPAPERS, ICON_PACKS, PRESETS, SHORTCUTS, MAX_SHORTCUTS,
@@ -14,7 +15,7 @@ import {
 } from '@/lib/appearance';
 
 /** A few icons, enough to judge an icon pack or a look by. */
-const SAMPLE = ['sales', 'pnl', 'zakat', 'tasks', 'landed', 'charity'];
+const SAMPLE = ['leads', 'meta', 'whatsapp', 'bank', 'expenses', 'attendance'];
 
 function MiniTiles({ count = 6 }: { count?: number }) {
   return (
@@ -93,7 +94,7 @@ export function AppearancePage() {
             <span className="ap-prev-logo">
               <BrandMark size={18} />
             </span>
-            <b>A &amp; Sons Tradeway</b>
+            <b>{COMPANY}</b>
           </div>
           <div className="ap-prev-body">
             <div className="ap-prev-sc">
@@ -112,7 +113,7 @@ export function AppearancePage() {
                   <span className="tile-ic">
                     <AppIcon name={n} />
                   </span>
-                  <span className="tile-l">{['Sales', 'Profit', 'Zakat', 'Tasks', 'Cost Sheets', 'Charity'][i]}</span>
+                  <span className="tile-l">{['Leads', 'Meta Ads', 'WhatsApp', 'Banks', 'Expenses', 'Attendance'][i]}</span>
                 </span>
               ))}
             </div>

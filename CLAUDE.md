@@ -1,3 +1,21 @@
+# Fatima Marketing CRM — read first
+
+This repo was created from the Leadway/Mahziyar CRM. Everything below this note is that
+project's history and still describes the lead, attendance, deals and expense logic, with
+these differences:
+
+- Removed: StateLife, Car Sale, Marketing Income, Investment with X, Capital Investments,
+  Committee, Amanat, Receivables/Payables, Group Income/Expense, Income Sheet, Salary/Payroll.
+  Notes below about those modules are history only.
+- Accounts is now **Banks & Wallets** only (bank / wallet / cash accounts) — the source office
+  and personal expenses are paid from.
+- UI is the Property-CRM design system: `src/components/shell/`, `src/app/fm-shell.css`,
+  menus in `src/lib/navigation.ts`. `/home` is the app grid; the Day End dashboard is `/dashboard`.
+- WhatsApp monitor from Datadash: `src/app/api/whatsapp/*`, `src/components/whatsapp/`, admin only.
+- Planned: data layer moves to Neon Postgres; Firebase Auth stays.
+
+---
+
 # CRM — Agent Context
 
 Lead Management & CRM for Meta Ads intake, fair employee distribution, immutable

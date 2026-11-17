@@ -11,6 +11,8 @@ export interface NavItem {
   path: string;
   /** AppIcon artwork for the home tile. */
   icon: string;
+  /** The home tile's name when the menu label alone would be ambiguous there. */
+  tile?: string;
   /** Tooltip / card subtitle on the home screen. */
   hint?: string;
 }
@@ -28,14 +30,14 @@ const attendance = (base: string, opts: { manage: boolean; settings: boolean }):
   icon: "attendance",
   items: opts.manage
     ? [
-        { label: "Overview", path: `${base}/attendance`, icon: "attendance", hint: "Who is in today" },
+        { label: "Overview", path: `${base}/attendance`, icon: "attendance", tile: "Attendance", hint: "Who is in today" },
         { label: "My Attendance", path: `${base}/attendance/me`, icon: "checkin", hint: "Check in and out" },
         { label: "Calendar", path: `${base}/attendance/calendar`, icon: "calendar", hint: "The month at a glance" },
         { label: "Leave", path: `${base}/attendance/leave`, icon: "leave", hint: "Requests and balances" },
-        { label: "Reports", path: `${base}/attendance/reports`, icon: "fiscal", hint: "Attendance over a period" },
+        { label: "Reports", path: `${base}/attendance/reports`, tile: "Attendance Reports", icon: "fiscal", hint: "Attendance over a period" },
         { label: "Late / Absence", path: `${base}/attendance/records`, icon: "late", hint: "Late arrivals and absences" },
         ...(opts.settings
-          ? [{ label: "Settings", path: `${base}/attendance/settings`, icon: "settings", hint: "Office hours and rules" }]
+          ? [{ label: "Settings", path: `${base}/attendance/settings`, tile: "Attendance Settings", icon: "settings", hint: "Office hours and rules" }]
           : []),
       ]
     : [
@@ -50,7 +52,7 @@ const ADMIN: NavSection[] = [
     id: "dashboard",
     label: "Dashboard",
     icon: "dashboard",
-    items: [{ label: "Day End", path: "/dashboard", icon: "dashboard", hint: "Targets, KPIs and the team today" }],
+    items: [{ label: "Day End", path: "/dashboard", tile: "Dashboard", icon: "dashboard", hint: "Targets, KPIs and the team today" }],
   },
   {
     id: "leads",
@@ -66,7 +68,7 @@ const ADMIN: NavSection[] = [
     label: "Data Bank",
     icon: "databank",
     items: [
-      { label: "Sources", path: "/admin/data-bank", icon: "databank", hint: "Imported lists and folders" },
+      { label: "Sources", path: "/admin/data-bank", tile: "Data Bank", icon: "databank", hint: "Imported lists and folders" },
       { label: "Meta Ads", path: "/admin/meta-ads", icon: "meta", hint: "Facebook & Instagram lead forms" },
     ],
   },
@@ -74,23 +76,23 @@ const ADMIN: NavSection[] = [
     id: "whatsapp",
     label: "WhatsApp",
     icon: "whatsapp",
-    items: [{ label: "Monitor", path: "/admin/whatsapp", icon: "whatsapp", hint: "Employees' WhatsApp chats" }],
+    items: [{ label: "Monitor", path: "/admin/whatsapp", tile: "WhatsApp", icon: "whatsapp", hint: "Employees' WhatsApp chats" }],
   },
   {
     id: "team",
     label: "Team",
     icon: "agents",
     items: [
-      { label: "Directory", path: "/admin/employees/directory", icon: "agents", hint: "Employees and managers" },
-      { label: "Reports", path: "/admin/team/reports", icon: "reports", hint: "Activity per person" },
-      { label: "Priority", path: "/admin/employees/priority", icon: "priority", hint: "Who gets the next lead" },
+      { label: "Directory", path: "/admin/employees/directory", tile: "Employees", icon: "agents", hint: "Employees and managers" },
+      { label: "Reports", path: "/admin/team/reports", tile: "Team Reports", icon: "reports", hint: "Activity per person" },
+      { label: "Priority", path: "/admin/employees/priority", tile: "Lead Priority", icon: "priority", hint: "Who gets the next lead" },
     ],
   },
   {
     id: "clients",
     label: "Clients",
     icon: "clients",
-    items: [{ label: "Folders", path: "/admin/clients", icon: "clients", hint: "Customers by folder" }],
+    items: [{ label: "Folders", path: "/admin/clients", tile: "Clients", icon: "clients", hint: "Customers by folder" }],
   },
   {
     id: "money",
@@ -99,7 +101,7 @@ const ADMIN: NavSection[] = [
     items: [
       { label: "Closed Deals", path: "/admin/financials/deals", icon: "sales", hint: "Every won deal" },
       { label: "Profit Distribution", path: "/admin/financials/distribution", icon: "gross", hint: "Who gets what" },
-      { label: "Reports", path: "/admin/financials/reports", icon: "net", hint: "Revenue and profit" },
+      { label: "Reports", path: "/admin/financials/reports", tile: "Financial Reports", icon: "net", hint: "Revenue and profit" },
     ],
   },
   {
@@ -130,7 +132,7 @@ function subadmin(isHr: boolean): NavSection[] {
       id: "dashboard",
       label: "Dashboard",
       icon: "dashboard",
-      items: [{ label: "Day End", path: "/dashboard", icon: "dashboard", hint: "Your team today" }],
+      items: [{ label: "Day End", path: "/dashboard", tile: "Dashboard", icon: "dashboard", hint: "Your team today" }],
     },
     {
       id: "leads",
@@ -146,7 +148,7 @@ function subadmin(isHr: boolean): NavSection[] {
       label: "Data Bank",
       icon: "databank",
       items: [
-        { label: "My Sources", path: "/subadmin/data-bank", icon: "databank", hint: "Lists assigned to you" },
+        { label: "My Sources", path: "/subadmin/data-bank", tile: "Data Bank", icon: "databank", hint: "Lists assigned to you" },
         { label: "Meta Ads", path: "/subadmin/meta-ads", icon: "campaigns", hint: "Your team's campaigns" },
       ],
     },
@@ -157,14 +159,14 @@ function subadmin(isHr: boolean): NavSection[] {
       items: [
         { label: "My Profile", path: "/subadmin/profile", icon: "account", hint: "You and your team" },
         { label: "Team Performance", path: "/subadmin/team", icon: "agents", hint: "Each member's numbers" },
-        { label: "Reports", path: "/subadmin/reports", icon: "reports", hint: "Activity per person" },
+        { label: "Reports", path: "/subadmin/reports", tile: "Team Reports", icon: "reports", hint: "Activity per person" },
       ],
     },
     {
       id: "clients",
       label: "Clients",
       icon: "clients",
-      items: [{ label: "Folders", path: "/subadmin/clients", icon: "clients", hint: "Customers by folder" }],
+      items: [{ label: "Folders", path: "/subadmin/clients", tile: "Clients", icon: "clients", hint: "Customers by folder" }],
     },
     attendance("/subadmin", { manage: true, settings: isHr }),
     {
@@ -192,7 +194,7 @@ const EMPLOYEE: NavSection[] = [
     id: "dashboard",
     label: "Dashboard",
     icon: "dashboard",
-    items: [{ label: "Day End", path: "/dashboard", icon: "dashboard", hint: "Your day and your targets" }],
+    items: [{ label: "Day End", path: "/dashboard", tile: "Dashboard", icon: "dashboard", hint: "Your day and your targets" }],
   },
   {
     id: "workspace",
