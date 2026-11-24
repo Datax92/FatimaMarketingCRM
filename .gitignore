@@ -78,3 +78,5 @@ Thumbs.db
 
 # Demo video build (/brag): frames, node_modules, renders
 brag-output*/
+.neon
+.env*
