@@ -6,7 +6,7 @@ import {
   resolveCampaign,
   isMetaConfigured,
 } from '@/lib/meta';
-import { notifyMetaLead } from '@/lib/server/metaFiling';
+import { notifyMetaLead, recordMetaIntakeIssue } from '@/lib/server/metaFiling';
 import { fileAndOfferMetaLead } from '@/lib/server/metaDistribute';
 import { fileWhatsAppMessage, splitCloudApiMessages } from '@/lib/server/whatsappFiling';
 import { karachiDayKey } from '@/lib/dates';
@@ -188,6 +188,20 @@ async function ingestLead(leadgenId: string, value: Record<string, unknown>): Pr
   if (result.outcome === 'CREATED') {
     await notifyMetaLead(result.folderId, result.folderName, karachiDayKey());
     return true;
+  }
+  /*
+    No usable phone number — a form without a phone question, or Meta's own
+    test lead, whose phone is placeholder text. Kept under Meta Ads as the
+    Make bridge does, so the person's answers are never lost without a trace.
+  */
+  if (result.outcome === 'NO_PHONE') {
+    await recordMetaIntakeIssue({
+      reason: 'NO_PHONE',
+      detail: 'The lead arrived without a usable phone number, so it cannot be filed in the Data Bank.',
+      leadgenId,
+      source: campaign.campaignName ?? formId,
+      payload: { name: details.name, phone: details.phone, email: details.email, city: details.city, extras: details.customFields, adId, formId, pageId },
+    });
   }
   return false;
 }
